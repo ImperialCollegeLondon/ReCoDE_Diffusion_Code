@@ -46,8 +46,8 @@ OBJS= stdlib/Constants.o \
  PETSc/PETSc_Vec.o \
  PETSc/PETSc_Mat.o \
  PETSc/PETSc_Ksp.o \
- inoutproc/Input.o \
  inoutproc/Materials.o \
+ inoutproc/Problem.o \
  inoutproc/Output.o \
  centralproc/Solver.o \
  centralproc/PETScSolver.o \
