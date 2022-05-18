@@ -42,10 +42,10 @@ warning:   LD_FLAGS = $(LD_FLAGS_WARNING)
 #Set the objects
 OBJS= stdlib/Constants.o \
  stdlib/StdLib.o \
- PETSc/PETScInit.o \
- PETSc/PETScVec.o \
- PETSc/PETScMat.o \
- PETSc/PETScKSP.o \
+ PETSc/PETSc_Init.o \
+ PETSc/PETSc_Vec.o \
+ PETSc/PETSc_Mat.o \
+ PETSc/PETSc_Ksp.o \
  inoutproc/Input.o \
  inoutproc/Materials.o \
  inoutproc/Output.o \

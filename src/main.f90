@@ -9,4 +9,6 @@ Program Main
   use PETScSolver_Mod
   
 
+
+  Write(*,*) "Code Executed"
 End program
