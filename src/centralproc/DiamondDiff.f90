@@ -36,14 +36,7 @@ Subroutine CreatePETSc(this,Problem,pMatA,pVecb,pVecx)
     call PETSc_Init()
 
     !!Extract relevant data from the Problem specification
-    N_Regions = Problem%GetN_Regions()
-    Allocate(RegionNodes(N_Regions),Boundary_Pos(N_Regions))
-    Boundary_Pos = Problem%GetBoundary_Pos()
-    RegionNodes = Problem%GetNodes()
-    N_Nodes = 0
-    Do ii = 1, N_Regions
-        N_Nodes = N_Nodes + RegionNodes(ii)
-    EndDo
+    N_Nodes = Problem%GetN_Nodes()
 
     !!Generate the required PETSc Matrices and Vectors for the problem
     call pMatA%Create(N_Nodes,N_Nodes,5)
@@ -73,10 +66,7 @@ Subroutine SolveProblem(this,Material,Problem,pMatA,pVecb,pVecx)
     Allocate(RegionNodes(N_Regions),Boundary_Pos(N_Regions))
     Boundary_Pos = Problem%GetBoundary_Pos()
     RegionNodes = Problem%GetNodes()
-    N_Nodes = 0
-    Do ii = 1, N_Regions
-        N_Nodes = N_Nodes + RegionNodes(ii)
-    EndDo
+    N_Nodes = Problem%GetN_Nodes()
 
     !!Extract relevant material data from the materials class
     Allocate(Sig_a(N_Regions),Source(N_Regions))
@@ -105,7 +95,8 @@ Subroutine SolveProblem(this,Material,Problem,pMatA,pVecb,pVecx)
     call pVecb%Assemble()
     call PETScSolver%Solve(pMatA,pVecb,pVecx)
 
-
+    Deallocate(RegionNodes,Boundary_Pos)
+    Deallocate(Sig_a,Source)
 End Subroutine SolveProblem
 
 

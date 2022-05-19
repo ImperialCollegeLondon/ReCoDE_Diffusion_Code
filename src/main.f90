@@ -16,6 +16,7 @@ Program Main
   type(t_Problem) :: Problem 
   type(t_material), allocatable, dimension(:) :: Material
   type(t_DDiff) :: DDiff
+  type(t_output) :: Output
   type(pMat) :: pMatA
   type(pVec) :: pVecb, pVecx
 
@@ -30,8 +31,12 @@ Program Main
   call DDiff%SolveProblem(Material,Problem,pMatA,pVecb,pVecx)
   Write(*,*) "...Problem Assembled Successfully"
 
+  Write(*,*) "Generating Output..."
+  call Output%GenerateVTU(Material,Problem,pVecx)
+  Write(*,*) "...Generated Output Successfully"
 
   call DDiff%DestroyPETSc(pMatA,pVecb,pVecx)
+  call Problem%DestroyProblem(Material)
 
   Write(*,*) "Code Executed"
 End program

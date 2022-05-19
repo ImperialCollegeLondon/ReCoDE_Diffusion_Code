@@ -5,7 +5,7 @@ Module Problem_Mod
   !!Reads through an input deck and passes the required data to external routines
 
   type, public :: t_Problem
-      Integer :: N_Regions
+      Integer :: N_Regions, N_Nodes
       Integer, allocatable, dimension(:) :: Nodes
       Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos 
   contains
@@ -13,7 +13,9 @@ Module Problem_Mod
       procedure, public :: ReadInput
       procedure, public :: GetN_Regions
       procedure, public :: GetNodes 
+      procedure, public :: GetN_Nodes
       procedure, public :: GetBoundary_Pos
+      procedure, public :: DestroyProblem
   end type
 
 contains
@@ -59,8 +61,10 @@ Subroutine ReadInput(this,Material)
   Do While (String_Read .NE. 'Nodes:')
     Read(InputFile,*) String_Read
   EndDo
+  this%N_Nodes = 0
   Do ii = 1, this%N_Regions
     Read(InputFile,*) this%Nodes(ii)
+    this%N_Nodes = this%N_Nodes + this%Nodes(ii)
   EndDo
 
   !!Read in the materials and set the data
@@ -91,7 +95,7 @@ Function GetN_Regions(this) Result(Res)
     Implicit None
     class(t_problem) :: this
     Integer :: Res
-    !!Get the name of the material (generally for debugging purposes)
+    !!Get the number of regions in the problem
     Res = this%N_Regions
 End Function GetN_Regions
 
@@ -100,17 +104,39 @@ Function GetNodes(this) Result(Res)
     Implicit None
     class(t_problem) :: this
     Integer, dimension(this%N_Regions) :: Res
-    !!Get the name of the material (generally for debugging purposes)
+    !!Get an array containing the number of nodes in each region
     Res = this%Nodes
 End Function GetNodes
+
+
+Function GetN_Nodes(this) Result(Res)
+    Implicit None
+    class(t_problem) :: this
+    Integer :: Res
+    !!Get the total number of nodes in the problem
+    Res = this%N_Nodes
+End Function GetN_Nodes
 
 
 Function GetBoundary_Pos(this) Result(Res)
     Implicit None
     class(t_problem) :: this
     Real(kind=dp), dimension(this%N_Regions+1) :: Res
-    !!Get the name of the material (generally for debugging purposes)
+    !!Get the positions of the boundaries in the problem
     Res = this%Boundary_Pos
 End Function GetBoundary_Pos
+
+
+Subroutine DestroyProblem(this,Material)
+  !!Destroy the data stored in the problem class
+  Implicit None
+  class(t_Problem) :: this
+  type(t_material), allocatable, dimension(:) :: Material
+
+  !!Deallocate the relevant arrays
+  Deallocate(this%Boundary_Pos,this%Nodes)
+  Deallocate(Material)
+End Subroutine DestroyProblem
+
 
 End Module
