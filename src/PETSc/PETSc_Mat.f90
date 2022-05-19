@@ -36,7 +36,6 @@ Subroutine Create_PETSc_Mat(This,N_row,N_col,N_nz)
   Integer :: N_row, N_col, N_nz
   PetscErrorCode ierr
   call MatCreateSeqAIJ(PETSC_COMM_SELF,N_row,N_col,N_nz,PETSC_NULL_INTEGER,This%mat,ierr)
-  ! call MatSeqAIJSetPreallocation(This%mat,N_nz,PETSC_NULL_INTEGER,ierr)
 End Subroutine Create_PETSc_Mat
 
 

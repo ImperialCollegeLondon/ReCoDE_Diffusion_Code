@@ -1,15 +1,19 @@
 Module Problem_Mod
 
-    use Constants_Mod
-    use Materials_Mod
-    !!Reads through an input deck and passes the required data to external routines
+  use Constants_Mod
+  use Materials_Mod
+  !!Reads through an input deck and passes the required data to external routines
 
-    type, public :: t_Problem
-        Integer :: N_Regions
-        Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos 
-    contains
-    !!Procedures which handle the storing, calculation and retrieval of material data
-        procedure, public :: ReadInput
+  type, public :: t_Problem
+      Integer :: N_Regions
+      Integer, allocatable, dimension(:) :: Nodes
+      Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos 
+  contains
+  !!Procedures which handle the storing, calculation and retrieval of material data
+      procedure, public :: ReadInput
+      procedure, public :: GetN_Regions
+      procedure, public :: GetNodes 
+      procedure, public :: GetBoundary_Pos
   end type
 
 contains
@@ -38,6 +42,7 @@ Subroutine ReadInput(this,Material)
 
   !!Allocate the relevant arrays
   Allocate(this%Boundary_Pos(this%N_Regions+1))
+  Allocate(this%Nodes(this%N_Regions))
   Allocate(Material(this%N_Regions))
 
   !!Read in the boundary positions
@@ -47,6 +52,15 @@ Subroutine ReadInput(this,Material)
   EndDo
   Do ii = 1, this%N_Regions+1
     Read(InputFile,*) this%Boundary_Pos(ii)
+  EndDo
+
+  !!Read in the number of nodes in each region
+  String_Read = ''
+  Do While (String_Read .NE. 'Nodes:')
+    Read(InputFile,*) String_Read
+  EndDo
+  Do ii = 1, this%N_Regions
+    Read(InputFile,*) this%Nodes(ii)
   EndDo
 
   !!Read in the materials and set the data
@@ -73,5 +87,30 @@ Subroutine ReadInput(this,Material)
 End Subroutine ReadInput
 
 
+Function GetN_Regions(this) Result(Res)
+    Implicit None
+    class(t_problem) :: this
+    Integer :: Res
+    !!Get the name of the material (generally for debugging purposes)
+    Res = this%N_Regions
+End Function GetN_Regions
+
+
+Function GetNodes(this) Result(Res)
+    Implicit None
+    class(t_problem) :: this
+    Integer, dimension(this%N_Regions) :: Res
+    !!Get the name of the material (generally for debugging purposes)
+    Res = this%Nodes
+End Function GetNodes
+
+
+Function GetBoundary_Pos(this) Result(Res)
+    Implicit None
+    class(t_problem) :: this
+    Real(kind=dp), dimension(this%N_Regions+1) :: Res
+    !!Get the name of the material (generally for debugging purposes)
+    Res = this%Boundary_Pos
+End Function GetBoundary_Pos
 
 End Module
