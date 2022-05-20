@@ -85,9 +85,9 @@ Subroutine SolveProblem(this,Material,Problem,pMatA,pVecb,pVecx)
         Do jj = 1, RegionNodes(ii)
             !!Use Delta and material properties to fill the matrix and vector
             NodeID = NodeID + 1
+            !!Equation currently uncoupled
             call pMatA%AddVal(NodeID,NodeID,Delta*Sig_a(ii))
             call pVecb%Add(NodeID,Delta*Source(ii))
-            Write(*,*) "Abs:", Delta*Sig_a(ii), "S:", Delta*Source(ii)
         EndDo
     EndDo
 

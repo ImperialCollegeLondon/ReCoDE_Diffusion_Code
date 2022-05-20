@@ -19,24 +19,25 @@ Program Main
   type(t_output) :: Output
   type(pMat) :: pMatA
   type(pVec) :: pVecb, pVecx
+  Real(kind=dp) :: time_start, time_stop
 
-
-  Write(*,*) "Reading Input..."
+  call cpu_time(time_start)
   call Problem%ReadInput(Material)
-  Write(*,*) "...Input Read Successfully"
+  Write(*,*) ">Input Read"
 
   call DDiff%CreatePETSc(Problem,pMatA,pVecb,pVecx)
 
-  Write(*,*) "Assembling Problem..."
   call DDiff%SolveProblem(Material,Problem,pMatA,pVecb,pVecx)
-  Write(*,*) "...Problem Assembled Successfully"
+  Write(*,*) ">Problem Assembled"
 
-  Write(*,*) "Generating Output..."
   call Output%GenerateVTU(Material,Problem,pVecx)
-  Write(*,*) "...Generated Output Successfully"
+  Write(*,*) ">Output Generated"
 
   call DDiff%DestroyPETSc(pMatA,pVecb,pVecx)
   call Problem%DestroyProblem(Material)
 
-  Write(*,*) "Code Executed"
+  call  cpu_time(time_stop)
+  Write(*,'(g0)',advance='no') " >Problem Solved in:"
+  Write(*,'(E14.6)',advance='no') time_stop-time_start
+  Write(*,'(g0)') " seconds"
 End program
