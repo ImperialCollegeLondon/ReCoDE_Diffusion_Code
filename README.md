@@ -9,4 +9,4 @@ export PETSC_DIR="/home/jack/petsc-3.16.0"
 
 export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
 
-- compile with 'make' for standard use optimised version of code or 'make debug' for unoptimised run with more descriptive outputs
+- compile with 'make' for optimised version of code or 'make debug' for unoptimised run with more descriptive outputs
