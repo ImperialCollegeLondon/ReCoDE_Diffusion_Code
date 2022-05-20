@@ -78,7 +78,7 @@ Subroutine ReadInput(this,Material)
     If (String_Read == 'Fuel') Then 
       Call Material(ii)%SetProps(1._dp,10._dp)
     ElseIf (String_Read == 'Water') Then 
-      Call Material(ii)%SetProps(3._dp,1._dp)
+      Call Material(ii)%SetProps(3._dp,4._dp)
     ElseIf  (String_Read == 'Steel') Then 
       Call Material(ii)%SetProps(5._dp,1._dp)
     Else 

@@ -187,7 +187,7 @@ Subroutine GenerateVTU(this,Material,Problem,pVecx)
     Write(vtufile,'(g0)') "</VTKFile>"
 
     Close(vtufile)
-
+    Deallocate(Flux)
 End Subroutine GenerateVTU
 
 End Module

@@ -6,9 +6,7 @@ Program Main
   use Materials_Mod
   use Output_Mod
   use DiamondDiff_Mod
-  use Solver_Mod
   use PETScSolver_Mod
-  use PETSc_Init_Mod
   use PETSc_Mat_Mod
   use PETSc_Vec_Mod
   
