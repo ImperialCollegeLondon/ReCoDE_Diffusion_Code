@@ -80,13 +80,14 @@ Subroutine SolveProblem(this,Material,Problem,pMatA,pVecb,pVecx)
     NodeID = 0
     Do ii = 1, N_Regions
         !!Loop over each node within the region
+        !!Calculate the delta value between each node in the region
+        Delta = (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
         Do jj = 1, RegionNodes(ii)
-            !!Calculate the delta value between each node in the region
-            Delta = (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii),dp)
-            !!Use Delta and material properties to fill the matrix
+            !!Use Delta and material properties to fill the matrix and vector
             NodeID = NodeID + 1
             call pMatA%AddVal(NodeID,NodeID,Delta*Sig_a(ii))
             call pVecb%Add(NodeID,Delta*Source(ii))
+            Write(*,*) "Abs:", Delta*Sig_a(ii), "S:", Delta*Source(ii)
         EndDo
     EndDo
 

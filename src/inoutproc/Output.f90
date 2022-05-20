@@ -20,9 +20,9 @@ Subroutine GenerateVTU(this,Material,Problem,pVecx)
     type(t_material), dimension(:) :: Material
     type(t_problem) :: Problem 
     type(pVec) :: pVecx
-    Integer :: ii, jj, N_Nodes, N_Regions
+    Integer :: ii, jj, N_Nodes, N_Regions, NodeID
     Integer, allocatable, dimension(:) :: RegionNodes
-    Integer, parameter :: vtufile = 201 
+    Integer, parameter :: textfile = 201, vtufile = 202 
     Real(kind=dp) :: Position
     Real(kind=dp), allocatable, dimension(:) :: Flux, Boundary_Pos
     !!Generate the VTU file using the resultand flux sorted in the PETSc vector x
@@ -38,6 +38,20 @@ Subroutine GenerateVTU(this,Material,Problem,pVecx)
     Allocate(Flux(N_Nodes))
     call pVecx%ConvFrom(Flux)
 
+    !!Generate textfile
+    Open(textfile,File='OutputFile.txt',Status='Replace')
+    Position = 0._dp
+    NodeID = 0
+    Do ii = 1, N_Regions
+        Do jj = 1, RegionNodes(ii)
+            NodeID = NodeID + 1
+            Write(textfile,'(2E14.6)') Position, Flux(NodeID)
+            Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
+        EndDo 
+    EndDo
+    Close(textfile)
+
+
     !!Generate VTU file
     Open(vtufile,File='OutputFile.vtu',Status='Replace')
 
@@ -48,63 +62,126 @@ Subroutine GenerateVTU(this,Material,Problem,pVecx)
     Write(vtufile,'(g0)') "<UnstructuredGrid>"
 
     !!Describe the amount of data
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
+    Write(vtufile,'(g0)',advance='no') "    "
     Write(vtufile,'(g0)',advance='no') '<Piece NumberOfPoints="'
-    Write(vtufile,'(g0)',advance='no') N_Nodes
-    Write(vtufile,'(g0)') '" NumberOfCells="0">'
-
+    Write(vtufile,'(g0)',advance='no') N_Nodes*2
+    Write(vtufile,'(g0)',advance='no') '" NumberOfCells="'
+    Write(vtufile,'(g0)',advance='no') N_Nodes-1
+    Write(vtufile,'(g0)') '">'
 
     !!Fill in the point data
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
+    Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') '<PointData Scalars="flux">'
 
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') '<DataArray Name="flux" format="ascii" type="Float64" />'
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') '<DataArray Name="flux" format="ascii" type="Float64" >'
+    Write(vtufile,'(g0)',advance='no') "          "
+    !!Flux values
+    Do ii = 1, N_Nodes
+        Write(vtufile,'(E14.6)',advance='no') Flux(ii)
+        Write(vtufile,'(g0)',advance='no') " "
+    EndDo
+    !!Copy of flux to be smeared in y
     Do ii = 1, N_Nodes
         Write(vtufile,'(E14.6)',advance='no') Flux(ii)
         Write(vtufile,'(g0)',advance='no') " "
     EndDo
     Write(vtufile,'(g0)') ""
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') "</DataArray>"
+    Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') "</PointData>"
 
+    !!Cell data section (not used)
+    Write(vtufile,'(g0)',advance='no') "      "
+    Write(vtufile,'(g0)') "<CellData>"
+    Write(vtufile,'(g0)',advance='no') "      "
+    Write(vtufile,'(g0)') "</CellData>"
 
-    !!Fill in the positions of the point data
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
+    !!Fill in the point data
+    Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') "<Points>"
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "<DataArray Name=""Coordinates"" NumberOfComponents=""1"" format=""ascii"" type=""Float64"" />"
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') "<DataArray Name=""Coordinates"" NumberOfComponents=""3"" format=""ascii"" type=""Float64"" >"
+    Write(vtufile,'(g0)',advance='no') "          "
+    !!1 dimensional flux results
     Position = 0._dp
     Do ii = 1, N_Regions
         Do jj = 1, RegionNodes(ii)
+            !!x co-ord
             Write(vtufile,'(E14.6)',advance='no') Position
             Write(vtufile,'(g0)',advance='no') " "
-            Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii),dp)
+            !!y and z co-ords
+            Write(vtufile,'(g0)',advance='no') "0.000000E+00 0.000000E+00 "
+            Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
+        EndDo 
+    EndDo
+    !!Copy of results smeared in y for vtu visualisation
+    Position = 0._dp
+    Do ii = 1, N_Regions
+        Do jj = 1, RegionNodes(ii)
+            !!x co-ord
+            Write(vtufile,'(E14.6)',advance='no') Position
+            Write(vtufile,'(g0)',advance='no') " "
+            !!y and z co-ords
+            Write(vtufile,'(g0)',advance='no') "0.100000E+01 0.000000E+00 "
+            Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
         EndDo 
     EndDo
     Write(vtufile,'(g0)') ""
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') "</DataArray>"
+    Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') "</Points>"
 
+    !!Fill in the cell data
+    Write(vtufile,'(g0)',advance='no') "      "
+    Write(vtufile,'(g0)') "<Cells>"
+    !!Connectivity
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') '<DataArray type="Int32" Name="connectivity" format="ascii">'
+    Write(vtufile,'(g0)',advance='no') "          "
+    Do ii = 1, N_Nodes-1
+        Write(vtufile,'(g0)',advance='no') ii-1
+        Write(vtufile,'(g0)',advance='no') " "
+        Write(vtufile,'(g0)',advance='no') ii
+        Write(vtufile,'(g0)',advance='no') " "
+        Write(vtufile,'(g0)',advance='no') ii+N_Nodes
+        Write(vtufile,'(g0)',advance='no') " "
+        Write(vtufile,'(g0)',advance='no') ii-1+N_Nodes
+        Write(vtufile,'(g0)',advance='no') " "
+    EndDo
+    Write(vtufile,'(g0)') ""
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') " </DataArray>"
+    !!Offsets
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') '<DataArray type="Int32" Name="offsets" format="ascii">'
+    Write(vtufile,'(g0)',advance='no') "          "
+    Do ii = 1, N_Nodes-1
+        Write(vtufile,'(g0)',advance='no') ii*4
+        Write(vtufile,'(g0)',advance='no') " "
+    EndDo
+    Write(vtufile,'(g0)') ""
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') " </DataArray>"
+    !!Types
+    Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)',advance='no') "  "
-    Write(vtufile,'(g0)') '</Piece>'
+    Write(vtufile,'(g0)') '<DataArray type="Int32" Name="types" format="ascii">'
+    Write(vtufile,'(g0)',advance='no') "          "
+    Do ii = 1, N_Nodes-1
+        Write(vtufile,'(g0)',advance='no') 5
+        Write(vtufile,'(g0)',advance='no') " "
+    EndDo
+    Write(vtufile,'(g0)') ""
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') " </DataArray>"
 
+    Write(vtufile,'(g0)',advance='no') "      "
+    Write(vtufile,'(g0)') "</Cells>"
+    Write(vtufile,'(g0)',advance='no') "    "
+    Write(vtufile,'(g0)') '</Piece>'
     Write(vtufile,'(g0)',advance='no') "  "
     Write(vtufile,'(g0)') "</UnstructuredGrid>"
     Write(vtufile,'(g0)') "</VTKFile>"
