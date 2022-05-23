@@ -37,6 +37,7 @@ debug:   LD_FLAGS = $(LD_FLAGS_DEBUG)
 
 
 #Set the objects
+#Note the order below is determined by dependencies between object files
 OBJS= stdlib/Constants.o \
  stdlib/StdLib.o \
  PETSc/PETSc_Init.o \
