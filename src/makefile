@@ -25,18 +25,16 @@ LIBS =$(PETSC_LIBS)
 
 
 # Compiler options
-FC_FLAGS_WARNING    =  -ffree-line-length-800 -O0 -g -pg -Wall -fcheck=bounds
-FC_FLAGS_DEBUG    =  -ffree-line-length-800 -O0 -g -pg -fcheck=bounds
-FC_FLAGS  =      -ffree-line-length-800 -O3 -DNDEBUG
+FC_FLAGS_COMMON = -ffree-line-length-800 -Wall -std=f2018
+FC_FLAGS_DEBUG = $(FC_FLAGS_COMMON) -O0 -g -pg -fcheck=bounds
+FC_FLAGS = $(FC_FLAGS_COMMON) -O3 -DNDEBUG
 debug:   FC_FLAGS = $(FC_FLAGS_DEBUG)
-warning: FC_FLAGS = $(FC_FLAGS_WARNING)
 
 #Linker flags
 LD_FLAGS = -O2
 LD_FLAGS_DEBUG = -g -Og
 LD_FLAGS_WARNING = -g -Og
 debug:   LD_FLAGS = $(LD_FLAGS_DEBUG)
-warning:   LD_FLAGS = $(LD_FLAGS_WARNING)
 
 
 #Set the objects
@@ -73,7 +71,6 @@ VPATH = $(SCRIPTS_PATH)
 #Default make command requires the executable to be up to date
 all : $(EXEC)
 debug:   $(EXEC)
-warning:   $(EXEC)
 home:    $(EXEC)
 
 #Objects required to be updated if the makefile has changed
