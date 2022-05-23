@@ -58,7 +58,7 @@ OBJS= stdlib/Constants.o \
 MODS= $(OBJS:.o=.mod)
 
 #Set the executable name
-EXEC=../output
+EXEC=../transport
 
 #Default make command requires the executable to be up to date
 all : $(EXEC)
