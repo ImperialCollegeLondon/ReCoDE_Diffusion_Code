@@ -20,11 +20,8 @@ Subroutine Solve(this,pMatA,pVecb,pVecx)
     Implicit none
     class(t_PETScSolver) :: this
     type(pMat) :: pMatA
-    type(pVec) :: pVecb, pVecx, pVecTIn, pVecTOut
+    type(pVec) :: pVecb, pVecx
     type(pSol) :: pSolve
-    Integer :: ii, jj, kk, N
-    Real(kind=dp),allocatable,dimension(:) :: TIn, TOut, Vecb
-    
     
     call pSolve%Create(pMatA,'N',1E-5_dp,1E-5_dp,100000)
     call pSolve%Solve(pVecb,pVecx)
@@ -32,7 +29,7 @@ Subroutine Solve(this,pMatA,pVecb,pVecx)
 
     call pSolve%Destroy()
 
-  End Subroutine Solve
+End Subroutine Solve
 
 
 End Module
