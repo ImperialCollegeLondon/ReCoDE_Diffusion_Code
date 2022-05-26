@@ -47,6 +47,7 @@ OBJS= stdlib/Constants.o \
  inoutproc/Materials.o \
  inoutproc/Problem.o \
  inoutproc/Output.o \
+ centralproc/CRS.o \
  centralproc/Solver.o \
  centralproc/PETScSolver.o \
  centralproc/DiamondDiff.o \
