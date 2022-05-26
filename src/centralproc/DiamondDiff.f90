@@ -7,6 +7,7 @@ Module DiamondDiff_Mod
     use PETSc_Init_Mod
     use PETSc_Vec_Mod
     use PETSc_Mat_Mod
+    use CRS_Mod
     use Solver_Mod
     use PETScSolver_Mod
     use Output_Mod
