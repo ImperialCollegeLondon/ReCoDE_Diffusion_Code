@@ -6,20 +6,18 @@ Module Solver_Mod
 
     private
 
-    !! type definitions
-
     type, public :: t_Solver
         private
 
     contains
-        procedure, public :: solve_CG_Alg
+        procedure, public :: solve
     end type
     !!Solves the system of equations to generate a result which can be fed into the output module
     !!Solver used when code is compiled without PETSc
 contains
 
 
-Subroutine solve_CG_Alg(this, mat_CRS, Vecx, N_Size, phi_array)
+Subroutine solve(this, mat_CRS, Vecx, N_Size, phi_array)
     Implicit None
     class(t_Solver)    :: this
     type(t_CRS) :: mat_CRS
@@ -32,7 +30,7 @@ Subroutine solve_CG_Alg(this, mat_CRS, Vecx, N_Size, phi_array)
     Real(kind=dp), dimension(N_Size) :: Input_Operate_array
     Logical :: CG_Conv
 
-    
+    Write(*,*) Size(Vecx), N_Size
     Input_Operate_array(:) = 1._dp
     call mat_CRS%operate(Input_Operate_array, Output_Operate_array)
     r_old_array(:) = Vecx(:) - Output_Operate_array(:)
@@ -67,9 +65,14 @@ Subroutine solve_CG_Alg(this, mat_CRS, Vecx, N_Size, phi_array)
       r_s_old = r_s_new
     EndDo
 
-    Write(*,*) "CG Iterations Performed:", CG_Iterations
+  Write(*,*) "---CG Convergence Succeeded---"
+  Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
+  Write(*,'(g0)',advance='no') CG_Iterations
+  Write(*,'(g0)',advance='no') "  with residual:"
+  Write(*,'(E14.6)') dot_product(r_old_array,r_old_array)
+  Write(*,*) "-------------------------------"
 
-  End subroutine solve_CG_Alg
+  End subroutine solve
 
 
 End Module
