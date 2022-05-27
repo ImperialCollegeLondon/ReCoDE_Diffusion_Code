@@ -81,6 +81,8 @@ Subroutine insert_CRS(this, Matrix_i, Matrix_j, Matrix_ij_value)
     Real(kind=dp), allocatable, dimension(:,:) :: New_Row_ValCol_Array, New_ValCol_array
     Logical  :: Sparsity_Change_Logical
 
+    Write(*,*) "Inserting value of", Matrix_ij_value
+
     Input_Row = Matrix_j
     Input_Column = Matrix_i
     Input_Value = Matrix_ij_value
@@ -217,6 +219,12 @@ Subroutine insert_CRS(this, Matrix_i, Matrix_j, Matrix_ij_value)
 
         EndIf
     EndIf
+
+    ! Write(*,*) "Row Ptr"
+    ! Write(*,*) this%row_ptr_array
+    ! Write(*,*) "value col"
+    ! Write(*,*) this%value_col_array(:,1)
+    ! Write(*,*) this%value_col_array(:,2)
 
 End Subroutine insert_CRS
 

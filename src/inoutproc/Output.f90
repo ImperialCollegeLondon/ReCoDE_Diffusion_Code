@@ -13,10 +13,9 @@ Module Output_Mod
     end type
 contains
 
-Subroutine GenerateVTU(this,Material,Problem,Flux)
+Subroutine GenerateVTU(this,Problem,Flux)
     Implicit None
     class(t_output) :: this
-    type(t_material), dimension(:) :: Material
     type(t_problem) :: Problem 
     Integer :: ii, jj, N_Nodes, N_Regions, NodeID
     Integer, allocatable, dimension(:) :: RegionNodes
@@ -35,12 +34,14 @@ Subroutine GenerateVTU(this,Material,Problem,Flux)
     !!Generate textfile
     Open(textfile,File='OutputFile.txt',Status='Replace')
     Position = 0._dp
-    NodeID = 0
+    !!First node
+    NodeID = 1
+    Write(textfile,'(2E14.6)') Position, Flux(NodeID)
     Do ii = 1, N_Regions
-        Do jj = 1, RegionNodes(ii)
+        Do jj = 1, RegionNodes(ii)-1
             NodeID = NodeID + 1
-            Write(textfile,'(2E14.6)') Position, Flux(NodeID)
             Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
+            Write(textfile,'(2E14.6)') Position, Flux(NodeID)
         EndDo 
     EndDo
     Close(textfile)
@@ -83,14 +84,34 @@ Subroutine GenerateVTU(this,Material,Problem,Flux)
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') "</DataArray>"
+
     Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') "</PointData>"
 
-    !!Cell data section (not used)
+
+    !!Cell data section 
     Write(vtufile,'(g0)',advance='no') "      "
-    Write(vtufile,'(g0)') "<CellData>"
+    Write(vtufile,'(g0)') '<CellData Scalars="Region">'
+
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') '<DataArray Name="Region" format="ascii" type="Int32" >'
+    Write(vtufile,'(g0)',advance='no') "          "
+
+    !!Loop over the problem to find the region number
+    Do ii = 1, N_Regions
+        Do jj = 1, RegionNodes(ii)-1
+            Write(vtufile,'(g0)',advance='no') ii
+            Write(vtufile,'(g0)',advance='no') " "
+        EndDo    
+    EndDo
+    Write(vtufile,'(g0)') ""
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') "</DataArray>"
+    
+
     Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') "</CellData>"
+
 
     !!Fill in the point data
     Write(vtufile,'(g0)',advance='no') "      "
@@ -101,32 +122,34 @@ Subroutine GenerateVTU(this,Material,Problem,Flux)
     !!1 dimensional flux results
     Position = 0._dp
     Do ii = 1, N_Regions
-        Do jj = 1, RegionNodes(ii)
-            !!x co-ord
+        Do jj = 1, RegionNodes(ii)-1
             Write(vtufile,'(E14.6)',advance='no') Position
-            Write(vtufile,'(g0)',advance='no') " "
-            !!y and z co-ords
-            Write(vtufile,'(g0)',advance='no') "0.000000E+00 0.000000E+00 "
+            Write(vtufile,'(g0)',advance='no') " 0.000000E+00 0.000000E+00 "
             Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
         EndDo 
     EndDo
+    !!Final Node
+    Write(vtufile,'(E14.6)',advance='no') Boundary_Pos(N_Regions+1)
+    Write(vtufile,'(g0)',advance='no') " 0.000000E+00 0.000000E+00 "
+
     !!Copy of results smeared in y for vtu visualisation
     Position = 0._dp
     Do ii = 1, N_Regions
-        Do jj = 1, RegionNodes(ii)
-            !!x co-ord
+        Do jj = 1, RegionNodes(ii)-1
             Write(vtufile,'(E14.6)',advance='no') Position
-            Write(vtufile,'(g0)',advance='no') " "
-            !!y and z co-ords
-            Write(vtufile,'(g0)',advance='no') "0.100000E+01 0.000000E+00 "
+            Write(vtufile,'(g0)',advance='no') " 0.100000E+01 0.000000E+00 "
             Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
         EndDo 
     EndDo
+    !!Final Node
+    Write(vtufile,'(E14.6)',advance='no') Boundary_Pos(N_Regions+1)
+    Write(vtufile,'(g0)',advance='no') " 0.100000E+01 0.000000E+00 "
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') "</DataArray>"
     Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') "</Points>"
+
 
     !!Fill in the cell data
     Write(vtufile,'(g0)',advance='no') "      "
