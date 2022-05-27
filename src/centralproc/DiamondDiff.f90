@@ -44,10 +44,10 @@ Subroutine Create(this,Problem)
 
     !!Extract relevant data from the Problem specification
     N_Nodes = Problem%GetN_Nodes()
+    Allocate(this%Vecb(N_Nodes))
 
 # ifdef NPETSC 
     call this%CRS%construct(N_Nodes)
-    Allocate(this%Vecb(N_Nodes))
 # endif
 
 # ifdef PETSC 
@@ -77,7 +77,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
 # endif
     Integer :: ii, jj, N_Regions, N_Nodes, NodeID
     Integer, allocatable, dimension(:) :: RegionNodes
-    Real(kind=dp) :: Delta
+    Real(kind=dp) :: Delta, Delta_prev
     Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos, Sig_a, Source, Vecx
 
 
@@ -106,14 +106,28 @@ Subroutine Solve(this,Material,Problem,Vecx)
         !!Loop over each node within the region
         !!Calculate the delta value between each node in the region
         Delta = (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
-        Do jj = 1, RegionNodes(ii)
+        !!Initial Node
+        NodeID = NodeID + 1
+        If (ii /= 1) Then
+            Delta_prev = (Boundary_Pos(ii)-Boundary_Pos(ii-1))/Real(RegionNodes(ii-1)-1,dp)
+            call this%CRS%insert(NodeID,NodeID,(0.5_dp*((Delta*Sig_a(ii))+(Delta_prev*Sig_a(ii-1)))))
+            this%Vecb(NodeID) = (0.5_dp*((Delta*Source(ii))+(Delta_prev*Source(ii-1))))
+        Else 
+            call this%CRS%insert(NodeID,NodeID,Delta*Sig_a(ii))
+            this%Vecb(NodeID) = Delta*Source(ii)
+        EndIf
+        !!Loop up to boundary
+        Do jj = 1, RegionNodes(ii)-2
             !!Use Delta and material properties to fill the matrix and vector
             NodeID = NodeID + 1
-            !!Equation currently uncoupled
             call this%CRS%insert(NodeID,NodeID,Delta*Sig_a(ii))
             this%Vecb(NodeID) = Delta*Source(ii)
         EndDo
     EndDo
+    !!Final Node
+    NodeID = NodeID + 1
+    call this%CRS%insert(NodeID,NodeID,Delta*Sig_a(N_Regions))
+    this%Vecb(NodeID) = Delta*Source(N_Regions)
 
     !!Solve the problem
     call Solver%solve(this%CRS,this%Vecb,N_Nodes,Vecx)
@@ -129,20 +143,36 @@ Subroutine Solve(this,Material,Problem,Vecx)
         !!Loop over each node within the region
         !!Calculate the delta value between each node in the region
         Delta = (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
-        Do jj = 1, RegionNodes(ii)
+        !!Initial Node
+        NodeID = NodeID + 1
+        If (ii /= 1) Then
+            Delta_prev = (Boundary_Pos(ii)-Boundary_Pos(ii-1))/Real(RegionNodes(ii-1)-1,dp)
+            call this%pMatA%InsertVal(NodeID,NodeID,(0.5_dp*((Delta*Sig_a(ii))+(Delta_prev*Sig_a(ii-1)))))
+            this%Vecb(NodeID) = (0.5_dp*((Delta*Source(ii))+(Delta_prev*Source(ii-1))))
+        Else 
+            call this%pMatA%InsertVal(NodeID,NodeID,Delta*Sig_a(ii))
+            this%Vecb(NodeID) = Delta*Source(ii)
+        EndIf
+        !!Loop up to boundary
+        Do jj = 1, RegionNodes(ii)-2
             !!Use Delta and material properties to fill the matrix and vector
             NodeID = NodeID + 1
-            !!Equation currently uncoupled
-            call this%pMatA%AddVal(NodeID,NodeID,Delta*Sig_a(ii))
-            call this%pVecb%Add(NodeID,Delta*Source(ii))
+            call this%pMatA%InsertVal(NodeID,NodeID,Delta*Sig_a(ii))
+            this%Vecb(NodeID) = Delta*Source(ii)
         EndDo
     EndDo
+    !!Final Node
+    NodeID = NodeID + 1
+    call this%pMatA%InsertVal(NodeID,NodeID,Delta*Sig_a(N_Regions))
+    this%Vecb(NodeID) = Delta*Source(N_Regions)
+    call this%pVecb%ConvTo(this%Vecb)
 
     !!Solve the problem
     call this%pMatA%Assemble()
     call this%pVecb%Assemble()
     call PETScSolver%Solve(this%pMatA,this%pVecb,this%pVecx)
-    call this%pVecx%ConvTo(Vecx)
+    call this%pVecx%ConvFrom(Vecx)
+
 # endif
 
     Deallocate(RegionNodes,Boundary_Pos)
@@ -157,10 +187,11 @@ Subroutine Destroy(this,Flux)
     Real(kind=dp), allocatable, dimension(:) :: Flux
 
     If(Allocated(Flux)) Deallocate(Flux)
+    If(Allocated(this%Vecb)) Deallocate(this%Vecb)
 
 # ifdef NPETSC 
     call this%CRS%destroy()
-    Deallocate(this%Vecb)
+    
 # endif
 
 # ifdef PETSC 

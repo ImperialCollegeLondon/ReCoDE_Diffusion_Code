@@ -64,6 +64,7 @@ Subroutine ReadInput(this,Material)
     Read(InputFile,*) this%Nodes(ii)
     this%N_Nodes = this%N_Nodes + this%Nodes(ii)
   EndDo
+  this%N_Nodes = this%N_Nodes - (this%N_Regions - 1)
 
   !!Read in the materials and set the data
   String_Read = ''

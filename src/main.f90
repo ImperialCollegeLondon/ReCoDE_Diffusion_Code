@@ -35,7 +35,7 @@ Program Main
   call DDiff%Solve(Material,Problem,Flux)
   Write(*,*) ">Problem Assembled"
 
-  call Output%GenerateVTU(Material,Problem,Flux)
+  call Output%GenerateVTU(Problem,Flux)
   Write(*,*) ">Output Generated"
 
   call DDiff%Destroy(Flux)

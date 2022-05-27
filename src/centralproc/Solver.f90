@@ -17,51 +17,69 @@ Module Solver_Mod
 contains
 
 
-Subroutine solve(this, mat_CRS, Vecx, N_Size, phi_array)
+Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     Implicit None
     class(t_Solver)    :: this
     type(t_CRS) :: mat_CRS
     Integer :: CG_Iterations, ii
     Integer :: N_Size
     Real(kind=dp) :: alpha, alpha_den, r_s_old, r_s_new
-    Real(kind=dp), dimension(:) :: Vecx
-    Real(kind=dp), dimension(N_Size) :: Output_Operate_array
-    Real(kind=dp), dimension(N_Size) :: r_old_array, p_array, phi_array, phi_Previous_array
-    Real(kind=dp), dimension(N_Size) :: Input_Operate_array
+    Real(kind=dp), dimension(:) :: Vecb
+    Real(kind=dp), dimension(N_Size) :: Output_Operate
+    Real(kind=dp), dimension(N_Size) :: r_old, p, phi, phi_Previous
+    Real(kind=dp), dimension(N_Size) :: Input_Operate
     Logical :: CG_Conv
 
-    Write(*,*) Size(Vecx), N_Size
-    Input_Operate_array(:) = 1._dp
-    call mat_CRS%operate(Input_Operate_array, Output_Operate_array)
-    r_old_array(:) = Vecx(:) - Output_Operate_array(:)
-    p_array(:) = r_old_array(:)
+    Write(*,*) Size(Vecb), N_Size
+    phi = 1._dp
+    call mat_CRS%operate(phi, Output_Operate)
+    Write(*,*) "================="
+    Write(*,*) "      CG         "
+    Write(*,*) "================="
+    Write(*,*) "CRS Operation:"
+    Write(*,*) phi(:)
+    Write(*,*) Output_Operate(:)
+
+    Write(*,*) "Vecb:", Size(Vecb)
+    Write(*,*) Vecb
+
+    r_old(:) = Vecb(:) - Output_Operate(:)
+    p(:) = r_old(:)
     CG_Conv = .FALSE.
-    r_s_old = dot_product(r_old_array,r_old_array)
-    If (r_s_old .LT. 1E-5) Then
+    r_s_old = dot_product(r_old,r_old)
+    If (r_s_old .LT. 1E-8) Then
       CG_Conv = .TRUE.
     EndIf
     CG_Iterations = 0
-    Do While ((CG_Conv .EQV. .FALSE.) .AND. (CG_Iterations .LT. 1000))
+    Do While ((CG_Conv .EQV. .FALSE.) .AND. (CG_Iterations .LT. 10))
       CG_Iterations = CG_Iterations + 1
-      Input_Operate_array(:) = p_array(:)
-      call mat_CRS%operate(Input_Operate_array, Output_Operate_array)
+      Input_Operate(:) = p(:)
+      call mat_CRS%operate(Input_Operate, Output_Operate)
       alpha_den = 0.0_dp
       Do ii = 1, N_Size
-        alpha_den = alpha_den + (p_array(ii)*Output_Operate_array(ii))
+        alpha_den = alpha_den + (p(ii)*Output_Operate(ii))
       EndDo
       alpha = r_s_old/alpha_den
-      phi_Previous_array(:) = phi_array(:)
-      phi_array(:) = phi_array(:) + (alpha*p_array(:))
-      If (dot_product(r_old_array,r_old_array) .LT. 1E-6) Then
-        CG_Conv = .TRUE.
-        Exit
-      EndIf
-      r_old_array(:) = r_old_array(:) - (alpha*Output_Operate_array(:))
+      phi_Previous(:) = phi(:)
+      phi(:) = phi(:) + (alpha*p(:))
+      r_old(:) = r_old(:) - (alpha*Output_Operate(:))
       r_s_new = 0.0_dp
       Do ii = 1, N_Size
-        r_s_new = r_s_new + (r_old_array(ii)**2)
+        r_s_new = r_s_new + (r_old(ii)**2)
       EndDo
-      p_array(:) = r_old_array(:) + ((r_s_new/r_s_old)*p_array(:))
+
+      Write(*,*) "Phi Old:"
+      Write(*,*) phi_Previous(:)
+      Write(*,*) "Phi:"
+      Write(*,*) phi(:)
+      Write(*,*) "----"
+
+      If (dot_product(r_old,r_old) .LT. 1E-8) Then
+        CG_Conv = .TRUE.
+      EndIf
+      
+      
+      p(:) = r_old(:) + ((r_s_new/r_s_old)*p(:))
       r_s_old = r_s_new
     EndDo
 
@@ -69,7 +87,7 @@ Subroutine solve(this, mat_CRS, Vecx, N_Size, phi_array)
   Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
   Write(*,'(g0)',advance='no') CG_Iterations
   Write(*,'(g0)',advance='no') "  with residual:"
-  Write(*,'(E14.6)') dot_product(r_old_array,r_old_array)
+  Write(*,'(E14.6)') dot_product(r_old,r_old)
   Write(*,*) "-------------------------------"
 
   End subroutine solve
