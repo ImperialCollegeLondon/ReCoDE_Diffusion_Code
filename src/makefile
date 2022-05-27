@@ -28,7 +28,6 @@ FC_FLAGS_COMMON = -ffree-line-length-800 -Wall -std=f2018
 FC_FLAGS_DEBUG = $(FC_FLAGS_COMMON) -O0 -g -pg -fcheck=bounds
 FC_FLAGS = $(FC_FLAGS_COMMON) -O3 -DNDEBUG
 petsc:   FC_FLAGS = $(FC_FLAGS_COMMON) -DPETSC
-debug:   FC_FLAGS = $(FC_FLAGS_DEBUG) -DNPETSC
 petsc_debug:   FC_FLAGS = $(FC_FLAGS_DEBUG) -DPETSC
 
 #Linker flags

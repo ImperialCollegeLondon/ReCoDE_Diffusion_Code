@@ -12,7 +12,7 @@ Program Main
     use PETSc_Mat_Mod
     use PETScSolver_Mod
 # endif
-# ifdef NPETSC
+# ifndef PETSC
     use CRS_Mod
     use Solver_Mod
 # endif

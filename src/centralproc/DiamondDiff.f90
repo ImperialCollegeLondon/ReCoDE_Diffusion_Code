@@ -10,7 +10,7 @@ Module DiamondDiff_Mod
     use PETSc_Mat_Mod
     use PETScSolver_Mod
 # endif
-# ifdef NPETSC
+# ifndef PETSC
     use CRS_Mod
     use Solver_Mod
 # endif
@@ -20,7 +20,7 @@ Module DiamondDiff_Mod
     type, public :: t_DDiff
         Integer :: N_Regions
         Real(kind=dp), allocatable, dimension(:) :: Vecb
-# ifdef NPETSC
+# ifndef PETSC
         type(t_CRS) :: CRS
 # endif
 # ifdef PETSC
@@ -46,7 +46,7 @@ Subroutine Create(this,Problem)
     N_Nodes = Problem%GetN_Nodes()
     Allocate(this%Vecb(N_Nodes))
 
-# ifdef NPETSC 
+# ifndef PETSC 
     call this%CRS%construct(N_Nodes)
 # endif
 
@@ -69,7 +69,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
     class(t_DDiff) :: this
     type(t_material), dimension(:) :: Material 
     type(t_Problem) :: Problem
-# ifdef NPETSC
+# ifndef PETSC
     type(t_Solver) :: Solver
 # endif 
 # ifdef PETSC
@@ -98,7 +98,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
 
     !!Non-PETSc Implementation
-# ifdef NPETSC 
+# ifndef PETSC 
     !!Fill CRS Matrices with problem information
     !!Loop over each region within the geometry
     NodeID = 0
@@ -189,7 +189,7 @@ Subroutine Destroy(this,Flux)
     If(Allocated(Flux)) Deallocate(Flux)
     If(Allocated(this%Vecb)) Deallocate(this%Vecb)
 
-# ifdef NPETSC 
+# ifndef PETSC 
     call this%CRS%destroy()
     
 # endif
