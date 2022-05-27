@@ -72,7 +72,7 @@ MODS_PETSC= $(OBJS:.o=.mod)
 
 #Set the executable name
 EXEC=../transport
-EXEC_PETSC=../transport
+EXEC_PETSC=../transport_petsc
 
 #Default make command requires the executable to be up to date
 all : $(EXEC)

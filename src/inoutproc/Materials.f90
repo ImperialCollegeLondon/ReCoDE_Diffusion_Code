@@ -42,7 +42,6 @@ contains
     Subroutine SetMaterialProperties(this,Sig_a,S)
         Implicit None
         class(t_material) :: this
-        Integer :: Groups
         Real(Kind=dp) :: Sig_a, S
         !!Set the properties of the material
         this%Sig_a = Sig_a

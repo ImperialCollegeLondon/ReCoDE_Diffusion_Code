@@ -124,7 +124,6 @@ End Subroutine Reset_PETSc_Vec
 Subroutine InsertValue_PETSc_Vec(this,Position,Value)
   Implicit None 
   Class(PVec), intent(inout) :: this
-  PetscErrorCode ierr 
   Real(kind=dp) :: Value 
   Integer :: Position 
   call VecSetValue(this%vec,Position-1,Value,INSERT_VALUES)
@@ -134,7 +133,6 @@ End Subroutine InsertValue_PETSc_Vec
 Subroutine AddValue_PETSc_Vec(this,Position,Value)
   Implicit None 
   Class(PVec), intent(inout) :: this
-  PetscErrorCode ierr 
   Real(kind=dp) :: Value 
   Integer :: Position
   call VecSetValue(this%vec,Position-1,Value,ADD_VALUES)

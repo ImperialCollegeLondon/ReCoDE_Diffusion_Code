@@ -76,10 +76,10 @@ Subroutine insert_CRS(this, Matrix_i, Matrix_j, Matrix_ij_value)
     Class(t_CRS), intent(inout) :: this
     Integer, intent(in) :: Matrix_i, Matrix_j
     Real(kind=dp), intent(in) :: Matrix_ij_value
-    Real(kind=dp)       :: Input_Value
-    Integer             :: Row_Start_N, Row_End_N, i, j, New_ValCol_Length, ii, Input_Row, Input_Column
+    Real(kind=dp)  :: Input_Value
+    Integer  :: Row_Start_N, Row_End_N, i, j, New_ValCol_Length, Input_Row, Input_Column
     Real(kind=dp), allocatable, dimension(:,:) :: New_Row_ValCol_Array, New_ValCol_array
-    Logical             :: Sparsity_Change_Logical
+    Logical  :: Sparsity_Change_Logical
 
     Input_Row = Matrix_j
     Input_Column = Matrix_i
@@ -228,11 +228,11 @@ Subroutine add_CRS(this, Matrix_i, Matrix_j, Matrix_ij_value)
     Class(t_CRS), intent(inout) :: this
     Integer, intent(in) :: Matrix_i, Matrix_j
     Real(kind=dp), intent(in) :: Matrix_ij_value
-    Real(kind=dp)       :: Input_Value
+    Real(kind=dp) :: Input_Value
     Real(kind=dp), allocatable, dimension(:) :: New_Row_ValCol_Array1, New_ValCol_array1
-    Integer             :: Row_Start_N, Row_End_N, i, j, New_ValCol_Length, ii, Input_Row, Input_Column
+    Integer  :: Row_Start_N, Row_End_N, i, j, New_ValCol_Length, Input_Row, Input_Column
     Integer, allocatable, dimension(:) :: New_Row_ValCol_Array2, New_ValCol_array2
-    Logical             :: Sparsity_Change_Logical
+    Logical  :: Sparsity_Change_Logical
 
     !!?New row valcol is an integer array -> error when storing reals
 
