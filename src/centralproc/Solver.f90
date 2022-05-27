@@ -66,7 +66,7 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
       r_s_old = r_s_new
     EndDo
 
-# ifndef NDEBUG 
+# ifdef DEBUG 
   Write(*,*) "---CG Convergence Succeeded---"
   Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
   Write(*,'(g0)',advance='no') CG_Iterations

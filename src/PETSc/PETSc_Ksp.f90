@@ -133,7 +133,7 @@ Subroutine Solve_PETSc_Ksp(This,b,x)
   class(pVec) :: b,x
   PetscErrorCode ierr
   call KSpSolve(This%ksp,b%vec,x%vec,ierr); CHKERRQ(ierr)
-#   ifndef NDEBUG
+#   ifdef DEBUG
       call This%analysis()
 #   endif
 
