@@ -25,10 +25,8 @@ Subroutine ReadInput(this,Material)
   Implicit None
   class(t_Problem) :: this
   type(t_material), allocatable, dimension(:) :: Material
-  Integer :: ii, jj, ID
+  Integer :: ii
   Integer, parameter :: InputFile = 101
-  Real(kind=dp) :: Initial_Val
-  Character(len=1) :: Char_Read
   Character(len=32) :: String_Read
 
 
