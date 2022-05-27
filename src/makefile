@@ -94,4 +94,4 @@ $(EXEC_PETSC): $(OBJS_PETSC)
 #Clean the directory and any directories searched
 .PHONY : clean
 clean :
-	rm -f $(OBJS) $(OBJS_PETSC) $(EXEC) $(MODS) $(MODS_PETSC) *.o *.mod
+	rm -f $(OBJS) $(OBJS_PETSC) $(EXEC) $(EXEC_PETSC) $(MODS) $(MODS_PETSC) *.o *.mod
