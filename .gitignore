@@ -1,4 +1,5 @@
 *.o
 *.mod
 transport
+transport_petsc
 /.vscode
