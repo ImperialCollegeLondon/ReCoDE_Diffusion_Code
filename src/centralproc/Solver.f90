@@ -30,18 +30,8 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     Real(kind=dp), dimension(N_Size) :: Input_Operate
     Logical :: CG_Conv
 
-    Write(*,*) Size(Vecb), N_Size
     phi = 1._dp
     call mat_CRS%operate(phi, Output_Operate)
-    Write(*,*) "================="
-    Write(*,*) "      CG         "
-    Write(*,*) "================="
-    Write(*,*) "CRS Operation:"
-    Write(*,*) phi(:)
-    Write(*,*) Output_Operate(:)
-
-    Write(*,*) "Vecb:", Size(Vecb)
-    Write(*,*) Vecb
 
     r_old(:) = Vecb(:) - Output_Operate(:)
     p(:) = r_old(:)
@@ -68,27 +58,22 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
         r_s_new = r_s_new + (r_old(ii)**2)
       EndDo
 
-      Write(*,*) "Phi Old:"
-      Write(*,*) phi_Previous(:)
-      Write(*,*) "Phi:"
-      Write(*,*) phi(:)
-      Write(*,*) "----"
-
       If (dot_product(r_old,r_old) .LT. 1E-8) Then
         CG_Conv = .TRUE.
       EndIf
-      
       
       p(:) = r_old(:) + ((r_s_new/r_s_old)*p(:))
       r_s_old = r_s_new
     EndDo
 
+# ifndef NDEBUG 
   Write(*,*) "---CG Convergence Succeeded---"
   Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
   Write(*,'(g0)',advance='no') CG_Iterations
   Write(*,'(g0)',advance='no') "  with residual:"
   Write(*,'(E14.6)') dot_product(r_old,r_old)
   Write(*,*) "-------------------------------"
+# endif
 
   End subroutine solve
 

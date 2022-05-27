@@ -91,7 +91,7 @@ Subroutine GenerateVTU(this,Problem,Flux)
 
     !!Cell data section 
     Write(vtufile,'(g0)',advance='no') "      "
-    Write(vtufile,'(g0)') '<CellData Scalars="Region">'
+    Write(vtufile,'(g0)') '<CellData Scalars="Region, Cell">'
 
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') '<DataArray Name="Region" format="ascii" type="Int32" >'
@@ -103,6 +103,18 @@ Subroutine GenerateVTU(this,Problem,Flux)
             Write(vtufile,'(g0)',advance='no') ii
             Write(vtufile,'(g0)',advance='no') " "
         EndDo    
+    EndDo
+    Write(vtufile,'(g0)') ""
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') "</DataArray>"
+
+    Write(vtufile,'(g0)',advance='no') "        "
+    Write(vtufile,'(g0)') '<DataArray Name="Cell" format="ascii" type="Int32" >'
+    Write(vtufile,'(g0)',advance='no') "          "
+
+    Do ii = 1, N_Nodes-1
+        Write(vtufile,'(g0)',advance='no') ii
+        Write(vtufile,'(g0)',advance='no') " "
     EndDo
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
