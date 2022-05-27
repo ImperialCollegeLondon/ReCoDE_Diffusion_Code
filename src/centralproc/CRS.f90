@@ -6,27 +6,25 @@ Module CRS_Mod
 
     private
 
-  !! type definitions
+    type, public :: t_CRS
+        private
+        integer :: length
+        Real(kind=dp), allocatable, dimension(:,:) :: value_col_array
+        Integer, allocatable, dimension(:) :: row_ptr_array
 
-  type, public :: t_CRS
-    private
-    integer :: length
-    Real(kind=dp), allocatable, dimension(:,:) :: value_col_array
-    Integer, allocatable, dimension(:) :: row_ptr_array
-
-  contains
-    procedure, public :: construct => construct_CRS
-    procedure, public :: input => input_CRS
-    procedure, public :: insert => insert_CRS
-    procedure, public :: add => add_CRS
-    procedure, public :: get => get_CRS
-    procedure, public :: get_N_rows
-    procedure, public :: get_N_elements
-    procedure, public :: get_data => get_data_CRS
-    procedure, public :: get_sparse_data_CRS
-    procedure, public :: operate => operate_CRS
-    procedure, public :: destroy => destroy_CRS
-  end type
+    contains
+        procedure, public :: construct => construct_CRS
+        procedure, public :: input => input_CRS
+        procedure, public :: insert => insert_CRS
+        procedure, public :: add => add_CRS
+        procedure, public :: get => get_CRS
+        procedure, public :: get_N_rows
+        procedure, public :: get_N_elements
+        procedure, public :: get_data => get_data_CRS
+        procedure, public :: get_sparse_data_CRS
+        procedure, public :: operate => operate_CRS
+        procedure, public :: destroy => destroy_CRS
+    end type
 
 contains
 

@@ -103,7 +103,12 @@ Subroutine Analysis_PETSc_Ksp(This)
     End Select
   Else
     Write(*,*) "---KSP Convergence Succeeded---"
-    Write(*,*) "Succeeded after iterations:", Its, "with residual norm:", RNorm, "for reason:", Reason
+    Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
+    Write(*,'(g0)',advance='no') Its
+    Write(*,'(g0)',advance='no') "  with residual norm:"
+    Write(*,'(E14.6)',advance='no') RNorm
+    Write(*,'(g0)',advance='no') "  for reason  :"
+    Write(*,'(g0)') Reason
     Write(*,*) "-------------------------------"
     Select Case(Reason)
     Case(2)
