@@ -4,6 +4,8 @@ Module Problem_Mod
   use Materials_Mod
   !!Reads through an input deck and passes the required data to external routines
 
+  Implicit None
+
   type, public :: t_Problem
       Integer :: N_Regions, N_Nodes
       Integer, allocatable, dimension(:) :: Nodes
@@ -22,7 +24,6 @@ contains
 
 Subroutine ReadInput(this,Material)
 !!Read the Input File
-  Implicit None
   class(t_Problem) :: this
   type(t_material), allocatable, dimension(:) :: Material
   Integer :: ii
@@ -91,7 +92,6 @@ End Subroutine ReadInput
 
 
 Function GetN_Regions(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Integer :: Res
     !!Get the number of regions in the problem
@@ -100,7 +100,6 @@ End Function GetN_Regions
 
 
 Function GetNodes(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Integer, dimension(this%N_Regions) :: Res
     !!Get an array containing the number of nodes in each region
@@ -109,7 +108,6 @@ End Function GetNodes
 
 
 Function GetN_Nodes(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Integer :: Res
     !!Get the total number of nodes in the problem
@@ -118,7 +116,6 @@ End Function GetN_Nodes
 
 
 Function GetBoundary_Pos(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Real(kind=dp), dimension(this%N_Regions+1) :: Res
     !!Get the positions of the boundaries in the problem
@@ -128,7 +125,6 @@ End Function GetBoundary_Pos
 
 Subroutine DestroyProblem(this,Material)
   !!Destroy the data stored in the problem class
-  Implicit None
   class(t_Problem) :: this
   type(t_material), allocatable, dimension(:) :: Material
 

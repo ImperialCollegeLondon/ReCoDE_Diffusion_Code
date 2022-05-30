@@ -3,6 +3,8 @@ Module Materials_Mod
     use Constants_Mod
     !!Stores standard material data and material data explicitly set via an input file
 
+    Implicit None
+
   type, public :: t_material
         private
         !!Currently only storing the absorption and source terms
@@ -22,7 +24,6 @@ contains
 
 
     Subroutine SetMaterialName(this,name)
-        Implicit None
         class(t_material) :: this
         Character(len=20) :: name
         !!Set the name of the material
@@ -31,7 +32,6 @@ contains
 
 
     Function GetMaterialName(this) Result(Res)
-        Implicit None
         class(t_material) :: this
         Character(len=20) :: Res
         !!Get the name of the material (generally for debugging purposes)
@@ -40,7 +40,6 @@ contains
 
 
     Subroutine SetMaterialProperties(this,Sig_a,S)
-        Implicit None
         class(t_material) :: this
         Real(Kind=dp) :: Sig_a, S
         !!Set the properties of the material
@@ -50,7 +49,6 @@ contains
 
 
     Function GetSig_a(this) Result(Res)
-        Implicit None
         class(t_material) :: this
         Real(Kind=dp) :: Res
         !!Get absorption cross section of material
@@ -59,7 +57,6 @@ contains
 
 
     Function GetS(this) Result(Res)
-        Implicit None
         class(t_material) :: this
         Real(Kind=dp) :: Res
         !!Get source of material
