@@ -17,10 +17,14 @@ PETSC_LIBS = -lpetsc -lblas -llapack
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # PATHS
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INCLUDE_PATH = $(PETSC_INC_PATH)
-LINK_PATH =  $(PETSC_LINK_PATH)
-LOAD_PATH =  $(PETSC_LOAD_PATH)
-LIBS =$(PETSC_LIBS)
+petsc: INCLUDE_PATH = $(PETSC_INC_PATH)
+petsc_debug: INCLUDE_PATH = $(PETSC_INC_PATH)
+petsc: LINK_PATH =  $(PETSC_LINK_PATH)
+petsc_debug: LINK_PATH =  $(PETSC_LINK_PATH)
+petsc: LOAD_PATH =  $(PETSC_LOAD_PATH)
+petsc_debug: LOAD_PATH =  $(PETSC_LOAD_PATH)
+petsc: LIBS =$(PETSC_LIBS)
+petsc_debug: LIBS =$(PETSC_LIBS)
 
 
 # Compiler options
