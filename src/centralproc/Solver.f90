@@ -37,30 +37,20 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     p(:) = r_old(:)
     CG_Conv = .FALSE.
     r_s_old = dot_product(r_old,r_old)
-    If (r_s_old .LT. 1E-8) Then
-      CG_Conv = .TRUE.
-    EndIf
-    CG_Iterations = 0
-    Do While ((CG_Conv .EQV. .FALSE.) .AND. (CG_Iterations .LT. 10))
-      CG_Iterations = CG_Iterations + 1
+
+    Do CG_Iterations = 0, 10
+      If (r_s_old .LT. 1E-8) Then
+        exit
+      EndIf
+
       Input_Operate(:) = p(:)
       call mat_CRS%operate(Input_Operate, Output_Operate)
-      alpha_den = 0.0_dp
-      Do ii = 1, N_Size
-        alpha_den = alpha_den + (p(ii)*Output_Operate(ii))
-      EndDo
+      alpha_den = dot_product(p, Output_Operate)
       alpha = r_s_old/alpha_den
       phi_Previous(:) = phi(:)
       phi(:) = phi(:) + (alpha*p(:))
       r_old(:) = r_old(:) - (alpha*Output_Operate(:))
-      r_s_new = 0.0_dp
-      Do ii = 1, N_Size
-        r_s_new = r_s_new + (r_old(ii)**2)
-      EndDo
-
-      If (dot_product(r_old,r_old) .LT. 1E-8) Then
-        CG_Conv = .TRUE.
-      EndIf
+      r_s_new = dot_product(r_old,r_old)
       
       p(:) = r_old(:) + ((r_s_new/r_s_old)*p(:))
       r_s_old = r_s_new
