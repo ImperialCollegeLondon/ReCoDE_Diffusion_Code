@@ -2,7 +2,7 @@ Module Solver_Mod
 
     use Constants_Mod
     use CRS_Mod
-    Implicit none
+    Implicit None
 
     private
 
@@ -18,7 +18,6 @@ contains
 
 
 Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
-    Implicit None
     class(t_Solver)    :: this
     type(t_CRS) :: mat_CRS
     Integer :: CG_Iterations, ii
@@ -33,8 +32,8 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     phi = 1._dp
     call mat_CRS%operate(phi, Output_Operate)
 
-    r_old(:) = Vecb(:) - Output_Operate(:)
-    p(:) = r_old(:)
+    r_old = Vecb - Output_Operate
+    p = r_old
     CG_Conv = .FALSE.
     r_s_old = dot_product(r_old,r_old)
     If (r_s_old .LT. 1E-8) Then
@@ -43,16 +42,16 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     CG_Iterations = 0
     Do While ((CG_Conv .EQV. .FALSE.) .AND. (CG_Iterations .LT. 10))
       CG_Iterations = CG_Iterations + 1
-      Input_Operate(:) = p(:)
+      Input_Operate = p
       call mat_CRS%operate(Input_Operate, Output_Operate)
       alpha_den = 0.0_dp
       Do ii = 1, N_Size
         alpha_den = alpha_den + (p(ii)*Output_Operate(ii))
       EndDo
       alpha = r_s_old/alpha_den
-      phi_Previous(:) = phi(:)
-      phi(:) = phi(:) + (alpha*p(:))
-      r_old(:) = r_old(:) - (alpha*Output_Operate(:))
+      phi_Previous = phi
+      phi = phi + (alpha*p)
+      r_old = r_old - (alpha*Output_Operate)
       r_s_new = 0.0_dp
       Do ii = 1, N_Size
         r_s_new = r_s_new + (r_old(ii)**2)
@@ -62,7 +61,7 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
         CG_Conv = .TRUE.
       EndIf
       
-      p(:) = r_old(:) + ((r_s_new/r_s_old)*p(:))
+      p = r_old + ((r_s_new/r_s_old)*p)
       r_s_old = r_s_new
     EndDo
 

@@ -17,7 +17,6 @@ Module PETScSolver_Mod
 contains
 
 Subroutine Solve(this,pMatA,pVecb,pVecx)
-    Implicit none
     class(t_PETScSolver) :: this
     type(pMat) :: pMatA
     type(pVec) :: pVecb, pVecx

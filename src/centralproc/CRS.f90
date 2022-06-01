@@ -27,7 +27,6 @@ contains
 
 
 Subroutine construct_CRS(this, N_SIZE)
-    Implicit none
     class(t_CRS), intent(inout) :: this
     Integer :: N_SIZE, jj 
     !!Construct a blank CRS matrix of known size
@@ -50,7 +49,6 @@ End subroutine construct_CRS
 
 
 Subroutine input_CRS(this, row_ptr, val, col_ind)
-    Implicit None
     Class(t_CRS), intent(inout) :: this
     Integer, dimension(:) :: row_ptr
     Real(kind=dp), dimension(:) :: val, col_ind
@@ -69,7 +67,6 @@ End Subroutine input_CRS
 
 
 Subroutine insert_CRS(this, Matrix_i, Matrix_j, Matrix_ij_value)
-    Implicit None
     Class(t_CRS), intent(inout) :: this
     Integer, intent(in) :: Matrix_i, Matrix_j
     Real(kind=dp), intent(in) :: Matrix_ij_value
@@ -225,8 +222,6 @@ End Subroutine insert_CRS
 
 
 Function get_CRS(this, Matrix_i, Matrix_j) Result(Matrix_ij_value)
-
-    Implicit None
     Class(t_CRS), intent(inout) :: this
     Integer :: Matrix_i, Matrix_j, Row_Start_Element, Row_End_Element, j
     Real(kind=dp) :: Matrix_ij_value
@@ -261,7 +256,6 @@ End Function get_CRS
 
 
 Function get_N_rows(this) Result(res)
-    Implicit None
     Class(t_CRS), intent(inout) :: this
     Integer :: res
     !!Get the number of rows in the problem
@@ -272,7 +266,6 @@ End Function get_N_rows
 
 
 Function get_N_elements(this) Result(res)
-    Implicit None
     Class(t_CRS), intent(inout) :: this
     Integer :: res
     !!Get the number of elements in the problem
@@ -281,9 +274,8 @@ Function get_N_elements(this) Result(res)
 
 End Function get_N_elements
 
-Subroutine operate_CRS(this, Input_Operate_array, Output_Operate_array)
 
-    Implicit None
+Subroutine operate_CRS(this, Input_Operate_array, Output_Operate_array)
     Class(t_CRS), intent(inout) :: this
     Real(kind=dp), dimension(Size(this%row_ptr_array)), intent(in) :: Input_Operate_array
     Real(kind=dp), dimension(Size(this%row_ptr_array)), intent(out) :: Output_Operate_array
@@ -314,7 +306,6 @@ End Subroutine operate_CRS
 
 
 Subroutine destroy_CRS(this)
-    Implicit none
     class(t_CRS), intent(inout) :: this
     !!Destroy the data stored within the CRS module 
 
