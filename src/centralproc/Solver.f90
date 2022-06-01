@@ -36,8 +36,11 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     p(:) = r_old(:)
     r_s_old = dot_product(r_old,r_old)
 
+    CG_Conv = .False.
+
     Do CG_Iterations = 1, 10
       If (r_s_old < 1E-8) Then
+        CG_Conv = .True.
         exit
       EndIf
 
@@ -52,6 +55,14 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
       p(:) = r_old(:) + ((r_s_new/r_s_old)*p(:))
       r_s_old = r_s_new
     EndDo
+
+    If (.Not. CG_Conv) Then
+      Write(*,*) "---CG Convergence Failed---"
+      Write(*,*) "Maximum number of iterations reached"
+      Write(*,*) "Terminating"
+      Write(*,*) "-------------------------------"
+      Error Stop "Solver failed to converge"
+    EndIf
 
 # ifdef DEBUG 
   Write(*,*) "---CG Convergence Succeeded---"
