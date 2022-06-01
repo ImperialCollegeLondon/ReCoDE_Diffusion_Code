@@ -2,7 +2,7 @@ Module Solver_Mod
 
     use Constants_Mod
     use CRS_Mod
-    Implicit none
+    Implicit None
 
     private
 
@@ -18,7 +18,6 @@ contains
 
 
 Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
-    Implicit None
     class(t_Solver)    :: this
     type(t_CRS) :: mat_CRS
     Integer :: CG_Iterations, ii
@@ -31,9 +30,8 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
 
     phi = 1._dp
     call mat_CRS%operate(phi, Output_Operate)
-
-    r_old(:) = Vecb(:) - Output_Operate(:)
-    p(:) = r_old(:)
+    r_old = Vecb - Output_Operate
+    p = r_old
     r_s_old = dot_product(r_old,r_old)
 
     CG_Conv = .False.
@@ -47,12 +45,11 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
       call mat_CRS%operate(p, Output_Operate)
       alpha_den = dot_product(p, Output_Operate)
       alpha = r_s_old/alpha_den
-      phi_Previous(:) = phi(:)
-      phi(:) = phi(:) + (alpha*p(:))
-      r_old(:) = r_old(:) - (alpha*Output_Operate(:))
+      phi_Previous = phi
+      phi = phi + (alpha*p)
+      r_old = r_old - (alpha*Output_Operate)
       r_s_new = dot_product(r_old, r_old)
-      
-      p(:) = r_old(:) + ((r_s_new/r_s_old)*p(:))
+      p = r_old + ((r_s_new/r_s_old)*p)
       r_s_old = r_s_new
     EndDo
 

@@ -17,8 +17,8 @@ Program Main
     use Solver_Mod
 # endif
   
-  
   Implicit None
+  
   type(t_Problem) :: Problem 
   type(t_material), allocatable, dimension(:) :: Material
   type(t_DDiff) :: DDiff

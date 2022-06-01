@@ -10,7 +10,7 @@ PETSC_ARCH = $(PETSC_DIR)/linux_opt/
 PETSC_INC_PATH = -I$(PETSC_DIR)/include/  -I$(PETSC_ARCH)/include/
 PETSC_LINK_PATH =  -L$(PETSC_DIR)/lib/ -L$(PETSC_ARCH)/lib/
 PETSC_LOAD_PATH = -Wl,-rpath=$(PETSC_ARCH)/lib/
-PETSC_LIBS = -lpetsc -lblas -llapack
+PETSC_LIBS = -lpetsc
 
 
 
