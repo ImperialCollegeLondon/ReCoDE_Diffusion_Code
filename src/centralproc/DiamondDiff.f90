@@ -83,7 +83,6 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
     !!Extract relevant data from the Problem specification
     N_Regions = Problem%GetN_Regions()
-    Allocate(RegionNodes(N_Regions),Boundary_Pos(N_Regions))
     Boundary_Pos = Problem%GetBoundary_Pos()
     RegionNodes = Problem%GetNodes()
     N_Nodes = Problem%GetN_Nodes()
@@ -175,8 +174,6 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
 # endif
 
-    Deallocate(RegionNodes,Boundary_Pos)
-    Deallocate(Sig_a,Source)
 End Subroutine Solve
 
 
