@@ -26,44 +26,40 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     Real(kind=dp), dimension(:) :: Vecb
     Real(kind=dp), dimension(N_Size) :: Output_Operate
     Real(kind=dp), dimension(N_Size) :: r_old, p, phi, phi_Previous
-    Real(kind=dp), dimension(N_Size) :: Input_Operate
     Logical :: CG_Conv
 
     phi = 1._dp
     call mat_CRS%operate(phi, Output_Operate)
-
     r_old = Vecb - Output_Operate
     p = r_old
-    CG_Conv = .FALSE.
     r_s_old = dot_product(r_old,r_old)
-    If (r_s_old .LT. 1E-8) Then
-      CG_Conv = .TRUE.
-    EndIf
-    CG_Iterations = 0
-    Do While ((CG_Conv .EQV. .FALSE.) .AND. (CG_Iterations .LT. 10))
-      CG_Iterations = CG_Iterations + 1
-      Input_Operate = p
-      call mat_CRS%operate(Input_Operate, Output_Operate)
-      alpha_den = 0.0_dp
-      Do ii = 1, N_Size
-        alpha_den = alpha_den + (p(ii)*Output_Operate(ii))
-      EndDo
+
+    CG_Conv = .False.
+
+    Do CG_Iterations = 1, 10
+      If (r_s_old < 1E-8) Then
+        CG_Conv = .True.
+        exit
+      EndIf
+
+      call mat_CRS%operate(p, Output_Operate)
+      alpha_den = dot_product(p, Output_Operate)
       alpha = r_s_old/alpha_den
       phi_Previous = phi
       phi = phi + (alpha*p)
       r_old = r_old - (alpha*Output_Operate)
-      r_s_new = 0.0_dp
-      Do ii = 1, N_Size
-        r_s_new = r_s_new + (r_old(ii)**2)
-      EndDo
-
-      If (dot_product(r_old,r_old) .LT. 1E-8) Then
-        CG_Conv = .TRUE.
-      EndIf
-      
+      r_s_new = dot_product(r_old, r_old)
       p = r_old + ((r_s_new/r_s_old)*p)
       r_s_old = r_s_new
     EndDo
+
+    If (.Not. CG_Conv) Then
+      Write(*,*) "---CG Convergence Failed---"
+      Write(*,*) "Maximum number of iterations reached"
+      Write(*,*) "Terminating"
+      Write(*,*) "-------------------------------"
+      Error Stop "Solver failed to converge"
+    EndIf
 
 # ifdef DEBUG 
   Write(*,*) "---CG Convergence Succeeded---"
