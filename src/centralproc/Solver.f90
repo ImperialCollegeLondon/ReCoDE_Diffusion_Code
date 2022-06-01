@@ -27,7 +27,6 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     Real(kind=dp), dimension(:) :: Vecb
     Real(kind=dp), dimension(N_Size) :: Output_Operate
     Real(kind=dp), dimension(N_Size) :: r_old, p, phi, phi_Previous
-    Real(kind=dp), dimension(N_Size) :: Input_Operate
     Logical :: CG_Conv
 
     phi = 1._dp
@@ -35,17 +34,14 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
 
     r_old(:) = Vecb(:) - Output_Operate(:)
     p(:) = r_old(:)
-
     r_s_old = dot_product(r_old,r_old)
 
-    CG_Iterations = 0
     Do CG_Iterations = 1, 10
       If (r_s_old < 1E-8) Then
         exit
       EndIf
 
-      Input_Operate(:) = p(:)
-      call mat_CRS%operate(Input_Operate, Output_Operate)
+      call mat_CRS%operate(p, Output_Operate)
       alpha_den = dot_product(p, Output_Operate)
       alpha = r_s_old/alpha_den
       phi_Previous(:) = phi(:)
