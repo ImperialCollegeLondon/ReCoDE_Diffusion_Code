@@ -16,6 +16,8 @@ Module DiamondDiff_Mod
 # endif
     use Output_Mod
 
+    Implicit None
+
     !!Discretises the problem and sets up the system of equations which can then be solved
     type, public :: t_DDiff
         Integer :: N_Regions
@@ -36,7 +38,6 @@ contains
 
 Subroutine Create(this,Problem)
     !!Set up Problem
-    Implicit None
     class(t_DDiff) :: this
     type(t_Problem) :: Problem
     Integer :: N_Nodes
@@ -65,7 +66,6 @@ End Subroutine Create
 
 Subroutine Solve(this,Material,Problem,Vecx)
     !!Generate the system of equations to be fed into the solver
-    Implicit None
     class(t_DDiff) :: this
     type(t_material), dimension(:) :: Material 
     type(t_Problem) :: Problem
@@ -182,7 +182,6 @@ End Subroutine Solve
 
 Subroutine Destroy(this,Flux)
     !!Dismantle Problem
-    Implicit None
     class(t_DDiff) :: this
     Real(kind=dp), allocatable, dimension(:) :: Flux
 

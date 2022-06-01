@@ -2,7 +2,7 @@ Module Solver_Mod
 
     use Constants_Mod
     use CRS_Mod
-    Implicit none
+    Implicit None
 
     private
 
@@ -18,7 +18,6 @@ contains
 
 
 Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
-    Implicit None
     class(t_Solver)    :: this
     type(t_CRS) :: mat_CRS
     Integer :: CG_Iterations, ii

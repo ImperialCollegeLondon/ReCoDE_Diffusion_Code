@@ -2,7 +2,6 @@ module Constants_Mod
 
   Implicit None
 
- 
   !! Precision Definitions
   Integer, Parameter        :: sp=Kind(0.0)                 !! single precision
   Integer, Parameter        :: dp=Kind(0.0d0)               !! double precision
