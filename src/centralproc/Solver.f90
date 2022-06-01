@@ -45,20 +45,14 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
       CG_Iterations = CG_Iterations + 1
       Input_Operate(:) = p(:)
       call mat_CRS%operate(Input_Operate, Output_Operate)
-      alpha_den = 0.0_dp
-      Do ii = 1, N_Size
-        alpha_den = alpha_den + (p(ii)*Output_Operate(ii))
-      EndDo
+      alpha_den = dot_product(p, Output_Operate)
       alpha = r_s_old/alpha_den
       phi_Previous(:) = phi(:)
       phi(:) = phi(:) + (alpha*p(:))
       r_old(:) = r_old(:) - (alpha*Output_Operate(:))
-      r_s_new = 0.0_dp
-      Do ii = 1, N_Size
-        r_s_new = r_s_new + (r_old(ii)**2)
-      EndDo
+      r_s_new = dot_product(r_old, r_old)
 
-      If (dot_product(r_old,r_old) .LT. 1E-8) Then
+      If (r_s_new .LT. 1E-8) Then
         CG_Conv = .TRUE.
       EndIf
       
