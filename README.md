@@ -37,7 +37,7 @@ export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
     -  Writing data to an output file
     -  Using paraview and vtk structure
   - Materials Module
-    - Clear example of OOP (simple gets and sets
+    - Clear example of OOP (simple gets and sets)
   - MatGen Module
     - Discuss how a mathematical problem can be converted into something solveable
     - Discretisation in space using data stored within other modules
