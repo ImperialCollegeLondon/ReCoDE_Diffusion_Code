@@ -1,3 +1,12 @@
+# Table of Contents
+- [Abstract](#abstract)
+- [Structure of the Code](#structure-of-the-code)
+- [User Guide](#user-guide)
+- [Features of the Code](#features-of-the-code)
+- [Exercises](#exercises)
+- [PETSc Installation](#petsc-installation)
+- [Theory](#theory)
+
 # Abstract
 This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
@@ -95,8 +104,7 @@ $$ \text{neutrons lost in } dV/s = \text{neutrons produced in } dV/s$$
 
 Splitting these into the separate sources and sinks:
 
-$$ \text{neutrons leaking from } dV/s + \text{neutrons absorbed in } dV/s $$
-$$ = \text{neutrons emitted in } dV/s + \text{fission neutrons produced in } dV/s$$
+$$ \text{neutrons leaking from } dV/s + \text{neutrons absorbed in } dV/s = \text{neutrons emitted in } dV/s + \text{fission neutrons produced in } dV/s$$
 
 Where: 
 
