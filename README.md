@@ -1,35 +1,39 @@
-# ReCoDE_Transport_Code
-Repository for the ReCoDE project which aims to solve the Neutron Transport Equation
+# Abstract
+This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
-Current required steps for use:
-- Install PETSc
-- Set up environment variables such that PETSC_DIR and PETSC_BUILDS_DIR point to your PETSc and PETSc builds directories respectively, e.g.:
-
-export PETSC_DIR="/home/jack/petsc-3.16.0"
-
-export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
-
-- compile with 'make' for optimised version of code or 'make debug' for unoptimised run with more descriptive outputs
-
-# Proposed Structure of Readme
-
-- Abstract
-
+The code will provide examples of:
+- Compiled Codes
+- Object Oriented Programming (OOP)
+- Makefiles
+- Compiler Directives
+- Reading input data from file
+- Generating output files
+- Paraview
+- Solving mathematical problems
+- Discretisation of a spatial dimension
+- Optimised data storage and solvers
+- Incorporating external libraries (PETSc)
 
 
-- Structure of the Code
-  - Description of Logic
-  - Flowchart to clearly show OOP structure
-  - Pseudocode version of code
+# Structure of the Code
+Object Oriented Programming is a method of coding by which a piece of software is designed around the different required data types and classes which will be used in the programme. In it's simplest sense, this translates to a code which is made of multiple different modules which make use of one another, rather than one large block of code. This style of programming is particularly advantageous when working with large coding projects, such as those used in research or data science. Object oriented codes are also much easier to read once their structure has been understood. As such, this section of the readme will give an explanation of how the Diffusion Code project is structured.
+
+At it's simplest level, the code reads a specified problem from an input file, converts that to a system of equations which can then be solved, and outputs the resulting data to a set of files which can be read by an external program such a GNUPlot or Paraview.
+$$ \text{Input File } \rightarrow \text{Generate Equations } \rightarrow \text{Solve } \rightarrow \text{Output File } $$
+
+This explanation can now be further expanded in terms of complexity, where the structure will be given in terms files and modules. For the sake of readability, this is given as a full flow chart below. The $\textbf{Problem}$ module reads through the input file, storing relevant data or passing it to the $\textbf{Materials}$ module. Data from these modules is the used by the $\textbf{MatGen}$ module to generate the system of equations. If PETSc is used, this data is then passed to the $\textbf{PETScMat}$ and $\textbf{PETScVec}$ modules, which are wrappers for the data library. These are then passed into the $\textbf{PETScKSP}$ module which solves the problem. If PETSc isn't used, this data is passed into the $\textbf{CRS}$ module, which stores the data effieicently, such that it can be fed into the $\textbf{Solver}$ module. The solved data is then passed into the $\textbf{Output}$ module, which generates an output both in .txt and .vtu format.
+
 ![DiffCode drawio](https://user-images.githubusercontent.com/83182489/173537965-ac15206a-dc13-4659-89f0-5b7141eb3091.png)
 
-- User Guide
+$$ \textbf{Pseudocode here?} $$
+
+# User Guide
   - Compiling the Code
   - Changing Input Options
   - Reading Output Files
   - Installing PETSc 
 
-- Features of the Code
+# Features of the Code
   - Makefile
     - Discuss Makefile and compilation options
     - Compiler directives
@@ -54,7 +58,7 @@ export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
     - Compiling the code with PETSc
     - Why we use external libraries
 
-- Exercises
+# Exercises
   - Easier
     - Add a print statement to one of the materials subroutines
     - Write a new subroutine which prints all material data stored in the module
@@ -66,6 +70,20 @@ export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
     - Smear the problem into another dimension to produce a 3D paraview output
     - Create a Compressed Diagonal Storage Module and switch it out for the existing CRS Module
     - Make a wrapper for the blas/lapack library and use instead of PETSc/CG
+
+
+# PETSc Installation
+
+Current required steps for use with PETSc:
+- Install PETSc
+- Set up environment variables such that PETSC_DIR and PETSC_BUILDS_DIR point to your PETSc and PETSc builds directories respectively, e.g.:
+
+export PETSC_DIR="/home/jack/petsc-3.16.0"
+
+export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
+
+- compile with 'make petsc' for optimised version of code or 'make petsc debug' for unoptimised run with more descriptive outputs
+
 
 # Theory
 
