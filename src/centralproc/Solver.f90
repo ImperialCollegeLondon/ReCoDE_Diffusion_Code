@@ -41,7 +41,7 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
     CG_Conv = .False.
 
     Do CG_Iterations = 1, 1000
-      If (r_s_old < 1E-1) Then
+      If (r_s_old < 1E-4) Then
         CG_Conv = .True.
         exit
       EndIf

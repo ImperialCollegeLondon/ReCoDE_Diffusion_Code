@@ -160,13 +160,13 @@ Subroutine Solve(this,Material,Problem,Vecx)
             ! Write(*,*) "---"
             ! Write(*,*) "NodeID:", NodeID
             If (NodeID /= 1) Then
-                call this%CRS%insert(NodeID-1,NodeID,a)
+                call this%CRS%insert(NodeID,NodeID-1,a)
                 ! Write(*,*) "A->", a, NodeID-1, NodeID, this%CRS%get(NodeID-1,NodeID)
                 ! Write(*,*) this%CRS%get(2,3)
             EndIf
             call this%CRS%insert(NodeID,NodeID,b)
             ! Write(*,*) "B->", b, NodeID, NodeID
-            call this%CRS%insert(NodeID+1,NodeID,c)
+            call this%CRS%insert(NodeID,NodeID+1,c)
             ! Write(*,*) "C->", c, NodeID+1, NodeID
             this%Vecb(NodeID) = Source_Value
 
@@ -188,29 +188,33 @@ Subroutine Solve(this,Material,Problem,Vecx)
     ! Write(*,*) "NodeID:", NodeID
     ! Write(*,*) "A->", a, NodeID-1, NodeID
     ! Write(*,*) "B->", b, NodeID, NodeID
-    call this%CRS%insert(NodeID-1,NodeID,a)
+    call this%CRS%insert(NodeID,NodeID-1,a)
     call this%CRS%insert(NodeID,NodeID,b)
     this%Vecb(NodeID) = Source_Value
 
     !!Reflective modification
-    call this%CRS%insert(2,1,(2._dp*this%CRS%get(2,1)))
-    call this%CRS%insert(NodeID-1,NodeID,(2._dp*this%CRS%get(NodeID-1,NodeID)))
+    call this%CRS%insert(1,2,(2._dp*this%CRS%get(1,2)))
+    call this%CRS%insert(NodeID,NodeID-1,(2._dp*this%CRS%get(NodeID,NodeID-1)))
 
     !!Zero modification
     ! call this%CRS%insert(2,1,(1E2_dp*this%CRS%get(2,1)))
     ! call this%CRS%insert(NodeID-1,NodeID,(1E2_dp*this%CRS%get(NodeID-1,NodeID)))
 
     !!Prints matrix for debugging purposes
-    ! kk = this%CRS%get_N_rows()
-    ! Do ii = 1, kk
-    !     Write(*,*) "-"
-    !     Do jj = 1, kk
-    !         Write(*,*) "Pos", ii, jj, "Val:", this%CRS%get(ii,jj)
-    !     EndDo
-    ! EndDo
+    kk = this%CRS%get_N_rows()
+    Do ii = 1, kk
+        Write(*,*) "-"
+        Do jj = 1, kk
+            Write(*,*) "Pos", ii, jj, "Val:", this%CRS%get(ii,jj)
+        EndDo
+    EndDo
+    Write(*,*) "---b---"
+    Write(*,*) this%Vecb
 
     !!Solve the problem
     call Solver%solve(this%CRS,this%Vecb,N_Nodes,Vecx)
+    Write(*,*) "---x---"
+    Write(*,*) Vecx
 # endif
 
 
@@ -266,17 +270,13 @@ Subroutine Solve(this,Material,Problem,Vecx)
             ! Write(*,*) "---"
             ! Write(*,*) "NodeID:", NodeID
             If (NodeID /= 1) Then
-                call this%pMatA%InsertVal(NodeID-1,NodeID,a)
+                call this%pMatA%InsertVal(NodeID,NodeID-1,a)
                 ! Write(*,*) "A->", a, NodeID-1, NodeID, this%CRS%get(NodeID-1,NodeID)
                 ! Write(*,*) this%CRS%get(2,3)
             EndIf
             call this%pMatA%InsertVal(NodeID,NodeID,b)
             ! Write(*,*) "B->", b, NodeID, NodeID
-            If (NodeID /= 1) Then
-                call this%pMatA%InsertVal(NodeID+1,NodeID,c)
-            Else 
-                call this%pMatA%InsertVal(NodeID+1,NodeID,200._dp*c)
-            EndIf
+            call this%pMatA%InsertVal(NodeID,NodeID+1,c)
             ! Write(*,*) "C->", c, NodeID+1, NodeID
             this%Vecb(NodeID) = Source_Value
 
@@ -291,41 +291,44 @@ Subroutine Solve(this,Material,Problem,Vecx)
     D_Value = 1._dp/(3._dp*Sig_a(N_Regions))
     Dp1_Value = 1._dp/(3._dp*Sig_a(N_Regions))
 
-    a = (200._dp)*(-.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
+    a = (-.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
     b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
 
     ! Write(*,*) "---"
     ! Write(*,*) "NodeID:", NodeID
     ! Write(*,*) "A->", a, NodeID-1, NodeID
     ! Write(*,*) "B->", b, NodeID, NodeID
-    call this%pMatA%InsertVal(NodeID-1,NodeID,a)
+    call this%pMatA%InsertVal(NodeID,NodeID-1,a)
     call this%pMatA%InsertVal(NodeID,NodeID,b)
     this%Vecb(NodeID) = Source_Value
 
-    !!Reflective modification
-    ! c = 2._dp*this%pMatA%GetValMat(2,1)
-    ! call this%pMatA%InsertVal(2,1,c)
-    ! call this%pMatA%InsertVal(NodeID-1,NodeID,(2._dp*this%pMatA%GetValMat(NodeID-1,NodeID)))
+    !!Reflective Boundary Conditions
+    call this%pMatA%SwitchAssemble()
+    !!Initial Boundary
+    D_Value = 1._dp/(3._dp*Sig_a(1))
+    Delta_Value = Delta(1)
+    a = (-.5_dp)*((2._dp*D_Value)/(Delta_Value**2))
+    call this%pMatA%AddVal(1,2,a)
+    !!Final Boundary
+    D_Value = 1._dp/(3._dp*Sig_a(N_Regions))
+    Delta_Value = Delta(N_Regions)
+    a = (-.5_dp)*((2._dp*D_Value)/(Delta_Value**2))
+    call this%pMatA%AddVal(NodeID,NodeID-1,a)
 
-    !!Zero modification
-    ! call this%CRS%insert(2,1,(1E2_dp*this%CRS%get(2,1)))
-    ! call this%CRS%insert(NodeID-1,NodeID,(1E2_dp*this%CRS%get(NodeID-1,NodeID)))
 
-    !!Prints matrix for debugging purposes
-    ! kk = this%CRS%get_N_rows()
-    ! Do ii = 1, kk
-    !     Write(*,*) "-"
-    !     Do jj = 1, kk
-    !         Write(*,*) "Pos", ii, jj, "Val:", this%CRS%get(ii,jj)
-    !     EndDo
-    ! EndDo
-
-    !!Solve the problem
     call this%pVecb%ConvTo(this%Vecb)
     call this%pMatA%Assemble()
     call this%pVecb%Assemble()
+
+    !!Prints matrix for debugging purposes
+    call this%pMatA%MatView()
+    call this%pVecb%VecView()
+
+    !!Solve the problem
+    
     call PETScSolver%Solve(this%pMatA,this%pVecb,this%pVecx)
     call this%pVecx%ConvFrom(Vecx)
+    call this%pVecx%VecView()
 # endif
 
 
