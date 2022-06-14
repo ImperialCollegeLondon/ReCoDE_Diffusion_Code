@@ -8,8 +8,8 @@ Boundaries: - Real number positions of the boundaries between the regions (one p
 1.0
 ------------------------------------------
 Nodes: - Integer number of nodes in each region (one per line)
-30
-30
+10
+10
 ------------------------------------------
 Materials: - Fuel, Water or Steel (one per line)
 Fuel

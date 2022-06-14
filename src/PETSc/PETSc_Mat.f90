@@ -144,7 +144,7 @@ Subroutine GetSizeMat_PETSc_Mat(This,N_rows,N_cols)
 End Subroutine GetSizeMat_PETSc_Mat
 
 
-Subroutine GetValMat_PETSc_Mat(This,V_row,V_col,Value)
+Function GetValMat_PETSc_Mat(This,V_row,V_col) Result(Value)
   Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
@@ -157,7 +157,7 @@ Subroutine GetValMat_PETSc_Mat(This,V_row,V_col,Value)
   !!Revert to F format
   V_row = V_row + 1
   V_col = V_col + 1
-End Subroutine GetValMat_PETSc_Mat
+End Function GetValMat_PETSc_Mat
 
 
 Subroutine GetValsMat_PETSc_Mat(This,V_rows,V_cols,Values)

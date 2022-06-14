@@ -51,7 +51,7 @@ OBJS= stdlib/Constants.o \
  inoutproc/Output.o \
  centralproc/CRS.o \
  centralproc/Solver.o \
- centralproc/DiamondDiff.o \
+ centralproc/MatGen.o \
  main.o \
 
 OBJS_PETSC= stdlib/Constants.o \
@@ -64,7 +64,7 @@ OBJS_PETSC= stdlib/Constants.o \
  inoutproc/Problem.o \
  inoutproc/Output.o \
  centralproc/PETScSolver.o \
- centralproc/DiamondDiff.o \
+ centralproc/MatGen.o \
  main.o \
 
 
@@ -75,8 +75,8 @@ MODS= $(OBJS:.o=.mod)
 MODS_PETSC= $(OBJS:.o=.mod)
 
 #Set the executable name
-EXEC=../transport
-EXEC_PETSC=../transport_petsc
+EXEC=../diffusion
+EXEC_PETSC=../diffusion_petsc
 
 #Default make command requires the executable to be up to date
 all : $(EXEC)

@@ -30,17 +30,22 @@ Subroutine solve(this, mat_CRS, Vecb, N_Size, phi)
 
     phi = 1._dp
     call mat_CRS%operate(phi, Output_Operate)
+    ! write(*,*) "out:", Output_Operate
+    ! write(*,*) "vecb", vecb
     r_old = Vecb - Output_Operate
     p = r_old
     r_s_old = dot_product(r_old,r_old)
+    ! write(*,*) "p1", p
+    ! write(*,*) r_s_old
 
     CG_Conv = .False.
 
-    Do CG_Iterations = 1, 10
-      If (r_s_old < 1E-8) Then
+    Do CG_Iterations = 1, 1000
+      If (r_s_old < 1E-1) Then
         CG_Conv = .True.
         exit
       EndIf
+      ! write(*,*) "Residual:", r_s_old
 
       call mat_CRS%operate(p, Output_Operate)
       alpha_den = dot_product(p, Output_Operate)
