@@ -10,7 +10,7 @@
 # Abstract
 This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
-The code will provide examples of:
+This project aims to provide examples of:
 - Compiled Codes
 - Object Oriented Programming (OOP)
 - Makefiles
@@ -30,14 +30,61 @@ Object Oriented Programming is a method of coding by which a piece of software i
 At it's simplest level, the code reads a specified problem from an input file, converts that to a system of equations which can then be solved, and outputs the resulting data to a set of files which can be read by an external program such a GNUPlot or Paraview.
 $$ \text{Input File } \rightarrow \text{Generate Equations } \rightarrow \text{Solve } \rightarrow \text{Output File } $$
 
-This explanation can now be further expanded in terms of complexity, where the structure will be given in terms files and modules. For the sake of readability, this is given as a full flow chart below. The $\textbf{Problem}$ module reads through the input file, storing relevant data or passing it to the $\textbf{Materials}$ module. Data from these modules is the used by the $\textbf{MatGen}$ module to generate the system of equations. If PETSc is used, this data is then passed to the $\textbf{PETScMat}$ and $\textbf{PETScVec}$ modules, which are wrappers for the data library. These are then passed into the $\textbf{PETScKSP}$ module which solves the problem. If PETSc isn't used, this data is passed into the $\textbf{CRS}$ module, which stores the data effieicently, such that it can be fed into the $\textbf{Solver}$ module. The solved data is then passed into the $\textbf{Output}$ module, which generates an output both in .txt and .vtu format.
+This explanation can now be further expanded in terms of complexity, where the structure will be given in terms files and modules. For the sake of readability, this is given as a full flow chart below. The **Problem** module reads through the input file, storing relevant data or passing it to the **Materials** module. Data from these modules is the used by the **MatGen** module to generate the system of equations. If PETSc is used, this data is then passed to the **PETScMat** and **PETScVec** modules, which are wrappers for the data library. These are then passed into the **PETScKSP** module which solves the problem. If PETSc isn't used, this data is passed into the **CRS** module, which stores the data effieicently, such that it can be fed into the **Solver** module. The solved data is then passed into the **Output** module, which generates an output both in .txt and .vtu format.
 
 ![DiffCode drawio](https://user-images.githubusercontent.com/83182489/173537965-ac15206a-dc13-4659-89f0-5b7141eb3091.png)
 
-$$ \textbf{Pseudocode here?} $$
+This can also be represented through some blocks of pseudocode
+
+First read through the input file
+```{fortran, eval = FALSE}
+Open( Input File)
+Read Problem Data
+Read Material Data
+Close( Input File)
+
+Set Problem Data
+Set Material Data
+```
+
+Then generate the equations and solve for the flux
+```{fortran, eval = FALSE}
+Get Problem Data
+Get Material Data
+
+Do 1, Problem Size
+  Calculate Matrix Value
+  Calculate Vector Value
+EndDo
+
+If (PETSc Used) Then
+  Do 1, Problem Size
+    Fill PETSc Matrix
+    Fill PETSc Vector
+  EndDo
+  Flux = PETScSolver( PETSc Matrix, PETSc Vector)
+Else
+  Do 1, Problem Size
+    Fill CRS Matrix
+    Fill Vector
+  EndDo
+  Flux = Solver( CRS Matrix, Vector)
+EndIf
+```
+
+Finally generate the output files
+```{fortran, eval = FALSE}
+Open( Output File)
+Do 1, Problem Size
+  Write( Output File) Position, Flux
+  Write( Output File) Region Number
+  Write( Output File) Node Number
+EndDo
+Close( Output File
+```
 
 # User Guide
-  - Compiling the Code
+  ### Compiling the Code
   - Changing Input Options
   - Reading Output Files
   - Installing PETSc 
