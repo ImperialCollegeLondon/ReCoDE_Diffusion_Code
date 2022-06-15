@@ -201,20 +201,20 @@ Subroutine Solve(this,Material,Problem,Vecx)
     ! call this%CRS%insert(NodeID-1,NodeID,(1E2_dp*this%CRS%get(NodeID-1,NodeID)))
 
     !!Prints matrix for debugging purposes
-    kk = this%CRS%get_N_rows()
-    Do ii = 1, kk
-        Write(*,*) "-"
-        Do jj = 1, kk
-            Write(*,*) "Pos", ii, jj, "Val:", this%CRS%get(ii,jj)
-        EndDo
-    EndDo
-    Write(*,*) "---b---"
-    Write(*,*) this%Vecb
+    ! kk = this%CRS%get_N_rows()
+    ! Do ii = 1, kk
+    !     Write(*,*) "-"
+    !     Do jj = 1, kk
+    !         Write(*,*) "Pos", ii, jj, "Val:", this%CRS%get(ii,jj)
+    !     EndDo
+    ! EndDo
+    ! Write(*,*) "---b---"
+    ! Write(*,*) this%Vecb
 
     !!Solve the problem
     call Solver%solve(this%CRS,this%Vecb,N_Nodes,Vecx)
-    Write(*,*) "---x---"
-    Write(*,*) Vecx
+    ! Write(*,*) "---x---"
+    ! Write(*,*) Vecx
 # endif
 
 
@@ -321,8 +321,8 @@ Subroutine Solve(this,Material,Problem,Vecx)
     call this%pVecb%Assemble()
 
     !!Prints matrix for debugging purposes
-    call this%pMatA%MatView()
-    call this%pVecb%VecView()
+    ! call this%pMatA%MatView()
+    ! call this%pVecb%VecView()
 
     !!Solve the problem
     

@@ -21,6 +21,7 @@ Module CRS_Mod
         procedure, public :: get_N_elements
         procedure, public :: operate => operate_CRS
         procedure, public :: destroy => destroy_CRS
+        procedure, public :: print_CRS
     end type
 
 contains
@@ -66,7 +67,7 @@ End Subroutine input_CRS
 
 
 
-Subroutine insert_CRS(this, Matrix_i, Matrix_j, Matrix_ij_value)
+Subroutine insert_CRS(this, Matrix_j, Matrix_i, Matrix_ij_value)
     Class(t_CRS), intent(inout) :: this
     Integer, intent(in) :: Matrix_i, Matrix_j
     Real(kind=dp), intent(in) :: Matrix_ij_value
@@ -212,16 +213,10 @@ Subroutine insert_CRS(this, Matrix_i, Matrix_j, Matrix_ij_value)
         EndIf
     EndIf
 
-    ! Write(*,*) "Row Ptr"
-    ! Write(*,*) this%row_ptr_array
-    ! Write(*,*) "value col"
-    ! Write(*,*) this%value_col_array(:,1)
-    ! Write(*,*) this%value_col_array(:,2)
-
 End Subroutine insert_CRS
 
 
-Function get_CRS(this, Matrix_i, Matrix_j) Result(Matrix_ij_value)
+Function get_CRS(this, Matrix_j, Matrix_i) Result(Matrix_ij_value)
     Class(t_CRS), intent(inout) :: this
     Integer :: Matrix_i, Matrix_j, Row_Start_Element, Row_End_Element, j
     Real(kind=dp) :: Matrix_ij_value
@@ -313,6 +308,16 @@ Subroutine destroy_CRS(this)
     Deallocate(this%row_ptr_array)
 
 End subroutine destroy_CRS
+
+
+Subroutine print_CRS(this)
+    class(t_CRS) :: this
+    Write(*,*) "-------------"
+    Write(*,*) "Val:", this%value_col_array(:,1)
+    Write(*,*) "Col:", this%value_col_array(:,2)
+    Write(*,*) "Row:", this%row_ptr_array
+    Write(*,*) "-------------"
+End subroutine print_CRS
 
 
 End Module
