@@ -2,9 +2,9 @@ Module PETSc_Init_Mod
 !!Initialize the PETSc Database
 #include <petsc/finclude/petscsys.h>
 use petscsys
+Implicit None
 contains
   Subroutine PETSc_Init
-    Implicit None
     PetscErrorCode ierr
     Logical :: Called = .FALSE.
     If (.NOT. Called) Then

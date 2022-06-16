@@ -7,7 +7,7 @@ Module PETSc_Ksp_Mod
     use Constants_Mod
     use PETSc_Mat_Mod
     use PETSc_Vec_Mod
-
+  Implicit None
   type :: pSol
     type(tksp) :: ksp
     Integer :: Max_Its
@@ -24,7 +24,6 @@ contains
 
 
 Subroutine Create_PETSc_Ksp(This,A,PC_type,Rel_Tol,Abs_Tol,Max_Its)
-  Implicit none
   class(pSol) :: This
   class(pMat) :: A
   PC               Precon
@@ -58,7 +57,6 @@ End Subroutine Create_PETSc_Ksp
 
 
 Subroutine Destroy_PETSc_Ksp(This)
-  Implicit None
   class(pSol) :: This
   PetscErrorCode ierr
   call KSPDestroy(This%ksp,ierr)
@@ -66,7 +64,6 @@ End Subroutine Destroy_PETSc_Ksp
 
 
 Subroutine Analysis_PETSc_Ksp(This)
-  Implicit None
   class(pSol) :: This
   PetscErrorCode ierr
   Integer :: Its, Reason
@@ -128,7 +125,6 @@ End Subroutine Analysis_PETSc_Ksp
 
 
 Subroutine Solve_PETSc_Ksp(This,b,x)
-  Implicit None
   Class(pSol) :: This
   class(pVec) :: b,x
   PetscErrorCode ierr
