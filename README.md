@@ -1,3 +1,5 @@
+# ReCoDE Diffusion Code
+
 # Table of Contents
 - [Abstract](#abstract)
 - [Structure of the Code](#structure-of-the-code)
@@ -10,7 +12,7 @@
 # Abstract
 This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
-The code will provide examples of:
+This project aims to provide examples of:
 - Compiled Codes
 - Object Oriented Programming (OOP)
 - Makefiles
@@ -30,17 +32,151 @@ Object Oriented Programming is a method of coding by which a piece of software i
 At it's simplest level, the code reads a specified problem from an input file, converts that to a system of equations which can then be solved, and outputs the resulting data to a set of files which can be read by an external program such a GNUPlot or Paraview.
 $$ \text{Input File } \rightarrow \text{Generate Equations } \rightarrow \text{Solve } \rightarrow \text{Output File } $$
 
-This explanation can now be further expanded in terms of complexity, where the structure will be given in terms files and modules. For the sake of readability, this is given as a full flow chart below. The $\textbf{Problem}$ module reads through the input file, storing relevant data or passing it to the $\textbf{Materials}$ module. Data from these modules is the used by the $\textbf{MatGen}$ module to generate the system of equations. If PETSc is used, this data is then passed to the $\textbf{PETScMat}$ and $\textbf{PETScVec}$ modules, which are wrappers for the data library. These are then passed into the $\textbf{PETScKSP}$ module which solves the problem. If PETSc isn't used, this data is passed into the $\textbf{CRS}$ module, which stores the data effieicently, such that it can be fed into the $\textbf{Solver}$ module. The solved data is then passed into the $\textbf{Output}$ module, which generates an output both in .txt and .vtu format.
+This explanation can now be further expanded in terms of complexity, where the structure will be given in terms files and modules. For the sake of readability, this is given as a full flow chart below. The **Problem** module reads through the input file, storing relevant data or passing it to the **Materials** module. Data from these modules is the used by the **MatGen** module to generate the system of equations. If PETSc is used, this data is then passed to the **PETScMat** and **PETScVec** modules, which are wrappers for the data library. These are then passed into the **PETScKSP** module which solves the problem. If PETSc isn't used, this data is passed into the **CRS** module, which stores the data effieicently, such that it can be fed into the **Solver** module. The solved data is then passed into the **Output** module, which generates an output both in .txt and .vtu format.
 
 ![DiffCode drawio](https://user-images.githubusercontent.com/83182489/173537965-ac15206a-dc13-4659-89f0-5b7141eb3091.png)
 
-$$ \textbf{Pseudocode here?} $$
+This can also be represented through some blocks of pseudocode
+
+First read through the input file
+```{fortran, eval = FALSE}
+Open( Input File)
+Read Problem Data
+Read Material Data
+Close( Input File)
+
+Set Problem Data
+Set Material Data
+```
+
+Then generate the equations and solve for the flux
+```{fortran, eval = FALSE}
+Get Problem Data
+Get Material Data
+
+Do 1, Problem Size
+  Calculate Matrix Value
+  Calculate Vector Value
+EndDo
+
+If (PETSc Used) Then
+  Do 1, Problem Size
+    Fill PETSc Matrix
+    Fill PETSc Vector
+  EndDo
+  Flux = PETScSolver( PETSc Matrix, PETSc Vector)
+Else
+  Do 1, Problem Size
+    Fill CRS Matrix
+    Fill Vector
+  EndDo
+  Flux = Solver( CRS Matrix, Vector)
+EndIf
+```
+
+Finally generate the output files
+```{fortran, eval = FALSE}
+Open( Output File)
+Do 1, Problem Size
+  Write( Output File) Position, Flux
+  Write( Output File) Region Number
+  Write( Output File) Node Number
+EndDo
+Close( Output File
+```
 
 # User Guide
-  - Compiling the Code
-  - Changing Input Options
-  - Reading Output Files
-  - Installing PETSc 
+  ## Compiling the Code
+  As fortran is a compiled language, the code must first be compiled before it can be executed. To do so, navigate to the **src** directory within the code and enter the commands:
+  ```
+  make clean
+  make
+  ```
+  This will execute the makefile contained within the same directory, converting the fortran code to an optimised form that can be read by your computer. This then generates an executable named **diffusion**. Once this has been done, the code can be executed from the parent directory using the command:
+  ```
+  ./diffusion
+  ```
+  This command tells the executable to run and will generate relevant output files containing the solution to the problem. 
+
+
+  ## Changing Input Options
+  The code is designed such that the user can easily change the problem which the code is attempting to solve. The code uses the input file **Input.txt** to read details about the problem, such as the positions of boundaries or materials in the problem. An example of such an input can be seen below:
+  ```
+  ------------------------------------------
+  Regions: - Integer number of regions in the problem
+  2
+  ------------------------------------------
+  Boundaries: - Real number positions of the boundaries between the regions (one per line)
+  0.0
+  0.5
+  1.0
+  ------------------------------------------
+  Nodes: - Integer number of nodes in each region (one per line)
+  10
+  10
+  ------------------------------------------
+  Materials: - Fuel, Water or Steel (one per line)
+  Fuel
+  Steel
+  ------------------------------------------
+  ```
+   For this example problem, we are stating that we have a geometry ranging from *x = 0.0* to *1.0*, half fuel and half steel with a central boundary at *x = 0.5*. As seen from the above input, the code needs four different parameters to be described to it.
+  - **Regions** - An integer number of regions that exists within the problem. We have 1 region from *0.0* to *0.5* and another from *0.5* to *1.0*, hence we give the code the integer number **2**.
+  - **Boundaries** - The positions of the boundaries within the problem. Our first boundary is at the start of our geometry so we enter the number **0.0**. We then have an internal boundary halfway through the problem seperating the regions so we enter the number **0.5**. Finally we have the exterior boundary of our geometry, so we enter the number **1.0**. The code will always read one more value here than the number of regions in the problem.
+  - **Nodes** - This desribes how refined we want the geometry in each region. For the example we want a quick solve with just enough nodes to see the flux profile. As we need to describe this for each region we enter the value **10** twice. The code will always read the same number of values here as the number of regions in the problem.
+  - **Materials** - This described the materials that are present within the system. The first half of our geometry if fuel, with the latter half being Steel, so we enter **Fuel** and **Steel**. The code will always read the same number of values here as the number of regions in the problem.
+  ## Reading Output Files
+  The code generates two output files, **Output.txt** and **Output.vtu**. The former is a simple text file containing the position and flux of the solution to the problem. These are simply given in two columns such that they can be read easily by someting like a GNUPlot or Python script. An example of such a flux profile can be seen below:
+  ```
+  0.000000E+00  0.135813E+01
+  0.166667E+00  0.137306E+01
+  0.333333E+00  0.141907E+01
+  0.500000E+00  0.150000E+01
+  0.666667E+00  0.158093E+01
+  0.833333E+00  0.162694E+01
+  0.100000E+01  0.164187E+01
+  ```
+  This can then be plotted using tools such as GNUPlot to produce the profile seen below:
+
+  ![FluxProfile](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/FluxProfile.png)
+
+  GNUPlot was chosen here as the application is very simple and the program itself is very easy to install. On Linux, you only need the commands:
+  ```
+  sudo apt update
+  sudo apt install gnuplot
+  ```
+  For installation on Windows, you will need to download the software from http://www.gnuplot.info/download.html. The GNUPlot script used to generate the plot is named **fluxplot** and can be found in the home directory of the project. This can be run with the command:
+  ```
+  gnuplot -p fluxplot
+  ```
+  
+  ## Installing PETSc 
+  The Portable, Extensible Toolkit for Scientific Computation (PETSc) is an optional external library which can be utilised in this problem to solve the system of equations generated by the code. This section will give an explanation of how to download and compile PETSc. Note that the configuring and testing of PETSc may take some time. Installation instructions can also be foind at https://petsc.org/release/install/
+
+  - Download a copy of PETSc from:
+
+  https://petsc.org/release/download/
+
+  - Place the downloaded PETSc folder into the directory of your choice and navigate inside it through a terminal. Configure the code by running:
+  ```
+  ./configure --download-mpich --download-fblaslapack=1
+  ```
+  - Check that the installation was successful by running:
+  ```
+  make all check
+  ```
+
+  ## Compiling with PETSc
+
+  If you have installed PETSc (see [installation instructions](##Installing-PETSc)), the code can also be compiled to use it instead of the custom storage and solvers. To do so, navigate to the **src** directory within the code and enter the commands:
+  ```
+  make clean
+  make petsc
+  ```
+  This will execute the makefile contained within the same directory with the petsc options, converting the fortran code to an optimised form that utilises the PETSc library. This then generates an executable named **diffusion_petsc**. Once this has been done, the code can be executed from the parent directory using the command:
+  ```
+  ./diffusion_petsc
+  ```
 
 # Features of the Code
   - Makefile
@@ -147,7 +283,4 @@ This equation effectively relates the rate of change of neutrons within a system
 $$ -\frac{d}{d x} D(x) \frac{d \phi(x)}{d x}+\Sigma_{a}(x) \phi(x)=\frac{1}{\lambda} \nu \Sigma_{f}(x) \phi(x) $$
 
 Neutron diffusion codes will principally solve this equation to calculate the neutron flux over a specified geometry. Problems involving a fission neutron source can be solved for the eigenvalue $\lambda$ of the system, utilising a fission source normalisation.
-
-
-
 
