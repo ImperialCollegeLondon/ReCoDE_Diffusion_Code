@@ -1,7 +1,6 @@
 Module MatGen_Mod
 
     use Constants_Mod
-    use StdLib_Mod
     use Materials_Mod
     use Problem_Mod
 # ifdef PETSC
