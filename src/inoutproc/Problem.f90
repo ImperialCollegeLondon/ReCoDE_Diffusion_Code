@@ -7,13 +7,14 @@ Module Problem_Mod
   Implicit None
 
   type, public :: t_Problem
-      Integer :: N_Regions, N_Nodes
+      Integer :: N_Regions, N_Nodes, SolverID
       Integer, allocatable, dimension(:) :: Nodes
       Integer, dimension(2) :: Boundary_Conditions
       Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos 
   contains
   !!Procedures which handle the storing, calculation and retrieval of material data
       procedure, public :: ReadInput
+      procedure, public :: GetSolverID
       procedure, public :: GetN_Regions
       procedure, public :: GetNodes 
       procedure, public :: GetN_Nodes
@@ -35,6 +36,22 @@ Subroutine ReadInput(this,Material)
 
   !!Open onput file containing problem specification
   Open(InputFile, File='input.in', Status='Old')
+
+  !!Read in the solver type
+  String_Read = ''
+  Do While (String_Read .NE. 'Solver:')
+    Read(InputFile,*) String_Read
+  EndDo
+  Read(InputFile,*) String_Read
+  If (String_Read == 'Thomas') Then 
+    this%SolverID = 1
+  ElseIf (String_Read == 'BCG') Then 
+    this%SolverID = 2
+  ElseIf (String_Read == 'CG') Then 
+    this%SolverID = 3
+  Else 
+    Write(*,*) "ERROR: Unrecognised Solver Type"
+  EndIf
 
   !!Read in the number of Regions
   String_Read = ''
@@ -107,6 +124,14 @@ Subroutine ReadInput(this,Material)
   Close(InputFile)
 
 End Subroutine ReadInput
+
+
+Function GetSolverID(this) Result(Res)
+    class(t_problem) :: this
+    Integer :: Res
+    !!Get the solver type
+    Res = this%SolverID
+End Function GetSolverID
 
 
 Function GetN_Regions(this) Result(Res)

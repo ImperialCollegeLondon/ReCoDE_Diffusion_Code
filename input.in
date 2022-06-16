@@ -1,4 +1,7 @@
 ------------------------------------------
+Solver: - Thomas, BCG or CG (only active for non-PETSc usage)
+BCG
+------------------------------------------
 Regions: - Integer number of regions in the problem
 2
 ------------------------------------------
@@ -13,9 +16,9 @@ Nodes: - Integer number of nodes in each region (one per line)
 ------------------------------------------
 Materials: - Fuel, Water or Steel (one per line)
 Fuel
-Steel
+Fuel
 ------------------------------------------
 Boundary_Conditions: - Zero or Reflective (two parameters - one per line)
-Reflective
-Reflective
+Zero
+Zero
 ------------------------------------------
