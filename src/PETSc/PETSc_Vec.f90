@@ -65,7 +65,6 @@ Subroutine ConvTo_PETSc_Vec(This,Val_vec)
   Allocate(Pos_vec(N_Vec))
   Do ii = 1, N_Vec
     Pos_vec(ii) = ii-1
-    !Write(*,*) "ConvVec:", ii, Val_vec(ii)
   EndDo
   call VecSetValues(This%vec,N_vec,Pos_vec,Val_vec,INSERT_VALUES,ierr)
   Deallocate(Pos_vec)

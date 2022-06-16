@@ -78,11 +78,11 @@ Subroutine ReadInput(this,Material)
     Read(InputFile,*) String_Read
     Call Material(ii)%SetName(String_Read)
     If (String_Read == 'Fuel') Then 
-      Call Material(ii)%SetProps(1._dp,1._dp)
+      Call Material(ii)%SetProps(1._dp,6._dp)
     ElseIf (String_Read == 'Water') Then 
-      Call Material(ii)%SetProps(2._dp,1._dp)
+      Call Material(ii)%SetProps(2._dp,0.1_dp)
     ElseIf  (String_Read == 'Steel') Then 
-      Call Material(ii)%SetProps(1._dp,2._dp)
+      Call Material(ii)%SetProps(5._dp,0.1_dp)
     Else 
       Write(*,*) "ERROR: Unrecognised Material"
     EndIf

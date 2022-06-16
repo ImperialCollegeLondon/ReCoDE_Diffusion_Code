@@ -99,7 +99,6 @@ Subroutine insert_CRS(this, Matrix_j, Matrix_i, Matrix_ij_value)
 
     If (Sparsity_Change_Logical .EQV. .TRUE.) Then
         If (ABS(Input_Value) .GT. 1E-9) Then
-            ! Write(*,*) "Non-Zero Inserted"
             New_ValCol_Length = Size(this%value_col_array,1) + 1
             Allocate(New_ValCol_array(New_ValCol_Length,2))
             Allocate(New_Row_ValCol_Array(Row_End_N-Row_Start_N+2,2))
