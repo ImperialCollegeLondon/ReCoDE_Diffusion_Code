@@ -22,7 +22,6 @@ Program Main
   type(t_Problem) :: Problem 
   type(t_material), allocatable, dimension(:) :: Material
   type(t_MatGen) :: MatGen
-  type(t_output) :: Output
   Real(kind=dp) :: time_start, time_stop
   Real(kind=dp), allocatable, dimension(:) :: Flux
 
@@ -35,7 +34,7 @@ Program Main
   call MatGen%Solve(Material,Problem,Flux)
   Write(*,*) ">Problem Assembled"
 
-  call Output%GenerateVTU(Problem,Flux)
+  call GenerateVTU(Problem,Flux)
   Write(*,*) ">Output Generated"
 
   call MatGen%Destroy(Flux)

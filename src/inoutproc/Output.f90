@@ -7,16 +7,13 @@ Module Output_Mod
     !!Any other postprocessing of data would also go here
 
     Implicit None
-
+    public :: GenerateVTU
     type, public :: t_output
 
-    contains
-        procedure, public :: GenerateVTU
     end type
 contains
 
-Subroutine GenerateVTU(this,Problem,Flux)
-    class(t_output) :: this
+Subroutine GenerateVTU(Problem,Flux)
     type(t_problem) :: Problem 
     Integer :: ii, jj, N_Nodes, N_Regions, NodeID
     Integer, allocatable, dimension(:) :: RegionNodes

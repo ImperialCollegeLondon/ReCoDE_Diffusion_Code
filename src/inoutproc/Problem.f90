@@ -9,6 +9,7 @@ Module Problem_Mod
   type, public :: t_Problem
       Integer :: N_Regions, N_Nodes
       Integer, allocatable, dimension(:) :: Nodes
+      Integer, dimension(2) :: Boundary_Conditions
       Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos 
   contains
   !!Procedures which handle the storing, calculation and retrieval of material data
@@ -17,6 +18,7 @@ Module Problem_Mod
       procedure, public :: GetNodes 
       procedure, public :: GetN_Nodes
       procedure, public :: GetBoundary_Pos
+      procedure, public :: GetBoundary_Conditions
       procedure, public :: DestroyProblem
   end type
 
@@ -86,6 +88,22 @@ Subroutine ReadInput(this,Material)
     EndIf
   EndDo
 
+  !!Read in the boundary conditions of the problem
+  String_Read = ''
+  Do While (String_Read .NE. 'Boundary_Conditions:')
+    Read(InputFile,*) String_Read
+  EndDo
+  Do ii = 1, 2
+    Read(InputFile,*) String_Read
+    If (String_Read == 'Zero') Then 
+      this%Boundary_Conditions(ii) = 0
+    ElseIf (String_Read == 'Reflective') Then 
+      this%Boundary_Conditions(ii) = 1
+    Else 
+      Write(*,*) "ERROR: Unrecognised Boundary Condition"
+    EndIf
+  EndDo
+
   Close(InputFile)
 
 End Subroutine ReadInput
@@ -121,6 +139,14 @@ Function GetBoundary_Pos(this) Result(Res)
     !!Get the positions of the boundaries in the problem
     Res = this%Boundary_Pos
 End Function GetBoundary_Pos
+
+
+Function GetBoundary_Conditions(this) Result(Res)
+    class(t_problem) :: this
+    Integer, dimension(2) :: Res
+    !!Get the boundary condition of the problem
+    Res = this%Boundary_Conditions
+End Function GetBoundary_Conditions
 
 
 Subroutine DestroyProblem(this,Material)

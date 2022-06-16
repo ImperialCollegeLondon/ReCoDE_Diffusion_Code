@@ -69,16 +69,10 @@ Subroutine Solve(this,Material,Problem,Vecx)
     class(t_MatGen) :: this
     type(t_material), dimension(:) :: Material 
     type(t_Problem) :: Problem
-# ifndef PETSC
-    type(t_Solver) :: Solver
-# endif 
-# ifdef PETSC
-    type(t_PETScSolver) :: PETScSolver
-# endif
-    Integer :: ii, jj, kk, N_Regions, N_Nodes, NodeID
+    Integer :: ii, jj, N_Regions, N_Nodes, NodeID
     Integer, allocatable, dimension(:) :: RegionNodes
+    Integer, dimension(2) :: Boundary_Conditions
     Real(kind=dp) :: D_Value, Dm1_Value, Dp1_Value, Delta_Value, Sig_a_Value, Source_Value, a, b, c
-    Real(kind=dp) :: Delta_old, Delta_prev
     Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos, Delta, Sig_a, Source, Vecx
 
 
@@ -87,6 +81,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
     Boundary_Pos = Problem%GetBoundary_Pos()
     RegionNodes = Problem%GetNodes()
     N_Nodes = Problem%GetN_Nodes()
+    Boundary_Conditions = Problem%GetBoundary_Conditions()
     Allocate(Delta(N_Regions),Vecx(N_Nodes))
 
     !!Calculate Delta throughout problem
@@ -101,13 +96,6 @@ Subroutine Solve(this,Material,Problem,Vecx)
         Source(ii) = Material(ii)%GetS()
     EndDo
 
-    ! Write(*,*) "Boundary_Pos", Boundary_Pos
-    ! Write(*,*) "RegionNodes", RegionNodes
-    ! Write(*,*) "Delta", Delta
-    ! Write(*,*) "Sig_a", Sig_a
-    ! Write(*,*) "Source", Source
-
-
     !!Non-PETSc Implementation
 # ifndef PETSC 
     !!Fill CRS Matrices with problem information
@@ -117,57 +105,31 @@ Subroutine Solve(this,Material,Problem,Vecx)
         !!Loop over each node within the region (excluding last node)
         Do jj = 1, RegionNodes(ii)-1
             NodeID = NodeID + 1
-            ! Write(*,*) "---"
-            ! Write(*,*) "NodeID:", NodeID
             If ((jj == 1) .AND. (ii /= 1)) Then 
                 !!First node in region (excluding first in problem)
-                
                 Sig_a_Value = .5_dp*(Sig_a(ii) + Sig_a(ii-1))
                 Source_Value = .5_dp*(Source(ii) + Source(ii-1))
                 Delta_Value = .5_dp*(Delta(ii) + Delta(ii-1))
                 Dm1_Value = 1._dp/(3._dp*Sig_a(ii-1))
                 D_Value = 1._dp/(3._dp*(.5_dp*(Sig_a(ii) + Sig_a(ii-1))))
                 Dp1_Value = 1._dp/(3._dp*Sig_a(ii))
-
-                ! Write(*,*) "First"
-                ! Write(*,*) "Sig_a", Sig_a_Value
-                ! Write(*,*) "Source", Source_Value
-                ! Write(*,*) "Delta", Delta_Value
-                ! Write(*,*) "D", Dm1_Value, D_Value, Dp1_Value
-                ! Write(*,*) 
             Else
                 !!General node
-                
                 Sig_a_Value = Sig_a(ii)
                 Source_Value = Source(ii)
                 Delta_Value = Delta(ii)
                 Dm1_Value = 1._dp/(3._dp*Sig_a(ii))
                 D_Value = 1._dp/(3._dp*Sig_a(ii))
                 Dp1_Value = 1._dp/(3._dp*Sig_a(ii))
-
-                ! Write(*,*) "General"
-                ! Write(*,*) "Sig_a", Sig_a_Value
-                ! Write(*,*) "Source", Source_Value
-                ! Write(*,*) "Delta", Delta_Value
-                ! Write(*,*) "D", Dm1_Value, D_Value, Dp1_Value
-                ! Write(*,*) 
             EndIf
-
             a = -(.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
             b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
             c = -(.5_dp)*((Dp1_Value+D_Value)/(Delta_Value**2))
-            
-            ! Write(*,*) "---"
-            ! Write(*,*) "NodeID:", NodeID
             If (NodeID /= 1) Then
                 call this%CRS%insert(NodeID,NodeID-1,a)
-                ! Write(*,*) "A->", a, NodeID-1, NodeID, this%CRS%get(NodeID-1,NodeID)
-                ! Write(*,*) this%CRS%get(2,3)
             EndIf
             call this%CRS%insert(NodeID,NodeID,b)
-            ! Write(*,*) "B->", b, NodeID, NodeID
             call this%CRS%insert(NodeID,NodeID+1,c)
-            ! Write(*,*) "C->", c, NodeID+1, NodeID
             this%Vecb(NodeID) = Source_Value
 
         EndDo 
@@ -183,38 +145,26 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
     a = -(.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
     b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
-
-    ! Write(*,*) "---"
-    ! Write(*,*) "NodeID:", NodeID
-    ! Write(*,*) "A->", a, NodeID-1, NodeID
-    ! Write(*,*) "B->", b, NodeID, NodeID
     call this%CRS%insert(NodeID,NodeID-1,a)
     call this%CRS%insert(NodeID,NodeID,b)
     this%Vecb(NodeID) = Source_Value
 
-    !!Reflective modification
-    call this%CRS%insert(1,2,(2._dp*this%CRS%get(1,2)))
-    call this%CRS%insert(NodeID,NodeID-1,(2._dp*this%CRS%get(NodeID,NodeID-1)))
-
-    !!Zero modification
-    ! call this%CRS%insert(2,1,(1E2_dp*this%CRS%get(2,1)))
-    ! call this%CRS%insert(NodeID-1,NodeID,(1E2_dp*this%CRS%get(NodeID-1,NodeID)))
-
-    !!Prints matrix for debugging purposes
-    ! kk = this%CRS%get_N_rows()
-    ! Do ii = 1, kk
-    !     Write(*,*) "-"
-    !     Do jj = 1, kk
-    !         Write(*,*) "Pos", ii, jj, "Val:", this%CRS%get(ii,jj)
-    !     EndDo
-    ! EndDo
-    ! Write(*,*) "---b---"
-    ! Write(*,*) this%Vecb
+    !!Boundary Conditions
+    If (Boundary_Conditions(1) == 0) Then
+        call this%CRS%insert(1,1,(1E2_dp*this%CRS%get(1,1)))
+    ElseIf (Boundary_Conditions(1) == 1) Then 
+        call this%CRS%insert(1,2,(2._dp*this%CRS%get(1,2)))
+    EndIf
+    If (Boundary_Conditions(2) == 0) Then
+        call this%CRS%insert(NodeID,NodeID,(1E2_dp*this%CRS%get(NodeID,NodeID)))
+    ElseIf (Boundary_Conditions(2) == 1) Then 
+        call this%CRS%insert(NodeID,NodeID-1,(2._dp*this%CRS%get(NodeID,NodeID-1)))
+    EndIf
 
     !!Solve the problem
-    call Solver%solve(this%CRS,this%Vecb,N_Nodes,Vecx)
-    ! Write(*,*) "---x---"
-    ! Write(*,*) Vecx
+    call ThomAlg_Solve(this%CRS,this%Vecb,N_Nodes,Vecx)
+    !!CG Alg Version
+    ! call CG_Solve(this%CRS,this%Vecb,N_Nodes,Vecx)
 # endif
 
 
@@ -227,59 +177,34 @@ Subroutine Solve(this,Material,Problem,Vecx)
         !!Loop over each node within the region (excluding last node)
         Do jj = 1, RegionNodes(ii)-1
             NodeID = NodeID + 1
-            ! Write(*,*) "---"
-            ! Write(*,*) "NodeID:", NodeID, ii, jj
             If ((jj == 1) .AND. (ii /= 1)) Then 
                 !!First node in region (excluding first in problem)
-                
                 Sig_a_Value = .5_dp*(Sig_a(ii) + Sig_a(ii-1))
                 Source_Value = .5_dp*(Source(ii) + Source(ii-1))
                 Delta_Value = .5_dp*(Delta(ii) + Delta(ii-1))
                 Dm1_Value = 1._dp/(3._dp*Sig_a(ii-1))
                 D_Value = 1._dp/(3._dp*(.5_dp*(Sig_a(ii) + Sig_a(ii-1))))
                 Dp1_Value = 1._dp/(3._dp*Sig_a(ii))
-
-                ! Write(*,*) "First"
-                ! Write(*,*) "Sig_a", Sig_a_Value
-                ! Write(*,*) "Source", Source_Value
-                ! Write(*,*) "Delta", Delta_Value
-                ! Write(*,*) "D", Dm1_Value, D_Value, Dp1_Value
-                ! Write(*,*) 
             Else
                 !!General node
-                
                 Sig_a_Value = Sig_a(ii)
                 Source_Value = Source(ii)
                 Delta_Value = Delta(ii)
                 Dm1_Value = 1._dp/(3._dp*Sig_a(ii))
                 D_Value = 1._dp/(3._dp*Sig_a(ii))
                 Dp1_Value = 1._dp/(3._dp*Sig_a(ii))
-
-                ! Write(*,*) "General"
-                ! Write(*,*) "Sig_a", Sig_a_Value
-                ! Write(*,*) "Source", Source_Value
-                ! Write(*,*) "Delta", Delta_Value
-                ! Write(*,*) "D", Dm1_Value, D_Value, Dp1_Value
-                ! Write(*,*) 
             EndIf
 
             a = -(.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
             b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
             c = -(.5_dp)*((Dp1_Value+D_Value)/(Delta_Value**2))
             
-            ! Write(*,*) "---"
-            ! Write(*,*) "NodeID:", NodeID
             If (NodeID /= 1) Then
                 call this%pMatA%InsertVal(NodeID,NodeID-1,a)
-                ! Write(*,*) "A->", a, NodeID-1, NodeID, this%CRS%get(NodeID-1,NodeID)
-                ! Write(*,*) this%CRS%get(2,3)
             EndIf
             call this%pMatA%InsertVal(NodeID,NodeID,b)
-            ! Write(*,*) "B->", b, NodeID, NodeID
             call this%pMatA%InsertVal(NodeID,NodeID+1,c)
-            ! Write(*,*) "C->", c, NodeID+1, NodeID
             this%Vecb(NodeID) = Source_Value
-
         EndDo 
     EndDo
     !!Final Node
@@ -293,162 +218,45 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
     a = (-.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
     b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
-
-    ! Write(*,*) "---"
-    ! Write(*,*) "NodeID:", NodeID
-    ! Write(*,*) "A->", a, NodeID-1, NodeID
-    ! Write(*,*) "B->", b, NodeID, NodeID
     call this%pMatA%InsertVal(NodeID,NodeID-1,a)
     call this%pMatA%InsertVal(NodeID,NodeID,b)
     this%Vecb(NodeID) = Source_Value
 
-    !!Reflective Boundary Conditions
-    call this%pMatA%SwitchAssemble()
-    !!Initial Boundary
-    D_Value = 1._dp/(3._dp*Sig_a(1))
-    Delta_Value = Delta(1)
-    a = (-.5_dp)*((2._dp*D_Value)/(Delta_Value**2))
-    call this%pMatA%AddVal(1,2,a)
-    !!Final Boundary
-    D_Value = 1._dp/(3._dp*Sig_a(N_Regions))
-    Delta_Value = Delta(N_Regions)
-    a = (-.5_dp)*((2._dp*D_Value)/(Delta_Value**2))
-    call this%pMatA%AddVal(NodeID,NodeID-1,a)
-
-
+    !!Boundary Conditions
+    If (Boundary_Conditions(1) == 0) Then
+        Dm1_Value = 1._dp/(3._dp*Sig_a(1))
+        D_Value = 1._dp/(3._dp*Sig_a(1))
+        Dp1_Value = 1._dp/(3._dp*Sig_a(1))
+        b = Sig_a(1) + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta(1))**2))
+        call this%pMatA%InsertVal(1,1,1E3_dp*b)
+    ElseIf (Boundary_Conditions(1) == 1) Then 
+        D_Value = 1._dp/(3._dp*Sig_a(1))
+        a = (-.5_dp)*((2._dp*D_Value)/(Delta(1)**2))
+        call this%pMatA%InsertVal(1,2,2._dp*a)
+        
+    EndIf
+    If (Boundary_Conditions(2) == 0) Then
+        Dm1_Value = 1._dp/(3._dp*Sig_a(N_Regions))
+        D_Value = 1._dp/(3._dp*Sig_a(N_Regions))
+        Dp1_Value = 1._dp/(3._dp*Sig_a(N_Regions))
+        b = Sig_a(N_Regions) + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta(N_Regions))**2))
+        call this%pMatA%InsertVal(NodeID,NodeID,1E3_dp*b)
+    ElseIf (Boundary_Conditions(2) == 1) Then 
+        D_Value = 1._dp/(3._dp*Sig_a(N_Regions))
+        a = (-.5_dp)*((2._dp*D_Value)/(Delta(N_Regions)**2))
+        call this%pMatA%InsertVal(NodeID,NodeID-1,2._dp*a)
+    EndIf
+    
+    !!Assemble PETSc Matrix and Vector
     call this%pVecb%ConvTo(this%Vecb)
     call this%pMatA%Assemble()
     call this%pVecb%Assemble()
 
-    !!Prints matrix for debugging purposes
-    ! call this%pMatA%MatView()
-    ! call this%pVecb%VecView()
-
     !!Solve the problem
-    
-    call PETScSolver%Solve(this%pMatA,this%pVecb,this%pVecx)
+    call PETSc_Solve(this%pMatA,this%pVecb,this%pVecx)
     call this%pVecx%ConvFrom(Vecx)
-    call this%pVecx%VecView()
 # endif
 
-
-!     !!PETSc Implementation
-! # ifdef PETSC 
-!     !!Fill PETSc Matrices and Vectors with problem information
-!     !!Loop over each region within the geometry
-!     NodeID = 0
-!     Do ii = 1, N_Regions
-!         !!Loop over each node within the region
-!         !!Calculate the delta value between each node in the region
-!         Delta_old = (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
-
-!         Do jj = 1, RegionNodes(ii)-1
-!         NodeID = NodeID + 1
-!             ! Write(*,*) "---"
-!             ! Write(*,*) "NodeID:", NodeID
-!             If ((jj == 1) .AND. (ii /= 1)) Then 
-!                 !!First node in region (excluding first in problem)
-                
-!                 Sig_a_Value = .5_dp*(Sig_a(ii) + Sig_a(ii-1))
-!                 Source_Value = .5_dp*(Source(ii) + Source(ii-1))
-!                 Delta_Value = .5_dp*(Delta(ii) + Delta(ii-1))
-!                 Dm1_Value = 1._dp/(3._dp*Sig_a(ii-1))
-!                 D_Value = 1._dp/(3._dp*(.5_dp*(Sig_a(ii) + Sig_a(ii-1))))
-!                 Dp1_Value = 1._dp/(3._dp*Sig_a(ii))
-
-!                 ! Write(*,*) "First"
-!                 ! Write(*,*) "Sig_a", Sig_a_Value
-!                 ! Write(*,*) "Source", Source_Value
-!                 ! Write(*,*) "Delta", Delta_Value
-!                 ! Write(*,*) "D", Dm1_Value, D_Value, Dp1_Value
-!                 ! Write(*,*) 
-!             Else
-!                 !!General node
-                
-!                 Sig_a_Value = Sig_a(ii)
-!                 Source_Value = Source(ii)
-!                 Delta_Value = Delta(ii)
-!                 Dm1_Value = 1._dp/(3._dp*Sig_a(ii))
-!                 D_Value = 1._dp/(3._dp*Sig_a(ii))
-!                 Dp1_Value = 1._dp/(3._dp*Sig_a(ii))
-
-!                 ! Write(*,*) "General"
-!                 ! Write(*,*) "Sig_a", Sig_a_Value
-!                 ! Write(*,*) "Source", Source_Value
-!                 ! Write(*,*) "Delta", Delta_Value
-!                 ! Write(*,*) "D", Dm1_Value, D_Value, Dp1_Value
-!                 ! Write(*,*) 
-!             EndIf
-
-!             a = -(.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
-!             b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
-!             c = -(.5_dp)*((Dp1_Value+D_Value)/(Delta_Value**2))
-!             If (NodeID /= 1) Then
-!                 call this%CRS%insert(NodeID-1,NodeID,a)
-!                 ! Write(*,*) "A->", a, NodeID-1, NodeID, this%CRS%get(NodeID-1,NodeID)
-!                 ! Write(*,*) this%CRS%get(2,3)
-!             EndIf
-!             call this%CRS%insert(NodeID,NodeID,b)
-!             ! Write(*,*) "B->", b, NodeID, NodeID
-!             call this%CRS%insert(NodeID+1,NodeID,c)
-!             ! Write(*,*) "C->", c, NodeID+1, NodeID
-!             this%Vecb(NodeID) = Source_Value
-!         EndDo
-!     EndDo
-!     !!Final Node
-!     NodeID = NodeID + 1
-!     call this%pMatA%InsertVal(NodeID,NodeID,Delta_old*Sig_a(N_Regions))
-!     this%Vecb(NodeID) = Delta_old*Source(N_Regions)
-!     call this%pVecb%ConvTo(this%Vecb)
-
-!     !!Solve the problem
-!     call this%pMatA%Assemble()
-!     call this%pVecb%Assemble()
-!     call PETScSolver%Solve(this%pMatA,this%pVecb,this%pVecx)
-!     call this%pVecx%ConvFrom(Vecx)
-
-! # endif
-
-!     !!PETSc Implementation
-! # ifdef PETSC 
-!     !!Fill PETSc Matrices and Vectors with problem information
-!     !!Loop over each region within the geometry
-!     NodeID = 0
-!     Do ii = 1, N_Regions
-!         !!Loop over each node within the region
-!         !!Calculate the delta value between each node in the region
-!         Delta_old = (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
-!         !!Initial Node
-!         NodeID = NodeID + 1
-!         If (ii /= 1) Then
-!             Delta_prev = (Boundary_Pos(ii)-Boundary_Pos(ii-1))/Real(RegionNodes(ii-1)-1,dp)
-!             call this%pMatA%InsertVal(NodeID,NodeID,(0.5_dp*((Delta_old*Sig_a(ii))+(Delta_prev*Sig_a(ii-1)))))
-!             this%Vecb(NodeID) = (0.5_dp*((Delta_old*Source(ii))+(Delta_prev*Source(ii-1))))
-!         Else 
-!             call this%pMatA%InsertVal(NodeID,NodeID,Delta_old*Sig_a(ii))
-!             this%Vecb(NodeID) = Delta_old*Source(ii)
-!         EndIf
-!         !!Loop up to boundary
-!         Do jj = 1, RegionNodes(ii)-2
-!             !!Use Delta and material properties to fill the matrix and vector
-!             NodeID = NodeID + 1
-!             call this%pMatA%InsertVal(NodeID,NodeID,Delta_old*Sig_a(ii))
-!             this%Vecb(NodeID) = Delta_old*Source(ii)
-!         EndDo
-!     EndDo
-!     !!Final Node
-!     NodeID = NodeID + 1
-!     call this%pMatA%InsertVal(NodeID,NodeID,Delta_old*Sig_a(N_Regions))
-!     this%Vecb(NodeID) = Delta_old*Source(N_Regions)
-!     call this%pVecb%ConvTo(this%Vecb)
-
-!     !!Solve the problem
-!     call this%pMatA%Assemble()
-!     call this%pVecb%Assemble()
-!     call PETScSolver%Solve(this%pMatA,this%pVecb,this%pVecx)
-!     call this%pVecx%ConvFrom(Vecx)
-
-! # endif
 
 End Subroutine Solve
 
