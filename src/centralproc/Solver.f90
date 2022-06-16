@@ -113,7 +113,7 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
     r = b - Ax 
     rh = r 
     
-    Do BCG_Iterations = 1, 10
+    Do BCG_Iterations = 1, N_Size
       rho1 = dot_product(rh,r)
       If (SQRT(rho1) < 1E-4) Then 
         BCG_Conv = .True.
@@ -155,72 +155,6 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
   Write(*,'(E14.6)') rho1
   Write(*,*) "-------------------------------"
 # endif
-
-
-
-    ! ! Bi-conjugate gradient squared stabilized.
-    ! ! Van der Vorst's Bi-CGSTAB, 1992 SIAM J. Sci. Stat. Comput.
-    ! !
-    ! ! Solves x, for A*x = y,  where A*x is computed by mv_prod()
-    ! ! On entry, X contains Y, on exit X is the found solution.
-    ! ! If X_start is not present, X_start=0 is used.
-    ! !
-    ! Implicit None
-    ! type(t_CRS) :: mat_CRS
-    ! integer     :: mxiter, N_Size
-    ! real(kind=dp)     :: err
-    ! real(kind=dp), dimension(N_Size)       :: X, y, Vecb, phi
-    ! integer                        :: iter
-    ! real(kind=dp), dimension(N_Size) :: X_start
-    ! real(kind=dp), allocatable, dimension(:)  :: P, R, R0, T, V
-    ! real(kind=dp)  :: alpha, beta, omega, rho0, rho1, rnorm, ynorm
-    ! integer        :: i, n
-
-    ! !On entry x = y
-    ! y = Vecb 
-    ! x = y
-    ! X_start = 1._dp
-    ! err = 1E-5_dp
-    ! mxiter = 20
-
-    ! n = N_Size
-    ! allocate( P(n), R(n), R0(n), T(n), V(n) )
-    ! ynorm = dot_product(X,X)
-    ! call mat_CRS%operate(X_start,R)
-    ! R = X - R
-    ! R0 = R
-    ! P = 0
-    ! V = 0
-    ! rho0 = 1
-    ! alpha = 1
-    ! omega = 1
-    ! iter = 0
-    ! do i=1,mxiter
-    !     iter = i
-    !     rho1 = dot_product(R0,R)
-    !     beta = (rho1/rho0)* (alpha/omega)
-    !     P = R + beta*(P-omega*V)
-    !     call mat_CRS%operate(P,V)
-    !     alpha = rho1/dot_product(R0,V)
-    !     R = R - alpha*V
-    !     call mat_CRS%operate(R,T)
-    !     omega = dot_product(T,R) / dot_product(T,T)
-    !     X = X + alpha*P + omega*R
-    !     R = R - omega*T
-    !     rnorm = dot_product(R,R)
-    !     write(unit=*, fmt=*) "|r|/|y| =", sqrt(rnorm/ynorm)
-    !     if (sqrt(rnorm/ynorm) < err) then
-    !       Write(*,*) "Exit loop"
-    !       Write(*,*) "Its:", iter
-    !       exit                          ! exit this loop
-    !     end if
-    !     rho0 = rho1
-    ! end do
-    ! deallocate( P, R, R0, T, V )
-    
-    ! Write(*,*) "Final Flux:"
-    ! phi = X 
-    ! Write(*,*) phi
 
   End subroutine BCG_Solve
 
