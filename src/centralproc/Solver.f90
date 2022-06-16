@@ -27,7 +27,7 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
     Do ii = 2, N_Size
       beta = mat_CRS%get(ii,ii-1)/mat_CRS%get(ii-1,ii-1)
       alpha = mat_CRS%get(ii,ii) - beta*mat_CRS%get(ii-1,ii)
-      call mat_CRS%insert(ii,ii,alpha)
+      call mat_CRS%set(ii,ii,alpha)
       Vecb(ii)= Vecb(ii) - beta*Vecb(ii-1)
     EndDo
     phi(N_Size) = Vecb(N_Size)/mat_CRS%get(N_Size,N_Size)

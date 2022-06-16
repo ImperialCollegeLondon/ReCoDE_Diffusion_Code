@@ -48,7 +48,7 @@ Subroutine Create(this,Problem)
     Allocate(this%Vecb(N_Nodes))
 
 # ifndef PETSC 
-    call this%CRS%construct(N_Nodes)
+    call this%CRS%construct(N_Nodes, N_Nodes)
 # endif
 
 # ifdef PETSC 
@@ -126,10 +126,10 @@ Subroutine Solve(this,Material,Problem,Vecx)
             b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
             c = -(.5_dp)*((Dp1_Value+D_Value)/(Delta_Value**2))
             If (NodeID /= 1) Then
-                call this%CRS%insert(NodeID,NodeID-1,a)
+                call this%CRS%set(NodeID,NodeID-1,a)
             EndIf
-            call this%CRS%insert(NodeID,NodeID,b)
-            call this%CRS%insert(NodeID,NodeID+1,c)
+            call this%CRS%set(NodeID,NodeID,b)
+            call this%CRS%set(NodeID,NodeID+1,c)
             this%Vecb(NodeID) = Source_Value
 
         EndDo 
@@ -145,20 +145,20 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
     a = -(.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
     b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
-    call this%CRS%insert(NodeID,NodeID-1,a)
-    call this%CRS%insert(NodeID,NodeID,b)
+    call this%CRS%set(NodeID,NodeID-1,a)
+    call this%CRS%set(NodeID,NodeID,b)
     this%Vecb(NodeID) = Source_Value
 
     !!Boundary Conditions
     If (Boundary_Conditions(1) == 0) Then
-        call this%CRS%insert(1,1,(1E2_dp*this%CRS%get(1,1)))
+        call this%CRS%set(1,1,(1E2_dp*this%CRS%get(1,1)))
     ElseIf (Boundary_Conditions(1) == 1) Then 
-        call this%CRS%insert(1,2,(2._dp*this%CRS%get(1,2)))
+        call this%CRS%set(1,2,(2._dp*this%CRS%get(1,2)))
     EndIf
     If (Boundary_Conditions(2) == 0) Then
-        call this%CRS%insert(NodeID,NodeID,(1E2_dp*this%CRS%get(NodeID,NodeID)))
+        call this%CRS%set(NodeID,NodeID,(1E2_dp*this%CRS%get(NodeID,NodeID)))
     ElseIf (Boundary_Conditions(2) == 1) Then 
-        call this%CRS%insert(NodeID,NodeID-1,(2._dp*this%CRS%get(NodeID,NodeID-1)))
+        call this%CRS%set(NodeID,NodeID-1,(2._dp*this%CRS%get(NodeID,NodeID-1)))
     EndIf
 
     !!Solve the problem
