@@ -1,21 +1,19 @@
 module CRS_Mod
 
-  use Constants_Mod
+  use Matrix_Base
 
   implicit none
 
-  type  ::  t_crs
+  type, extends(t_matrix_base)  ::  t_crs
     integer, dimension(:), allocatable                        ::  col_index !The column of each non-zero entry into the matrix
     integer, dimension(:), allocatable                        ::  row_start !The index of the first entry in each row in the values array
     real(kind=dp), dimension(:), allocatable                  ::  values !The values of each non-zero entry in the matrix
-    integer                                                   ::  n_row, n_column !The number of rows and columns in the matrix
     
     contains
       procedure ::  construct => construct_crs
       procedure ::  destroy => destroy_crs
       procedure ::  get => get_crs
       procedure ::  set => set_crs
-      procedure ::  print_matrix => print_crs
       procedure ::  operate => operate_crs
       procedure ::  check_explicit => check_explicit_crs
       procedure ::  remove_zeroes => remove_zeroes_crs
@@ -28,8 +26,8 @@ module CRS_Mod
   contains
 
     subroutine construct_crs(this, n_row, n_column)
-      class(t_crs), intent(inout)          ::  this
-      integer, intent(in)                       ::  n_row, n_column
+      class(t_crs), intent(inout) ::  this
+      integer, intent(in)         ::  n_row, n_column
 
       call this%destroy()
 
@@ -99,15 +97,15 @@ module CRS_Mod
         class(t_crs), intent(inout) ::  this  
         integer, intent(in)         ::  row, column
         real(kind=dp), intent(in)   ::  value
-        integer                     ::  ii, jj, row_last_index, old_array_size
+        integer                     ::  ii, row_last_index, old_array_size
 
         !First, find the index of the last entry in the row of the value to be added
         row_last_index=this%find_last_index_of_row(row)
         !The case where the location has an explicit value already
         if (this%check_explicit(row, column))then
-            do jj=this%row_start(row), row_last_index !Loop over the entire row
-                if (column==this%col_index(jj))then !Replace the value with the new value once one of the matching column has been found
-                    this%values(jj)=value
+            do ii=this%row_start(row), row_last_index !Loop over the entire row
+                if (column==this%col_index(ii))then !Replace the value with the new value once one of the matching column has been found
+                    this%values(ii)=value
                 end if
             end do
         else !The case where the location does not have an explicit value
@@ -115,15 +113,15 @@ module CRS_Mod
             old_array_size = size(this%values)
             call this%change_array_sizes(old_array_size + 1) 
 
-            do jj=this%row_start(row), row_last_index !Loop over all entire row
-                if (column<this%col_index(jj))then!Found an entry which is to the right of the one to insert
+            do ii=this%row_start(row), row_last_index !Loop over all entire row
+                if (column<this%col_index(ii))then!Found an entry which is to the right of the one to insert
                     !Shift existing values cto the right in the arrays
                     this%row_start(row+1:)=this%row_start(row+1:)+1
-                    this%col_index(jj+1:)=this%col_index(jj:old_array_size)
-                    this%values(jj+1:)=this%values(jj:old_array_size)
+                    this%col_index(ii+1:)=this%col_index(ii:old_array_size)
+                    this%values(ii+1:)=this%values(ii:old_array_size)
                     !Set the new values
-                    this%col_index(jj)=column
-                    this%values(jj)=value
+                    this%col_index(ii)=column
+                    this%values(ii)=value
                     return
                 end if
             end do
@@ -139,25 +137,6 @@ module CRS_Mod
         call this%remove_zeroes()
 
     end subroutine set_crs
-
-    !===============================================
-    !===============================================
-
-    subroutine print_crs(this)
-        class(t_crs), intent(in)             ::  this
-        real(kind=dp), dimension(:), allocatable  ::  row_values
-        integer                                   ::  ii, jj
-  
-        allocate(row_values(this%n_column))
-  
-        do ii=1, this%n_row
-          do jj=1, this%n_column
-            row_values(jj)=this%get(ii,jj)
-          end do
-          print*, real(row_values)
-        end do
-  
-      end subroutine print_crs
 
     !===============================================
     !===============================================
@@ -322,15 +301,18 @@ module CRS_Mod
     !===============================================
 
     function find_last_index_of_row_crs(this, row)result(row_last_index)
-      class(t_crs), intent(in)     ::  this
-      integer, intent(in)               ::  row
-      integer                           ::  row_last_index, ii
+      class(t_crs), intent(in)  ::  this
+      integer, intent(in)       ::  row
+      integer                   ::  row_last_index, ii
+
+      !Initialise with a value which will cause an error if no value is returned for some reason
+      row_last_index = -1
 
       if (row==this%n_row) then!This is the last row
         do ii=size(this%values), 1, -1
           if (this%col_index(ii)>0)then
             row_last_index=ii
-            exit
+            return
           end if
         end do
       else if (this%row_start(row).ne.this%row_start(row+1)) then !This is not the last row and is not all zeroes

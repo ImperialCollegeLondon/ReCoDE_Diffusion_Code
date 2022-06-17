@@ -49,6 +49,7 @@ OBJS= stdlib/Constants.o \
  inoutproc/Materials.o \
  inoutproc/Problem.o \
  inoutproc/Output.o \
+ centralproc/Matrix_Base.o \
  centralproc/CRS.o \
  centralproc/Solver.o \
  centralproc/MatGen.o \
