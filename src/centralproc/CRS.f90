@@ -15,14 +15,13 @@ module CRS_Mod
       procedure ::  destroy => destroy_crs
       procedure ::  get => get_crs
       procedure ::  set => set_crs
+      procedure ::  print_matrix => print_crs
+      procedure ::  operate => operate_crs
       procedure ::  check_explicit => check_explicit_crs
       procedure ::  remove_zeroes => remove_zeroes_crs
       procedure ::  find_row_by_values_index => find_row_by_values_index_crs
       procedure ::  change_array_sizes => change_array_sizes_crs
-      procedure ::  print_matrix => print_t_crs
       procedure ::  find_last_index_of_row => find_last_index_of_row_crs
-      procedure ::  add_to_value => add_to_value_crs
-      procedure ::  operate => operate_crs
 
   end type t_crs
 
@@ -144,14 +143,53 @@ module CRS_Mod
     !===============================================
     !===============================================
 
-    subroutine add_to_value_crs(this, row, column, value_to_add)
-      class(t_crs), intent(inout)  ::  this
-      integer, intent(in)               ::  row, column
-      real(kind=dp), intent(in)         ::  value_to_add
+    subroutine print_crs(this)
+        class(t_crs), intent(in)             ::  this
+        real(kind=dp), dimension(:), allocatable  ::  row_values
+        integer                                   ::  ii, jj
+  
+        allocate(row_values(this%n_column))
+  
+        do ii=1, this%n_row
+          do jj=1, this%n_column
+            row_values(jj)=this%get(ii,jj)
+          end do
+          print*, real(row_values)
+        end do
+  
+      end subroutine print_crs
 
-      call this%set(row, column, this%get(row, column)+value_to_add)
+    !===============================================
+    !===============================================
 
-    end subroutine add_to_value_crs
+      subroutine operate_crs(this, vector_in, vector_out)
+        class(t_crs), intent(in)                      ::  this !The matrix to multiply the vector by
+        real(kind=dp), dimension(:), intent(in)       ::  vector_in  !The vector to be multiplied
+        real(kind=dp), dimension(:), intent(inout)    ::  vector_out  !The vector which results from the multiplication
+        integer                                       ::  ii  !Generic counting variable
+        integer                                       ::  current_row
+  
+        !First, check if the vector to be multiplied has the same number of rows as the matrix
+        if (size(vector_in).ne.this%n_column) then
+          write(*, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
+          stop
+        end if
+  
+        !Set the output to zero start with, then add up all contributions
+        vector_out=0.0_dp
+        current_row=1
+        do ii=1, size(this%values)
+          if (current_row<this%n_row) then
+            do while (ii>=this%row_start(current_row+1))
+              current_row=current_row+1
+              if (current_row==this%n_row) exit
+            end do
+          end if
+  
+          vector_out(current_row)=vector_out(current_row)+this%values(ii)*vector_in(this%col_index(ii))
+        end do
+  
+      end subroutine operate_crs
 
     !===============================================
     !===============================================
@@ -201,7 +239,7 @@ module CRS_Mod
 
       explicit=.false.
 
-    end function
+    end function check_explicit_crs
 
     !===============================================
     !===============================================
@@ -283,25 +321,6 @@ module CRS_Mod
     !===============================================
     !===============================================
 
-    subroutine print_t_crs(this)
-      class(t_crs), intent(in)             ::  this
-      real(kind=dp), dimension(:), allocatable  ::  row_values
-      integer                                   ::  ii, jj
-
-      allocate(row_values(this%n_column))
-
-      do ii=1, this%n_row
-        do jj=1, this%n_column
-          row_values(jj)=this%get(ii,jj)
-        end do
-        print*, real(row_values)
-      end do
-
-    end subroutine print_t_crs
-
-    !===============================================
-    !===============================================
-
     function find_last_index_of_row_crs(this, row)result(row_last_index)
       class(t_crs), intent(in)     ::  this
       integer, intent(in)               ::  row
@@ -322,37 +341,5 @@ module CRS_Mod
           row_last_index=this%row_start(row+1)
       end if
     end function find_last_index_of_row_crs
-
-    !===============================================
-    !===============================================
-
-    subroutine operate_crs(this, vector_in, vector_out)
-      class(t_crs), intent(in)                      ::  this !The matrix to multiply the vector by
-      real(kind=dp), dimension(:), intent(in)       ::  vector_in  !The vector to be multiplied
-      real(kind=dp), dimension(:), intent(inout)    ::  vector_out  !The vector which results from the multiplication
-      integer                                       ::  ii  !Generic counting variable
-      integer                                       ::  current_row
-
-      !First, check if the vector to be multiplied has the same number of rows as the matrix
-      if (size(vector_in).ne.this%n_column) then
-        write(*, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
-        stop
-      end if
-
-      !Set the output to zero start with, then add up all contributions
-      vector_out=0.0_dp
-      current_row=1
-      do ii=1, size(this%values)
-        if (current_row<this%n_row) then
-          do while (ii>=this%row_start(current_row+1))
-            current_row=current_row+1
-            if (current_row==this%n_row) exit
-          end do
-        end if
-
-        vector_out(current_row)=vector_out(current_row)+this%values(ii)*vector_in(this%col_index(ii))
-      end do
-
-    end subroutine operate_crs
 
 end module CRS_Mod
