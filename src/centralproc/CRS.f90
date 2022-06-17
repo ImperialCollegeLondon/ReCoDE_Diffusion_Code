@@ -15,7 +15,6 @@ module CRS_Mod
       procedure ::  destroy => destroy_crs
       procedure ::  get => get_crs
       procedure ::  set => set_crs
-      procedure ::  set_values => set_values_crs
       procedure ::  check_explicit => check_explicit_crs
       procedure ::  remove_zeroes => remove_zeroes_crs
       procedure ::  find_row_by_values_index => find_row_by_values_index_crs
@@ -98,97 +97,49 @@ module CRS_Mod
     !===============================================
 
     subroutine set_crs(this, row, column, value)
-      class(t_crs), intent(inout)        ::  this  
-      integer, intent(in)                     ::  row, column
-      real(kind=dp), intent(in)               ::  value
-      integer, dimension(1)                   ::  rows, columns
-      real(kind=dp), dimension(1)             ::  values
+        class(t_crs), intent(inout) ::  this  
+        integer, intent(in)         ::  row, column
+        real(kind=dp), intent(in)   ::  value
+        integer                     ::  ii, jj, row_last_index, old_array_size
 
-      rows=row
-      columns=column
-      values=value
+        !First, find the index of the last entry in the row of the value to be added
+        row_last_index=this%find_last_index_of_row(row)
+        !The case where the location has an explicit value already
+        if (this%check_explicit(row, column))then
+            do jj=this%row_start(row), row_last_index !Loop over the entire row
+                if (column==this%col_index(jj))then !Replace the value with the new value once one of the matching column has been found
+                    this%values(jj)=value
+                end if
+            end do
+        else !The case where the location does not have an explicit value
+            !Increase the size of arrays to accommodate the new value
+            old_array_size = size(this%values)
+            call this%change_array_sizes(old_array_size + 1) 
 
-      call this%set_values(rows, columns, values)
+            do jj=this%row_start(row), row_last_index !Loop over all entire row
+                if (column<this%col_index(jj))then!Found an entry which is to the right of the one to insert
+                    !Shift existing values cto the right in the arrays
+                    this%row_start(row+1:)=this%row_start(row+1:)+1
+                    this%col_index(jj+1:)=this%col_index(jj:old_array_size)
+                    this%values(jj+1:)=this%values(jj:old_array_size)
+                    !Set the new values
+                    this%col_index(jj)=column
+                    this%values(jj)=value
+                    return
+                end if
+            end do
+            !Did not find a current entry to the right of the one to be inserted so insert it after the last one of the current row
+            this%row_start(row+1:)=this%row_start(row+1:)+1
+            this%col_index(row_last_index+2:old_array_size+1)=this%col_index(row_last_index+1:old_array_size)
+            this%values(row_last_index+2:old_array_size+1)=this%values(row_last_index+1:old_array_size)
+            this%col_index(row_last_index+1)=column
+            this%values(row_last_index+1)=value
+        end if
+
+        !Finally, remove any zeroes in the matrix
+        call this%remove_zeroes()
 
     end subroutine set_crs
-
-    !===============================================
-    !===============================================
-
-    subroutine set_values_crs(this, rows, columns, values)
-      class(t_crs), intent(inout)          ::  this
-      integer, dimension(:), intent(in)         ::  columns, rows
-      real(kind=dp), dimension(:), intent(in)   ::  values
-      integer                                   ::  n_new, ii, jj, row_last_index, n_values_now
-
-      !Check there is exactly one row value and one column value for each value to be inserted
-      if (size(rows).ne.size(columns) .or. size(rows).ne.size(values))then
-        write(*,'(A, 3(I0, A))') "Error: set_values_crs has been passed a columns array with ", size(columns), " columns, ", size(rows), " rows and ", size(values), " values. These numbers do not match. Terminating."
-        stop
-      end if
-
-      !Check to see if any positions are duplicated
-      do ii=1, size(values)
-        do jj=ii+1, size(values)
-          if (rows(ii)==rows(jj) .and. columns(ii)==columns(jj))then
-            write(*, '(4(A, I0), A)') "Error: set_values_crs was passed a set of values to insert and entries ", ii, " and ", jj, " both assign values to (", rows(ii), ", ", columns(ii), "). Terminating."
-            stop
-          end if
-        end do
-      end do      
-
-      !Find out how many new locations are to be filled
-      n_new=0
-      do ii=1, size(values)
-        if (.not.this%check_explicit(rows(ii), columns(ii)))then
-          n_new=n_new+1
-        end if
-      end do
-
-      n_values_now=size(this%values)
-
-      if (n_new.ne.0) then
-        !Extend the values, row_start and col_index arrays to house the new entries
-        call this%change_array_sizes(n_values_now+n_new)      
-      end if
-
-      !Now loop through the values to be set and modify or add exisiting values as appropriate
-      values_loop: do ii=1, size(values)
-        !First, find the index of the last entry in the row of the value to be added
-        row_last_index=this%find_last_index_of_row(rows(ii))
-        !The case where the location has an explicit value already
-        if (this%check_explicit(rows(ii), columns(ii)))then
-          do jj=this%row_start(rows(ii)), row_last_index !Loop over the entire row
-            if (columns(ii)==this%col_index(jj))then !Replace the value with the new value once one of the matching column has been found
-              this%values(jj)=values(ii)
-            end if
-          end do
-        else !The case where the location does not have an explicit value
-          do jj=this%row_start(rows(ii)), row_last_index !Loop over all entire row
-            if (columns(ii)<this%col_index(jj))then!Found an entry which is to the right of the one to insert
-              this%row_start(rows(ii)+1:)=this%row_start(rows(ii)+1:)+1
-              this%col_index(jj+1:n_values_now+1)=this%col_index(jj:n_values_now)
-              this%values(jj+1:n_values_now+1)=this%values(jj:n_values_now)
-              this%col_index(jj)=columns(ii)
-              this%values(jj)=values(ii)
-              n_values_now=n_values_now+1
-              cycle values_loop
-            end if
-          end do
-            !Did not find a current entry to the right of the one to be inserted so insert it after the last one of the current row
-            this%row_start(rows(ii)+1:)=this%row_start(rows(ii)+1:)+1
-            this%col_index(row_last_index+2:n_values_now+1)=this%col_index(row_last_index+1:n_values_now)
-            this%values(row_last_index+2:n_values_now+1)=this%values(row_last_index+1:n_values_now)
-            this%col_index(row_last_index+1)=columns(ii)
-            this%values(row_last_index+1)=values(ii)
-            n_values_now=n_values_now+1
-        end if
-      end do values_loop
-
-      !Finally, remove any zeroes in the matrix
-      call this%remove_zeroes()
-
-    end subroutine set_values_crs
 
     !===============================================
     !===============================================
