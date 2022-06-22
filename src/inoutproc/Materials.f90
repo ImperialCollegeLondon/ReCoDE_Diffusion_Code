@@ -7,9 +7,6 @@ Module Materials_Mod
 
   type, public :: t_material
         private
-        !!Currently only storing the absorption and source terms
-        !!For a multigroup code these would be allocatable arrays
-        !!There would also be an associated allocatable scattering matrix
         Real(kind=dp) :: Sig_a, S
         Character(len=20) :: Name
     contains
