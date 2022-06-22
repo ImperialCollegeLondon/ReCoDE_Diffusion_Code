@@ -39,7 +39,7 @@ This explanation can now be further expanded in terms of complexity, where the s
 This can also be represented through some blocks of pseudocode
 
 First read through the input file
-```{fortran, eval = FALSE}
+```fortran
 Open( Input File)
 Read Problem Data
 Read Material Data
@@ -50,7 +50,7 @@ Set Material Data
 ```
 
 Then generate the equations and solve for the flux
-```{fortran, eval = FALSE}
+```fortran
 Get Problem Data
 Get Material Data
 
@@ -75,7 +75,7 @@ EndIf
 ```
 
 Finally generate the output files
-```{fortran, eval = FALSE}
+```fortran
 Open( Output File)
 Do 1, Problem Size
   Write( Output File) Position, Flux
@@ -88,12 +88,12 @@ Close( Output File
 # User Guide
   ## Compiling the Code
   As fortran is a compiled language, the code must first be compiled before it can be executed. To do so, navigate to the **src** directory within the code and enter the commands:
-  ```
+  ```bash
   make clean
   make
   ```
   This will execute the makefile contained within the same directory, converting the fortran code to an optimised form that can be read by your computer. This then generates an executable named **diffusion**. Once this has been done, the code can be executed from the parent directory using the command:
-  ```
+  ```bash
   ./diffusion
   ```
   This command tells the executable to run and will generate relevant output files containing the solution to the problem. 
@@ -141,12 +141,12 @@ Close( Output File
   ![FluxProfile](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/FluxProfile.png)
 
   GNUPlot was chosen here as the application is very simple and the program itself is very easy to install. On Linux, you only need the commands:
-  ```
+  ```bash
   sudo apt update
   sudo apt install gnuplot
   ```
   For installation on Windows, you will need to download the software from http://www.gnuplot.info/download.html. The GNUPlot script used to generate the plot is named **fluxplot** and can be found in the home directory of the project. This can be run with the command:
-  ```
+  ```bash
   gnuplot -p fluxplot
   ```
   
@@ -158,23 +158,23 @@ Close( Output File
   https://petsc.org/release/download/
 
   - Place the downloaded PETSc folder into the directory of your choice and navigate inside it through a terminal. Configure the code by running:
-  ```
+  ```bash
   ./configure --download-mpich --download-fblaslapack=1
   ```
   - Check that the installation was successful by running:
-  ```
+  ```bash
   make all check
   ```
 
   ## Compiling with PETSc
 
   If you have installed PETSc (see [installation instructions](##Installing-PETSc)), the code can also be compiled to use it instead of the custom storage and solvers. To do so, navigate to the **src** directory within the code and enter the commands:
-  ```
+  ```bash
   make clean
   make petsc
   ```
   This will execute the makefile contained within the same directory with the petsc options, converting the fortran code to an optimised form that utilises the PETSc library. This then generates an executable named **diffusion_petsc**. Once this has been done, the code can be executed from the parent directory using the command:
-  ```
+  ```bash
   ./diffusion_petsc
   ```
 
@@ -223,9 +223,11 @@ Current required steps for use with PETSc:
 - Install PETSc
 - Set up environment variables such that PETSC_DIR and PETSC_BUILDS_DIR point to your PETSc and PETSc builds directories respectively, e.g.:
 
+```bash
 export PETSC_DIR="/home/jack/petsc-3.16.0"
 
 export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
+```
 
 - compile with 'make petsc' for optimised version of code or 'make petsc debug' for unoptimised run with more descriptive outputs
 
