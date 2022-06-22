@@ -34,7 +34,7 @@ contains
     Function GetMaterialName(this) Result(Res)
         class(t_material) :: this
         Character(len=20) :: Res
-        !!Get the name of the material (generally for debugging purposes)
+        !!Get the name of the material
         Res = this%name
     End Function GetMaterialName
 
