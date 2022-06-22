@@ -23,7 +23,7 @@ Module MatGen_Mod
         Integer :: N_Regions
         Real(kind=dp), allocatable, dimension(:) :: Vecb
 # ifndef PETSC
-        type(t_CRS) :: CRS
+        class(t_matrix_base), pointer :: matrix
 # endif
 # ifdef PETSC
         type(pMat) :: pMatA
@@ -48,7 +48,10 @@ Subroutine Create(this,Problem)
     Allocate(this%Vecb(N_Nodes))
 
 # ifndef PETSC 
-    call this%CRS%construct(N_Nodes, N_Nodes)
+    !! Allocate the matrix to be a CRS matrix
+    allocate(t_crs :: this%matrix)
+    !! Construct the matrix
+    call this%matrix%construct(N_Nodes, N_Nodes)
 # endif
 
 # ifdef PETSC 
@@ -98,7 +101,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
     !!Non-PETSc Implementation
 # ifndef PETSC 
-    !!Fill CRS Matrices with problem information
+    !!Fill matrix with problem information
     !!Loop over each region within the geometry
     NodeID = 0
     Do ii = 1, N_Regions
@@ -126,10 +129,10 @@ Subroutine Solve(this,Material,Problem,Vecx)
             b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
             c = -(.5_dp)*((Dp1_Value+D_Value)/(Delta_Value**2))
             If (NodeID /= 1) Then
-                call this%CRS%set(NodeID,NodeID-1,a)
+                call this%matrix%set(NodeID,NodeID-1,a)
             EndIf
-            call this%CRS%set(NodeID,NodeID,b)
-            call this%CRS%set(NodeID,NodeID+1,c)
+            call this%matrix%set(NodeID,NodeID,b)
+            call this%matrix%set(NodeID,NodeID+1,c)
             this%Vecb(NodeID) = Source_Value
 
         EndDo 
@@ -145,26 +148,26 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
     a = -(.5_dp)*((D_Value+Dm1_Value)/(Delta_Value**2))
     b = Sig_a_Value + (.5_dp*((Dp1_Value+(2._dp*D_Value)+Dm1_Value)/(Delta_Value**2)))
-    call this%CRS%set(NodeID,NodeID-1,a)
-    call this%CRS%set(NodeID,NodeID,b)
+    call this%matrix%set(NodeID,NodeID-1,a)
+    call this%matrix%set(NodeID,NodeID,b)
     this%Vecb(NodeID) = Source_Value
 
     !!Boundary Conditions
     If (Boundary_Conditions(1) == 0) Then
-        call this%CRS%set(1,1,(1E2_dp*this%CRS%get(1,1)))
+        call this%matrix%set(1,1,(1E2_dp*this%matrix%get(1,1)))
     ElseIf (Boundary_Conditions(1) == 1) Then 
-        call this%CRS%set(1,2,(2._dp*this%CRS%get(1,2)))
+        call this%matrix%set(1,2,(2._dp*this%matrix%get(1,2)))
     EndIf
     If (Boundary_Conditions(2) == 0) Then
-        call this%CRS%set(NodeID,NodeID,(1E2_dp*this%CRS%get(NodeID,NodeID)))
+        call this%matrix%set(NodeID,NodeID,(1E2_dp*this%matrix%get(NodeID,NodeID)))
     ElseIf (Boundary_Conditions(2) == 1) Then 
-        call this%CRS%set(NodeID,NodeID-1,(2._dp*this%CRS%get(NodeID,NodeID-1)))
+        call this%matrix%set(NodeID,NodeID-1,(2._dp*this%matrix%get(NodeID,NodeID-1)))
     EndIf
 
     !!Solve the problem
-    call ThomAlg_Solve(this%CRS,this%Vecb,N_Nodes,Vecx)
+    call ThomAlg_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
     !!CG Alg Version
-    ! call CG_Solve(this%CRS,this%Vecb,N_Nodes,Vecx)
+    ! call CG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
 # endif
 
 
@@ -270,7 +273,7 @@ Subroutine Destroy(this,Flux)
     If(Allocated(this%Vecb)) Deallocate(this%Vecb)
 
 # ifndef PETSC 
-    call this%CRS%destroy()
+    call this%matrix%destroy()
     
 # endif
 

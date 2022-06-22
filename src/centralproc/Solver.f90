@@ -17,7 +17,7 @@ contains
 
 
 Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
-    type(t_CRS) :: mat_CRS
+    Class(t_matrix_base), pointer :: mat_CRS
     Integer :: ii, N_Size
     Real(kind=dp) :: alpha, beta
     Real(kind=dp), dimension(:) :: Vecb
@@ -39,7 +39,7 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
 
 
   Subroutine CG_Solve(mat_CRS, Vecb, N_Size, phi)
-    type(t_CRS) :: mat_CRS
+    Class(t_matrix_base), pointer :: mat_CRS
     Integer :: N_Size
     Real(kind=dp) :: alpha
     Real(kind=dp), dimension(:) :: Vecb
