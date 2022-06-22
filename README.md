@@ -167,21 +167,121 @@ Close( Output File
   A user guid for paraview can be found at: https://docs.paraview.org/en/latest/
 
 # Features of the Code
-## Makefile
 
-- Discuss Makefile and compilation options
+## Object oriented Programming
 
-![MakefileImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/MakefileImg.png)
+As discussed previously in the [Structure of the Code](#structure-of-the-code) section, this code utilises Object Oriented Programming. An example of such an abject orented structure can be seen in the code snippet below. This shows some of the **Materials** module, which handles the storage of data pertaining the material properties of the problem.
 
-- Compiler directives
+![OOPImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/OOP.png)
 
-![CompilerDirImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/CompilerDirImg.png)
+We first define the name of the module such that it can be used by other modules in our code.
 
-## Input Module
+```Fortran
+Module Materials_Mod
+```
+We then tell our module to make use of the **Constants** module.
 
-- Reading data from input files
+```Fortran
+use Constants_Mod
+```
+This method of declaring the name of this specific module and the modules which this code can be seen throughout our various pieces of code. We would like to store some data within this module such that it can be called forth at a later date. As such, we set up a public type which contains our chosen private data.
 
-![InputImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/InputImg.png)
+```Fortran
+type, public :: t_material
+        private
+        Real(kind=dp) :: Sig_a, S
+        Character(len=20) :: Name
+```
+We can then also choose what public procedures this module should utilise, which other pieces of code can then utilise. The most common routines you will often utilise in a code are 'gets' and 'sets' which pull stored data and set stored data respectively. In fortran you can also utilise pointers to point to certain pieces of memory. A nice example of this can be seen in the code block below where **SetName** points to **SetMaterialName** allowing us to use quick subroutine names when repeatedly calling a routine, but verbose names within the actual module.
+
+```Fortran
+      procedure, public :: SetName => SetMaterialName
+      procedure, public :: GetName => GetMaterialName
+      procedure, public :: SetProps => SetMaterialProperties
+      procedure, public :: GetSig_a
+      procedure, public :: GetS
+end type
+```
+
+
+
+
+
+
+
+## Makefiles
+
+Makefiles are particularly useful in a code that utilises OOP as it allows for easy compilation of the required files and handles the order of dependencies. The code snippet below comes from the makefile used in the project and shows how an ordered list of objects is used when compiling the code. This is written such that the compiler will work through the files in a way that each dependency is compiled before the modules that utilise it, ending with the main.
+
+```Makefile
+OBJS= stdlib/Constants.o \
+ inoutproc/Materials.o \
+ inoutproc/Problem.o \
+ inoutproc/Output.o \
+ centralproc/Matrix_Base.o \
+ centralproc/CRS.o \
+ centralproc/Solver.o \
+ centralproc/MatGen.o \
+ main.o \
+```
+
+The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when 'make debug' is called, such that it uses all common flags set by **$(FC_FLAGS_COMMON)** in addition to the compiler flag 'DEBUG'.
+```Makefile
+debug:   FC_FLAGS = $(FC_FLAGS_COMMON) -DDEBUG
+```
+This flag can then be checked with C pre-processor language to allow for differnet parts of the code to be compiled dependent on the flags incorporated. In the below example, a more detailed output is given by the **Solve** module when the code is compiled with 'DEBUG'.
+```C
+# ifdef DEBUG 
+  Write(*,*) "---CG Convergence Succeeded---"
+  Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
+  Write(*,'(g0)',advance='no') BCG_Iterations
+  Write(*,'(g0)',advance='no') "  with residual:"
+  Write(*,'(E14.6)') rho1
+  Write(*,*) "-------------------------------"
+# endif
+```
+
+## Reading input data from file
+
+Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the **Problem** module, where an input file has been opened and the desired solver type read in.
+
+![InputImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/ReadInput.png)
+
+
+When reading an input file, fortran needs an Integer ID, Filename and Status. The ID allows the file to be referred to easily in future, and is good practice to set through a parameter for readability. The Filename simply matches the name of the file, and the status describes the state of the file, in this case it is an 'Old' file which already exists in the directory.
+```Fortran
+Integer, parameter :: InputFile = 101
+Open(InputFile, File='input.in', Status='Old')
+```
+
+We then wish to read through our file until we reach the name of the descired solver. To do so, we loop through our file until we reach the 'Solver:' string. We now know that the next line will contain the name of our solver, and hence this can be read in.
+```Fortran
+String_Read = ''
+Do While (String_Read .NE. 'Solver:')
+  Read(InputFile,*) String_Read
+EndDo
+```
+
+We finally need to check what type of solver has been specified and store this information. Here we have an If statement which will loop over the known solver types.
+
+```Fortran
+Read(InputFile,*) String_Read
+If (String_Read == 'Thomas') Then 
+  this%SolverID = 1
+ElseIf (String_Read == 'BCG') Then 
+  this%SolverID = 2
+ElseIf (String_Read == 'CG') Then 
+  this%SolverID = 3
+Else 
+  Write(*,*) "ERROR: Unrecognised Solver Type"
+EndIf
+```
+
+Finally we should close this file, achieved through the close command and the associated ID.
+
+```Fortran
+Close(InputFile)
+```
 
 - Storing data within a module
 
@@ -197,11 +297,6 @@ Close( Output File
 
 ![VTKImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/VTKImg.png)
 
-## Materials Module
-
-- Clear example of OOP (simple gets and sets)
-
-![OOPImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/OOPImg.png)
 
 ## MatGen Module
 
@@ -444,4 +539,3 @@ This equation effectively relates the rate of change of neutrons within a system
 $$ -\frac{d}{d x} D(x) \frac{d \phi(x)}{d x}+\Sigma_{a}(x) \phi(x)=\frac{1}{\lambda} \nu \Sigma_{f}(x) \phi(x) $$
 
 Neutron diffusion codes will principally solve this equation to calculate the neutron flux over a specified geometry. Problems involving a fission neutron source can be solved for the eigenvalue $\lambda$ of the system, utilising a fission source normalisation.
-
