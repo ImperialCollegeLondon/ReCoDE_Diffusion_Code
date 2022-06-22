@@ -18,7 +18,7 @@ contains
 
 
 Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
-    type(t_CRS) :: mat_CRS
+    Class(t_matrix_base), pointer :: mat_CRS
     Integer :: ii, N_Size
     Real(kind=dp) :: alpha, beta
     Real(kind=dp), dimension(:) :: Vecb
@@ -28,7 +28,7 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
     Do ii = 2, N_Size
       beta = mat_CRS%get(ii,ii-1)/mat_CRS%get(ii-1,ii-1)
       alpha = mat_CRS%get(ii,ii) - beta*mat_CRS%get(ii-1,ii)
-      call mat_CRS%insert(ii,ii,alpha)
+      call mat_CRS%set(ii,ii,alpha)
       Vecb(ii)= Vecb(ii) - beta*Vecb(ii-1)
     EndDo
     phi(N_Size) = Vecb(N_Size)/mat_CRS%get(N_Size,N_Size)
@@ -40,7 +40,7 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
 
 
   Subroutine CG_Solve(mat_CRS, Vecb, N_Size, phi)
-    type(t_CRS) :: mat_CRS
+    Class(t_matrix_base), pointer :: mat_CRS
     Integer :: N_Size, CG_Iterations
     Real(kind=dp) :: alpha, rsold, rsnew
     Real(kind=dp), dimension(N_Size) :: phi, p, r, Ap, Ax
@@ -92,7 +92,7 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
 
 
   Subroutine BCG_Solve(mat_CRS, Vecb, N_Size, phi)
-    type(t_CRS) :: mat_CRS, M
+    Class(t_matrix_base), pointer :: mat_CRS, M
     Integer :: N_Size
     Integer :: ii, BCG_Iterations
     Real(kind=dp) :: alpha, beta, omega, rho1, rho2
@@ -101,9 +101,10 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
     Logical :: BCG_Conv=.False.
 
     !!Inverse Jacobi Preconditioner Matrix M
-    call M%construct(N_Size)
+    allocate(t_crs :: M)
+    call M%construct(N_Size,N_Size)
     Do ii = 1, N_Size 
-      call M%insert(ii,ii,(1._dp/mat_CRS%get(ii,ii)))
+      call M%set(ii,ii,(1._dp/mat_CRS%get(ii,ii)))
     EndDo
 
     !!Biconjugate Gradient Algorithm
@@ -136,6 +137,8 @@ Subroutine ThomAlg_Solve(mat_CRS, Vecb, N_Size, phi)
       r = s - omega * t 
       rho2 = rho1
     EndDo
+
+    call M%Destroy()
 
     !!Exit if convergence failed
     If (.Not. BCG_Conv) Then
