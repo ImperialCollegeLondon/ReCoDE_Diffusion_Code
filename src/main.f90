@@ -30,6 +30,7 @@ Program Main
   Write(*,*) ">Input Read"
 
   call MatGen%Create(Problem)
+  Write(*,*) ">Matrices Created"
 
   call MatGen%Solve(Material,Problem,Flux)
   Write(*,*) ">Problem Assembled"
