@@ -92,7 +92,7 @@ Close( Output File
   make clean
   make
   ```
-  This will execute the makefile contained within the same directory, converting the fortran code to an optimised form that can be read by your computer. This then generates an executable named **diffusion**. Once this has been done, the code can be executed from the parent directory using the command:
+  The **make clean** command first leans the directory of any module files or executables created by any past makes. This should generally be done before you compile the code with a new make option. The **make** command will execute the makefile contained within the same directory, converting the fortran code to an optimised form that can be read by your computer. This then generates an executable named **diffusion**. Once this has been done, the code can be executed from the parent directory using the command:
   ```bash
   ./diffusion
   ```
@@ -103,6 +103,9 @@ Close( Output File
   The code is designed such that the user can easily change the problem which the code is attempting to solve. The code uses the input file **Input.txt** to read details about the problem, such as the positions of boundaries or materials in the problem. An example of such an input can be seen below:
   ```
   ------------------------------------------
+  Solver: - Thomas, BCG or CG (only active for non-PETSc usage)
+  BCG
+  ------------------------------------------
   Regions: - Integer number of regions in the problem
   2
   ------------------------------------------
@@ -112,19 +115,25 @@ Close( Output File
   1.0
   ------------------------------------------
   Nodes: - Integer number of nodes in each region (one per line)
-  10
-  10
+  5
+  5
   ------------------------------------------
   Materials: - Fuel, Water or Steel (one per line)
   Fuel
-  Steel
+  Fuel
+  ------------------------------------------
+  Boundary_Conditions: - Zero or Reflective (two parameters - one per line)
+  Zero
+  Zero
   ------------------------------------------
   ```
    For this example problem, we are stating that we have a geometry ranging from *x = 0.0* to *1.0*, half fuel and half steel with a central boundary at *x = 0.5*. As seen from the above input, the code needs four different parameters to be described to it.
+  - **Solver** - This tells our code what solver we will be using. The specific types of solvers utilised are discussed later in the readme, but this can be left as BCG if you are not interested in specific solver routines. Note that CG should not be used unless both boundary conditions are set to 'Zero'. 
   - **Regions** - An integer number of regions that exists within the problem. We have 1 region from *0.0* to *0.5* and another from *0.5* to *1.0*, hence we give the code the integer number **2**.
   - **Boundaries** - The positions of the boundaries within the problem. Our first boundary is at the start of our geometry so we enter the number **0.0**. We then have an internal boundary halfway through the problem seperating the regions so we enter the number **0.5**. Finally we have the exterior boundary of our geometry, so we enter the number **1.0**. The code will always read one more value here than the number of regions in the problem.
   - **Nodes** - This desribes how refined we want the geometry in each region. For the example we want a quick solve with just enough nodes to see the flux profile. As we need to describe this for each region we enter the value **10** twice. The code will always read the same number of values here as the number of regions in the problem.
   - **Materials** - This described the materials that are present within the system. The first half of our geometry if fuel, with the latter half being Steel, so we enter **Fuel** and **Steel**. The code will always read the same number of values here as the number of regions in the problem.
+  - **Boundary Conditions** - This tells the code what boundaries exist at the edges of our problem. Two boudnaries have been implemented in out code, that of 'Zero' and 'Reflective'. The former simply ensures that the flux will tend to zero at the boundary, while the latter ensures that the derivative of the flux will tend to zero at the boundary.
   ## Reading Output Files
   The code generates two output files, **Output.txt** and **Output.vtu**. The former is a simple text file containing the position and flux of the solution to the problem. These are simply given in two columns such that they can be read easily by someting like a GNUPlot or Python script. An example of such a flux profile can be seen below:
   ```
@@ -138,7 +147,7 @@ Close( Output File
   ```
   This can then be plotted using tools such as GNUPlot to produce the profile seen below:
 
-  ![FluxProfile](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/FluxProfile.png)
+  ![FluxProfile](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/FluxProfile.png)
 
   GNUPlot was chosen here as the application is very simple and the program itself is very easy to install. On Linux, you only need the commands:
   ```bash
@@ -149,8 +158,203 @@ Close( Output File
   ```bash
   gnuplot -p fluxplot
   ```
+  The  **Output.vtu** file stores additional data such as the region and cell numbers in an XML format. This can be directly read by software such as Paraview, allowing for more detailed visualisations than that of the previous flux profile. For visualisation purposes, the data has been smeared in a second dimension, which should give users an idea of how multi-dimensional cell data can be viewed. An example output from paraview can be seen in the image below:
+
+  ![FluxParaview](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/FluxParaview.png)
   
-  ## Installing PETSc 
+  Instructions on how to install paraview can be found at: https://www.paraview.org/Wiki/ParaView:Build_And_Install
+
+  A user guid for paraview can be found at: https://docs.paraview.org/en/latest/
+
+# Features of the Code
+## Makefile
+
+- Discuss Makefile and compilation options
+
+![MakefileImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/MakefileImg.png)
+
+- Compiler directives
+
+![CompilerDirImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/CompilerDirImg.png)
+
+## Input Module
+
+- Reading data from input files
+
+![InputImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/InputImg.png)
+
+- Storing data within a module
+
+![StorageImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/StorageImg.png)
+
+## Output Module
+
+-  Writing data to an output file
+
+![OutputImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/OutputImg.png)
+
+-  Using paraview and vtk structure
+
+![VTKImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/VTKImg.png)
+
+## Materials Module
+
+- Clear example of OOP (simple gets and sets)
+
+![OOPImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/OOPImg.png)
+
+## MatGen Module
+
+- Discuss how a mathematical problem can be converted into something solveable
+
+![MatGenImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/MatGenImg.png)
+
+- Discretisation in space using data stored within other modules
+
+![DiscretiseImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/DiscretiseImg.png)
+
+## Compressed Row Storage Module
+
+- How data storage can be optimised for efficiency
+
+![CRSImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/CRSImg.png)
+
+## Conjugate Gradient Module
+
+- How you can write your own modules to solve systems of equations
+
+![SolveImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/SolveImg.png)
+
+- Brief aside on preconditioners
+
+![PreCondImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/PreCondImg.png)
+
+## One of the PETSc Modules
+
+- Writing a wrapper for a library
+
+![WrapperImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/WrapperImg.png)
+
+- Compiling the code with PETSc
+
+![PETScDirsImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/PETScDirsImg.png)
+
+- Why we use external libraries
+
+
+
+# Exercises
+This section contains a number of suggested exercises that will give the user a deeper understanding of the topics covered in the above descriptions and utilised throughout this code. Solutions to the exercises can be found in the 'solutions' directory, where a version of the main code exists, modified such that it solves the problem. The exercises will increase progressively in complexity, with jumps in challenge roughly seperated by the numeric ID of the exercise.
+
+## Exercise 1a
+
+**Task:** Add a print statement to the **SetName** Subroutine in the Materials Module
+
+**Aims:**
+
+-  Gain an initial understanding of how a code can utilise an OOP structure
+
+For this exercise, add a print (or write) statement to the **SetName** Subroutine contained within the Materials Module, which prints the name of the material being set to the terminal.
+
+## Exercise 1b
+
+**Task:** Write a new subroutine which prints all material data stored in the module
+
+**Aims:** 
+
+- Develop an understanding of Object Orientation
+- Learn how to write a new subroutine and implement it in a class structure
+- Learn how to utilise a type to call the generated routine
+- Opportunity to gain experience with Fortran output formatting
+
+For this exercise, you must make your own subroutine within the Materials Module called **PrintMaterial**. This subroutine, when called from the Main, should print all material data contained within the materials class to the terminal. This is also a good opportunity for users to gain some experience with Fortran formatting if they wish, as this can make the terminal output much easier to read.
+
+## Exercise 1c
+
+**Task:** Make a new material which can be used in the input deck
+
+**Aims:** 
+
+- Experience with fortran logical arguments, namely **If Statements**
+- Initial practice adjusting some exisitng logic within a subroutine
+
+For this exercise, a new material will be added to the list of those that the code can handle. The material 'Iron' will be added with an absoprtion cross section of *4.0* and source of *0.1*.
+
+
+
+
+## Exercise 2a
+
+**Task:** Get input deck to instead explicitly read in material data rather than associating with a name
+
+**Aims:** 
+
+- Experience making larger adjustments to the logic of the code
+- Understanding of how to adjust various sections of a code to handle a modification
+- Experience handling input files
+
+Currently, the code reads in a material name and then assigns material properties to the region based on a set of data stored in an If statement. For this exercise, the code will instead read in the absorption and source terms directly, such that 'Fuel' would instead become '1.0 6.0'. To achieve this, the user will need to adjust the **Problem** module, as well as adjust how they have defined their problem in the **input.in** file.
+
+
+
+## Exercise 2b
+
+**Task:** Add another set of cell data to the .vtu file where the material properties of each cell can be viewed e.g. absorption 
+
+**Aims:** 
+
+- Gain experience writing data to an output file
+- Learn how to utilise vtu files to add data sets to paraview
+
+The current vtu file output containts the Flux, Cell Number and Region Number data sets. In this exercise, the user will add the Source term data set to the vtu output, such that the source value of each cell can be viewed in Paraview. An additional Cell Data set will need to be added which uses the known Region Numbers to pull data from the **Materials** Module.
+
+
+## Exercise 3a
+
+**Task:** Smear the problem into another dimension to produce a 3D paraview output
+
+**Aims:** 
+
+- Gain further experience writing data to an output file
+- Learn how to utilise vtu files to generate more complex outputs in paraview
+
+The main version of the code already smears a 1-dimensional flux profile into a second dimension for the sake of a visualisation example. This could be furthered by also smearing the results in a third dimension. To do so, the user will need to make an additional set of nodes that have been translated in the z axis and ensure that these are then associated with the correct cells. Users should utilise the paraview vtk format guide to do so, noting that they will now need to define the cells as a three dimensional shape. The vtk file format is described here: https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf
+
+
+
+## Exercise 3b
+
+**Task:** Create a Compressed Diagonal Storage Module and switch it out for the existing CRS Module
+
+**Aims:** 
+
+- Gain an understanding of how to write a completely new module and incorporate it into the OOP structure
+- Gain experience with memory efficient programming
+- Gain experinece with abstract classes
+
+Currently the non-PETSc version of the code utilises a CRS system for handling the matrices involved in the problem. For this task, the user should create their own module which performs the same task utilising Compressed Diagonal Storage (CDS). The CDS module should have all the features of the CRS, allowing it to be used with the polymorphic matrix constructor and solver that already exists within the code. The user should ensure that they have added their CDS module to the makefile, and allocated it as 't_cds' where this has been done for 't_crs'. As a stretch goal, the user could also compare the solve times with their CDS module against that of the original CRS. An explanation of the CDS methodology can be found at: http://netlib.org/linalg/html_templates/node94.html
+
+
+
+## Exercise 3c
+
+**Task:** Make a wrapper for the blas/lapack library and use instead of PETSc/CG
+
+**Aims:** 
+
+- Gain experience installing external libraries
+- Understand how one can incorporate an external library into the code
+
+This final exercise involves incorporating an additional external library into the code. BLAS and LAPACK are often used in professional codes as the utilise a number of highly optimised mathematical routines. To solve the problem, the user should utilise DGETRF and DGETRI to perform LU decomposition and inversion of the matrix, then multiply it by the source vector using DGEMV. The code can be isntalled easily on a linux OS with the commands:
+
+```bash
+sudo apt-get install libblas-dev liblapack-dev
+```
+
+An explanation of how to use the code and each routine can be found at:
+http://www.netlib.org/lapack/explore-html/
+
+# Installing PETSc 
   The Portable, Extensible Toolkit for Scientific Computation (PETSc) is an optional external library which can be utilised in this problem to solve the system of equations generated by the code. This section will give an explanation of how to download and compile PETSc. Note that the configuring and testing of PETSc may take some time. Installation instructions can also be foind at https://petsc.org/release/install/
 
   - Download a copy of PETSc from:
@@ -166,9 +370,17 @@ Close( Output File
   make all check
   ```
 
-  ## Compiling with PETSc
+# Compiling with PETSc
 
-  If you have installed PETSc (see [installation instructions](##Installing-PETSc)), the code can also be compiled to use it instead of the custom storage and solvers. To do so, navigate to the **src** directory within the code and enter the commands:
+  With PETSc installed on your system, the last stage is to set up the environment variables that the code will use to find your PETSc directory. The text below shows how this can be done on a Linux OS, by entering the following commands into your bashrc file:
+
+  ```bash
+export PETSC_DIR="/home/jack/petsc-3.16.0"
+
+export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
+```
+
+  Once you have installed PETSc (see [installation instructions](##Installing-PETSc)) and set up the required environment variables, the code can also be compiled to use it instead of the custom storage and solvers. To do so, navigate to the **src** directory within the code and enter the commands:
   ```bash
   make clean
   make petsc
@@ -177,59 +389,6 @@ Close( Output File
   ```bash
   ./diffusion_petsc
   ```
-
-# Features of the Code
-  - Makefile
-    - Discuss Makefile and compilation options
-    - Compiler directives
-  - Input Module
-    - Reading data from input files
-    - Storing data within a module
-  - Output Module
-    -  Writing data to an output file
-    -  Using paraview and vtk structure
-  - Materials Module
-    - Clear example of OOP (simple gets and sets)
-  - MatGen Module
-    - Discuss how a mathematical problem can be converted into something solveable
-    - Discretisation in space using data stored within other modules
-  - Compressed Row Storage Module
-    - How data storage can be optimised for efficiency
-  - Conjugate Gradient Module
-    - How you can write your own modules to solve systems of equations
-    - Brief aside on preconditioners
-  - One of the PETSc Modules
-    - Writing a wrapper for a library
-    - Compiling the code with PETSc
-    - Why we use external libraries
-
-# Exercises
-  - Easier
-    - Add a print statement to one of the materials subroutines
-    - Write a new subroutine which prints all material data stored in the module
-    - Make a new material which can be used in the input deck
-  - More Challenging
-    - Get input deck to instead explicitly read in material data rather than associating with a name
-    - Add another set of cell data to the .vtu file where the material properties of each cell can be viewed e.g. absorption 
-  - Challenging
-    - Smear the problem into another dimension to produce a 3D paraview output
-    - Create a Compressed Diagonal Storage Module and switch it out for the existing CRS Module
-    - Make a wrapper for the blas/lapack library and use instead of PETSc/CG
-
-
-# PETSc Installation
-
-Current required steps for use with PETSc:
-- Install PETSc
-- Set up environment variables such that PETSC_DIR and PETSC_BUILDS_DIR point to your PETSc and PETSc builds directories respectively, e.g.:
-
-```bash
-export PETSC_DIR="/home/jack/petsc-3.16.0"
-
-export PETSC_BUILDS_DIR="/home/jack/petsc-3.16.0/builds"
-```
-
-- compile with 'make petsc' for optimised version of code or 'make petsc debug' for unoptimised run with more descriptive outputs
 
 
 # Theory
