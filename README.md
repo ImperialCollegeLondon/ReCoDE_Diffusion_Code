@@ -13,17 +13,17 @@
 This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
 This project aims to provide examples of:
-- Compiled Codes
-- Object Oriented Programming (OOP)
-- Makefiles
-- Compiler Directives
-- Reading input data from file
-- Generating output files
-- Paraview
-- Solving mathematical problems
-- Discretisation of a spatial dimension
-- Optimised data storage and solvers
-- Incorporating external libraries (PETSc)
+- [Compiled Codes]()
+- [Object Oriented Programming](##object-oriented-programming) (OOP)
+- [Makefiles]()
+- [Compiler Directives]()
+- [Reading input data from file](##Reading-input-data-from-file)
+- [Generating output files]()
+- [Paraview]()
+- [Solving mathematical problems]()
+- [Discretisation of a spatial dimension]()
+- [Optimised data storage and solvers]()
+- [Incorporating external libraries (PETSc)]()
 
 
 # Structure of the Code
@@ -168,11 +168,31 @@ Close( Output File
 
 # Features of the Code
 
-## Object oriented Programming
+## Object Oriented Programming
 
 As discussed previously in the [Structure of the Code](#structure-of-the-code) section, this code utilises Object Oriented Programming. An example of such an abject orented structure can be seen in the code snippet below. This shows some of the **Materials** module, which handles the storage of data pertaining the material properties of the problem.
 
-![OOPImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/OOP.png)
+```Fortran
+Module Materials_Mod
+
+    use Constants_Mod
+    !!Stores standard material data and material data explicitly set via an input file
+
+    Implicit None
+
+  type, public :: t_material
+        private
+        Real(kind=dp) :: Sig_a, S
+        Character(len=20) :: Name
+    contains
+    !!Procedures which handle the storing, calculation and retrieval of material data
+        procedure, public :: SetName => SetMaterialName
+        procedure, public :: GetName => GetMaterialName
+        procedure, public :: SetProps => SetMaterialProperties
+        procedure, public :: GetSig_a
+        procedure, public :: GetS
+  end type
+```
 
 We first define the name of the module such that it can be used by other modules in our code.
 
@@ -245,7 +265,26 @@ This flag can then be checked with C pre-processor language to allow for differn
 
 Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the **Problem** module, where an input file has been opened and the desired solver type read in.
 
-![InputImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/ReadInput.png)
+```Fortran
+!!Open input file containing problem specification
+Open(InputFile, File='input.in', Status='Old')
+
+!!Read in the solver type
+String_Read = ''
+Do While (String_Read .NE. 'Solver:')
+  Read(InputFile,*) String_Read
+EndDo
+Read(InputFile,*) String_Read
+If (String_Read == 'Thomas') Then 
+  this%SolverID = 1
+ElseIf (String_Read == 'BCG') Then 
+  this%SolverID = 2
+ElseIf (String_Read == 'CG') Then 
+  this%SolverID = 3
+Else 
+  Write(*,*) "ERROR: Unrecognised Solver Type"
+EndIf
+```
 
 
 When reading an input file, fortran needs an Integer ID, Filename and Status. The ID allows the file to be referred to easily in future, and is good practice to set through a parameter for readability. The Filename simply matches the name of the file, and the status describes the state of the file, in this case it is an 'Old' file which already exists in the directory.

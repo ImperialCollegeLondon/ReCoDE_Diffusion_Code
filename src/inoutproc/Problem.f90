@@ -34,7 +34,7 @@ Subroutine ReadInput(this,Material)
   Character(len=32) :: String_Read
 
 
-  !!Open onput file containing problem specification
+  !!Open input file containing problem specification
   Open(InputFile, File='input.in', Status='Old')
 
   !!Read in the solver type
