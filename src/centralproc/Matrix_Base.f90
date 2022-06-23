@@ -7,12 +7,13 @@ module Matrix_Base
   type, abstract :: t_matrix_base
     integer ::  n_row, n_column !The number of rows and columns in the matrix
     contains
-      procedure                                   ::  print => print_matrix
-      procedure(construct_matrix_base), deferred  ::  construct
-      procedure(destroy_matrix_base), deferred    ::  destroy
-      procedure(get_matrix_base), deferred        ::  get
-      procedure(set_matrix_base), deferred        ::  set
-      procedure(operate_matrix_base), deferred    ::  operate
+      private
+      procedure, public                                   ::  print => print_matrix
+      procedure(construct_matrix_base), public, deferred  ::  construct
+      procedure(destroy_matrix_base), public, deferred    ::  destroy
+      procedure(get_matrix_base), public, deferred        ::  get
+      procedure(set_matrix_base), public, deferred        ::  set
+      procedure(operate_matrix_base), public, deferred    ::  operate
   end type t_matrix_base
 
   !===============================================
