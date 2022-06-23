@@ -245,11 +245,11 @@ OBJS= stdlib/Constants.o \
  main.o \
 ```
 
-The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when the command ```make debug``` is used on the command line, such that it uses all common flags set by **$(FC_FLAGS_COMMON)** in addition to the compiler flag 'DEBUG'.
+The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when the command ```make debug``` is used on the command line, such that it uses all common flags set by **$(FC_FLAGS_COMMON)**. In addition, the flag ```-DDBEUG``` creates the compiler flag 'DEBUG'.
 ```Makefile
 debug:   FC_FLAGS = $(FC_FLAGS_COMMON) -DDEBUG
 ```
-This flag can then be checked with C pre-processor language to allow for differnet parts of the code to be compiled dependent on the flags incorporated. In the below example, a more detailed output is given by the **Solve** module when the code is compiled with 'DEBUG'.
+This flag can then be checked with C pre-processor language to allow for differnet parts of the code to be compiled dependent on the flags incorporated. In the below example, a more detailed output is given by the **Solve** module when the code is compiled with ```DEBUG```.
 ```C
 # ifdef DEBUG 
   Write(*,*) "---CG Convergence Succeeded---"
