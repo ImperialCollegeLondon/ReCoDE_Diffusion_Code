@@ -479,7 +479,7 @@ Currently the non-PETSc version of the code utilises a CRS system for handling t
 - Gain experience installing external libraries
 - Understand how one can incorporate an external library into the code
 
-This final exercise involves incorporating an additional external library into the code. BLAS and LAPACK are often used in professional codes as the utilise a number of highly optimised mathematical routines. To solve the problem, the user should utilise DGETRF and DGETRI to perform LU decomposition and inversion of the matrix, then multiply it by the source vector using DGEMV. The code can be isntalled easily on a linux OS with the commands:
+This final exercise involves incorporating an additional external library into the code. BLAS and LAPACK are often used in professional codes as the utilise a number of highly optimised mathematical routines. To solve the problem, the user should utilise DGETRF and DGETRI to perform LU decomposition and inversion of the matrix, then multiply it by the source vector using DGEMV. The code can be installed easily on a linux OS with the commands:
 
 ```bash
 sudo apt-get install libblas-dev liblapack-dev
