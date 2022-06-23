@@ -250,7 +250,7 @@ The makefile can also facilitate compilation in a number of different ways depen
 debug:   FC_FLAGS = $(FC_FLAGS_COMMON) -DDEBUG
 ```
 This flag can then be checked with C pre-processor language to allow for differnet parts of the code to be compiled dependent on the flags incorporated. In the below example, a more detailed output is given by the **Solve** module when the code is compiled with ```DEBUG```.
-```C
+```fortran
 # ifdef DEBUG 
   Write(*,*) "---CG Convergence Succeeded---"
   Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
