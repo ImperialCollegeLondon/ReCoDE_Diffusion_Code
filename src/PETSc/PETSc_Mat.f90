@@ -84,8 +84,7 @@ Subroutine AddVal_PETSc_Mat(This,V_row,V_col,Value)
   Real(kind=dp) :: Value
   If ((V_row .LT. 1) .OR. (V_col .LT. 1)) Then
     Write(*,*) "### Error ###"
-    Write(*,*) "Inserting Value outside of bounds"
-    Stop
+    Error Stop "Inserting Value outside of bounds"
   EndIf
   !!Convert the row and col integers to P format
   call MatSetValue(This%mat,V_row-1,V_col-1,Value,ADD_VALUES,ierr)

@@ -98,6 +98,7 @@ Subroutine Analysis_PETSc_Ksp(This)
       Write(*,*) "Reason => Description not implemented"
       Write(*,*) "-------------------------------"
     End Select
+    Error Stop "KSP Convergence Failed"
   Else
     Write(*,*) "---KSP Convergence Succeeded---"
     Write(*,'(g0)',advance='no') "Succeeded after iterations:  "

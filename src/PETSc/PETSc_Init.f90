@@ -11,7 +11,7 @@ contains
       Call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
       Called = .TRUE.
       If (ierr .NE. 0) Then
-        Write(*,*) "Failed to Initialize PETSc"
+        Error Stop "Failed to Initialize PETSc"
       EndIf
     EndIf
   End Subroutine PETSc_Init

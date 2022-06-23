@@ -77,8 +77,7 @@ Subroutine ConvFrom_PETSc_Vec(This,Val_vec)
   call This%GetSize(N_Vec)
   If (N_Vec .NE. Size(Val_vec)) Then
     Write(*,*) "### Error ###"
-    Write(*,*) "PVec and Output vec size do not match"
-    Stop
+    Error Stop "PVec and Output vec size do not match"
   EndIf
   Allocate(Pos_vec(N_Vec))
   Do ii = 1, N_Vec
