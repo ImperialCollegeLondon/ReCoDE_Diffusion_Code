@@ -82,7 +82,7 @@ Do 1, Problem Size
   Write( Output File) Region Number
   Write( Output File) Node Number
 EndDo
-Close( Output File
+Close( Output File)
 ```
 
 # User Guide
