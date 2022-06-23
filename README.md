@@ -245,7 +245,7 @@ OBJS= stdlib/Constants.o \
  main.o \
 ```
 
-The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when 'make debug' is called, such that it uses all common flags set by **$(FC_FLAGS_COMMON)** in addition to the compiler flag 'DEBUG'.
+The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when the command ```make debug``` is used on the command line, such that it uses all common flags set by **$(FC_FLAGS_COMMON)** in addition to the compiler flag 'DEBUG'.
 ```Makefile
 debug:   FC_FLAGS = $(FC_FLAGS_COMMON) -DDEBUG
 ```
