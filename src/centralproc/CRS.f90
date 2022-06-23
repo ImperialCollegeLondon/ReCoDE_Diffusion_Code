@@ -16,11 +16,11 @@ module CRS_Mod
       procedure, public ::  get => get_crs
       procedure, public ::  set => set_crs
       procedure, public ::  operate => operate_crs
-      procedure, public ::  check_explicit => check_explicit_crs
-      procedure, public ::  remove_zeroes => remove_zeroes_crs
-      procedure, public ::  find_row_by_values_index => find_row_by_values_index_crs
-      procedure, public ::  change_array_sizes => change_array_sizes_crs
-      procedure, public ::  find_last_index_of_row => find_last_index_of_row_crs
+      procedure ::  check_explicit => check_explicit_crs
+      procedure ::  remove_zeroes => remove_zeroes_crs
+      procedure ::  find_row_by_values_index => find_row_by_values_index_crs
+      procedure ::  change_array_sizes => change_array_sizes_crs
+      procedure ::  find_last_index_of_row => find_last_index_of_row_crs
 
   end type t_crs
 
