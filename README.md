@@ -82,7 +82,7 @@ Do 1, Problem Size
   Write( Output File) Region Number
   Write( Output File) Node Number
 EndDo
-Close( Output File
+Close( Output File)
 ```
 
 # User Guide
@@ -132,8 +132,8 @@ Close( Output File
   - **Regions** - An integer number of regions that exists within the problem. We have 1 region from *0.0* to *0.5* and another from *0.5* to *1.0*, hence we give the code the integer number **2**.
   - **Boundaries** - The positions of the boundaries within the problem. Our first boundary is at the start of our geometry so we enter the number **0.0**. We then have an internal boundary halfway through the problem seperating the regions so we enter the number **0.5**. Finally we have the exterior boundary of our geometry, so we enter the number **1.0**. The code will always read one more value here than the number of regions in the problem.
   - **Nodes** - This desribes how refined we want the geometry in each region. For the example we want a quick solve with just enough nodes to see the flux profile. As we need to describe this for each region we enter the value **10** twice. The code will always read the same number of values here as the number of regions in the problem.
-  - **Materials** - This described the materials that are present within the system. The first half of our geometry if fuel, with the latter half being Steel, so we enter **Fuel** and **Steel**. The code will always read the same number of values here as the number of regions in the problem.
-  - **Boundary Conditions** - This tells the code what boundaries exist at the edges of our problem. Two boudnaries have been implemented in out code, that of 'Zero' and 'Reflective'. The former simply ensures that the flux will tend to zero at the boundary, while the latter ensures that the derivative of the flux will tend to zero at the boundary.
+  - **Materials** - This described the materials that are present within the system. The first half of our geometry is fuel, with the latter half being Steel, so we enter **Fuel** and **Steel**. The code will always read the same number of values here as the number of regions in the problem.
+  - **Boundary Conditions** - This tells the code what boundaries exist at the edges of our problem. Two boudnary conditions have been implemented in out code, that of 'Zero' and 'Reflective'. The former simply ensures that the flux will tend to zero at the boundary, while the latter ensures that the derivative of the flux will tend to zero at the boundary.
   ## Reading Output Files
   The code generates two output files, **Output.txt** and **Output.vtu**. The former is a simple text file containing the position and flux of the solution to the problem. These are simply given in two columns such that they can be read easily by someting like a GNUPlot or Python script. An example of such a flux profile can be seen below:
   ```
@@ -245,12 +245,12 @@ OBJS= stdlib/Constants.o \
  main.o \
 ```
 
-The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when 'make debug' is called, such that it uses all common flags set by **$(FC_FLAGS_COMMON)** in addition to the compiler flag 'DEBUG'.
+The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when the command ```make debug``` is used on the command line, such that it uses all common flags set by **$(FC_FLAGS_COMMON)**. In addition, the flag ```-DDBEUG``` creates the compiler flag 'DEBUG'.
 ```Makefile
 debug:   FC_FLAGS = $(FC_FLAGS_COMMON) -DDEBUG
 ```
-This flag can then be checked with C pre-processor language to allow for differnet parts of the code to be compiled dependent on the flags incorporated. In the below example, a more detailed output is given by the **Solve** module when the code is compiled with 'DEBUG'.
-```C
+This flag can then be checked with C pre-processor language to allow for differnet parts of the code to be compiled dependent on the flags incorporated. In the below example, a more detailed output is given by the **Solve** module when the code is compiled with ```DEBUG```.
+```fortran
 # ifdef DEBUG 
   Write(*,*) "---CG Convergence Succeeded---"
   Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
@@ -479,7 +479,7 @@ Currently the non-PETSc version of the code utilises a CRS system for handling t
 - Gain experience installing external libraries
 - Understand how one can incorporate an external library into the code
 
-This final exercise involves incorporating an additional external library into the code. BLAS and LAPACK are often used in professional codes as the utilise a number of highly optimised mathematical routines. To solve the problem, the user should utilise DGETRF and DGETRI to perform LU decomposition and inversion of the matrix, then multiply it by the source vector using DGEMV. The code can be isntalled easily on a linux OS with the commands:
+This final exercise involves incorporating an additional external library into the code. BLAS and LAPACK are often used in professional codes as the utilise a number of highly optimised mathematical routines. To solve the problem, the user should utilise DGETRF and DGETRI to perform LU decomposition and inversion of the matrix, then multiply it by the source vector using DGEMV. The code can be installed easily on a linux OS with the commands:
 
 ```bash
 sudo apt-get install libblas-dev liblapack-dev
@@ -489,7 +489,7 @@ An explanation of how to use the code and each routine can be found at:
 http://www.netlib.org/lapack/explore-html/
 
 # Installing PETSc 
-  The Portable, Extensible Toolkit for Scientific Computation (PETSc) is an optional external library which can be utilised in this problem to solve the system of equations generated by the code. This section will give an explanation of how to download and compile PETSc. Note that the configuring and testing of PETSc may take some time. Installation instructions can also be foind at https://petsc.org/release/install/
+  The Portable, Extensible Toolkit for Scientific Computation (PETSc) is an optional external library which can be utilised in this problem to solve the system of equations generated by the code. This section will give an explanation of how to download and compile PETSc. Note that the configuring and testing of PETSc may take some time. Installation instructions can also be found at https://petsc.org/release/install/
 
   - Download a copy of PETSc from:
 
@@ -567,7 +567,7 @@ This can be substituted into the full form of the balance equation to form the n
 
 $$ - \nabla \cdot D(r)\nabla\phi(r) + \Sigma_{a} (r) \phi(r) = S(r) + \nu \Sigma_f (r) \phi (r) $$
 
-It is therefore also important to have an accurate method of calculation for the diffusion coefficient. The diffusion coefficient is equal to 1/3 multiplied by the inverse of the transport cross section. For simple neutron diffusion cases involving isotropic scatter, the transport cross section can be set to be equal to the total cross section, which is equal to the sum of the absorption and scattering (including self-scatter) cross sections. This can be seen below where $\Sigma_{tr}$ is the transport cross section, $\Sigma_{t}$ is the total cross section, $\Sigma_{a}$ is the absorption cross section and $\Sigma_{s}$ is the scattering cross section. \par
+It is therefore also important to have an accurate method of calculation for the diffusion coefficient. The diffusion coefficient is equal to 1/3 multiplied by the inverse of the transport cross section. For simple neutron diffusion cases involving isotropic scatter, the transport cross section can be set to be equal to the total cross section, which is equal to the sum of the absorption and scattering (including self-scatter) cross sections. This can be seen below where $\Sigma_{tr}$ is the transport cross section, $\Sigma_{t}$ is the total cross section, $\Sigma_{a}$ is the absorption cross section and $\Sigma_{s}$ is the scattering cross section.
 
 $$ D =  \frac{1}{3\Sigma_{tr}} \simeq \frac{1}{3\Sigma_{t}} = \frac{1}{3(\Sigma_{a}+\Sigma_{s})} $$
 
