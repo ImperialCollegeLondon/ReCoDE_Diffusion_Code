@@ -5,16 +5,17 @@ module CRS_Mod
   implicit none
 
   type, extends(t_matrix_base)  ::  t_crs
+    private
     integer, dimension(:), allocatable                        ::  col_index !The column of each non-zero entry into the matrix
     integer, dimension(:), allocatable                        ::  row_start !The index of the first entry in each row in the values array
     real(kind=dp), dimension(:), allocatable                  ::  values !The values of each non-zero entry in the matrix
     
     contains
-      procedure ::  construct => construct_crs
-      procedure ::  destroy => destroy_crs
-      procedure ::  get => get_crs
-      procedure ::  set => set_crs
-      procedure ::  operate => operate_crs
+      procedure, public ::  construct => construct_crs
+      procedure, public ::  destroy => destroy_crs
+      procedure, public ::  get => get_crs
+      procedure, public ::  set => set_crs
+      procedure, public ::  operate => operate_crs
       procedure ::  check_explicit => check_explicit_crs
       procedure ::  remove_zeroes => remove_zeroes_crs
       procedure ::  find_row_by_values_index => find_row_by_values_index_crs
