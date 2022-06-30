@@ -13,17 +13,16 @@
 This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
 This project aims to provide examples of:
-- [Compiled Codes]()
-- [Object Oriented Programming](##object-oriented-programming) (OOP)
-- [Makefiles]()
-- [Compiler Directives]()
-- [Reading input data from file](##Reading-input-data-from-file)
-- [Generating output files]()
-- [Paraview]()
-- [Solving mathematical problems]()
-- [Discretisation of a spatial dimension]()
-- [Optimised data storage and solvers]()
-- [Incorporating external libraries (PETSc)]()
+- [Compiled Codes and Makefiles](##compiled-codes-and-makefiles)
+- [Compiler Directives](##compiler-directives)
+- [Object Oriented Programming](##object-oriented-programming)
+- [Reading input data from file](##reading-input-data-from-file)
+- [Generating output files](##generating-output-files)
+- [Paraview](##paraview)
+- [Solving mathematical problems](##solving-mathematical-problems)
+- [Discretisation of a spatial dimension](##discretisation-of-a-spatial-dimension)
+- [Optimised data storage](##optimised-data-storage-and-solvers)
+- [Incorporating external libraries (PETSc)](##incorporating-external-libraries)
 
 
 # Structure of the Code
@@ -103,9 +102,6 @@ Close( Output File)
   The code is designed such that the user can easily change the problem which the code is attempting to solve. The code uses the input file **Input.txt** to read details about the problem, such as the positions of boundaries or materials in the problem. An example of such an input can be seen below:
   ```
   ------------------------------------------
-  Solver: - Thomas, BCG or CG (only active for non-PETSc usage)
-  BCG
-  ------------------------------------------
   Regions: - Integer number of regions in the problem
   2
   ------------------------------------------
@@ -128,7 +124,6 @@ Close( Output File)
   ------------------------------------------
   ```
    For this example problem, we are stating that we have a geometry ranging from *x = 0.0* to *1.0*, half fuel and half steel with a central boundary at *x = 0.5*. As seen from the above input, the code needs four different parameters to be described to it.
-  - **Solver** - This tells our code what solver we will be using. The specific types of solvers utilised are discussed later in the readme, but this can be left as BCG if you are not interested in specific solver routines. Note that CG should not be used unless both boundary conditions are set to 'Zero'. 
   - **Regions** - An integer number of regions that exists within the problem. We have 1 region from *0.0* to *0.5* and another from *0.5* to *1.0*, hence we give the code the integer number **2**.
   - **Boundaries** - The positions of the boundaries within the problem. Our first boundary is at the start of our geometry so we enter the number **0.0**. We then have an internal boundary halfway through the problem seperating the regions so we enter the number **0.5**. Finally we have the exterior boundary of our geometry, so we enter the number **1.0**. The code will always read one more value here than the number of regions in the problem.
   - **Nodes** - This desribes how refined we want the geometry in each region. For the example we want a quick solve with just enough nodes to see the flux profile. As we need to describe this for each region we enter the value **10** twice. The code will always read the same number of values here as the number of regions in the problem.
@@ -229,9 +224,11 @@ end type
 
 
 
-## Makefiles
+## Compiled Codes and Makefiles
 
-Makefiles are particularly useful in a code that utilises OOP as it allows for easy compilation of the required files and handles the order of dependencies. The code snippet below comes from the makefile used in the project and shows how an ordered list of objects is used when compiling the code. This is written such that the compiler will work through the files in a way that each dependency is compiled before the modules that utilise it, ending with the main.
+Programming languages can be differentiated into 'Interpreted' and 'Compiled' languages. Lagnuages such as Python are interpreted languages, where the code is read directly by the computer and the actions described are performed. In contrast, languages such as fortran must be compiled by a program before the code can be used, where a program known as a compiler reads through the code, convering it to machine language. While time must be spent compiling the code, this generally results in very noticeable performance increases and is the reason why most high perfromance codes are compiled. Readers familiar with Python may be familiar with the Numpy library that is often used for numerical calculations, a library which makes use of compiled codes to give Python codes some dramatic reductions in numerical computation time.
+
+Makefiles are particularly useful in a compiled code that utilises OOP as it allows for easy compilation of the required files and handles the order of dependencies. The code snippet below comes from the makefile used in the project and shows how an ordered list of objects is used when compiling the code. This is written such that the compiler will work through the files in a way that each dependency is compiled before the modules that utilise it, ending with the main.
 
 ```Makefile
 OBJS= stdlib/Constants.o \
@@ -244,6 +241,10 @@ OBJS= stdlib/Constants.o \
  centralproc/MatGen.o \
  main.o \
 ```
+
+
+
+## Compiler Directives
 
 The makefile can also facilitate compilation in a number of different ways depending on the options provided. The snippet below compiles the code when the command ```make debug``` is used on the command line, such that it uses all common flags set by **$(FC_FLAGS_COMMON)**. In addition, the flag ```-DDBEUG``` creates the compiler flag 'DEBUG'.
 ```Makefile
@@ -263,27 +264,27 @@ This flag can then be checked with C pre-processor language to allow for differn
 
 ## Reading input data from file
 
-Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the **Problem** module, where an input file has been opened and the desired solver type read in.
+Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the **Problem** module, where an input file has been opened and the boundary conditions read in.
 
 ```Fortran
 !!Open input file containing problem specification
 Open(InputFile, File='input.in', Status='Old')
 
-!!Read in the solver type
+!!Read in the boundary conditions of the problem
 String_Read = ''
-Do While (String_Read .NE. 'Solver:')
+Do While (String_Read .NE. 'Boundary_Conditions:')
   Read(InputFile,*) String_Read
 EndDo
-Read(InputFile,*) String_Read
-If (String_Read == 'Thomas') Then 
-  this%SolverID = 1
-ElseIf (String_Read == 'BCG') Then 
-  this%SolverID = 2
-ElseIf (String_Read == 'CG') Then 
-  this%SolverID = 3
-Else 
-  Write(*,*) "ERROR: Unrecognised Solver Type"
-EndIf
+Do ii = 1, 2
+  Read(InputFile,*) String_Read
+  If (String_Read == 'Zero') Then 
+    this%Boundary_Conditions(ii) = 0
+  ElseIf (String_Read == 'Reflective') Then 
+    this%Boundary_Conditions(ii) = 1
+  Else 
+    Write(*,*) "ERROR: Unrecognised Boundary Condition"
+  EndIf
+EndDo
 ```
 
 
@@ -293,26 +294,25 @@ Integer, parameter :: InputFile = 101
 Open(InputFile, File='input.in', Status='Old')
 ```
 
-We then wish to read through our file until we reach the name of the descired solver. To do so, we loop through our file until we reach the 'Solver:' string. We now know that the next line will contain the name of our solver, and hence this can be read in.
+We then wish to read through our file until we reach the name of the boundary conditions. To do so, we loop through our file until we reach the 'Boundary_Conditions:' string. We now know that the next line will contain the name of our boundary condition, and hence this can be read in.
 ```Fortran
 String_Read = ''
-Do While (String_Read .NE. 'Solver:')
+String_Read = ''
+Do While (String_Read .NE. 'Boundary_Conditions:')
   Read(InputFile,*) String_Read
 EndDo
 ```
 
-We finally need to check what type of solver has been specified and store this information. Here we have an If statement which will loop over the known solver types.
+We finally need to check what type of boundary has been specified and store this information. Here we have an If statement which will loop over the known boundary condition names.
 
 ```Fortran
 Read(InputFile,*) String_Read
-If (String_Read == 'Thomas') Then 
-  this%SolverID = 1
-ElseIf (String_Read == 'BCG') Then 
-  this%SolverID = 2
-ElseIf (String_Read == 'CG') Then 
-  this%SolverID = 3
+If (String_Read == 'Zero') Then 
+  this%Boundary_Conditions(ii) = 0
+ElseIf (String_Read == 'Reflective') Then 
+  this%Boundary_Conditions(ii) = 1
 Else 
-  Write(*,*) "ERROR: Unrecognised Solver Type"
+  Write(*,*) "ERROR: Unrecognised Boundary Condition"
 EndIf
 ```
 
@@ -322,56 +322,94 @@ Finally we should close this file, achieved through the close command and the as
 Close(InputFile)
 ```
 
-- Storing data within a module
 
-![StorageImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/StorageImg.png)
+## Generating output files
 
-## Output Module
+Most scientific codes will want to generate outputs that can be read by external software such as GNUPlot. To do so, data generated by the code must be written to an output file in some given format. This is done in a way similar to that of reading the input, with the read statements replaced with write statements.
 
--  Writing data to an output file
+First we tell the code to open the output file, specifying 'Replace' to tell the code that we wish to overwrite the file if it is already present.
 
-![OutputImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/OutputImg.png)
-
--  Using paraview and vtk structure
-
-![VTKImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/VTKImg.png)
+```Fortran
+!!Generate textfile
+Open(textfile,File='OutputFile.txt',Status='Replace') 
+```
 
 
-## MatGen Module
+We then loop over our solutions, writing the values of the position and fluxes to the textfile, with each row corresponding to a node. In code snippet below we write down the data for the first node, then loop over the rest of the nodes in each of the regions.
+
+```Fortran
+Position = 0._dp
+!!First node
+NodeID = 1
+Write(textfile,'(2E14.6)') Position, Flux(NodeID)
+Do ii = 1, N_Regions
+    Do jj = 1, RegionNodes(ii)-1
+        NodeID = NodeID + 1
+        Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
+        Write(textfile,'(2E14.6)') Position, Flux(NodeID)
+    EndDo 
+EndDo
+```
+
+Finally we close the file. We now have a complete set of output data stored in text format that can be plotted or used for later analysis.
+```Fortran
+Close(textfile)
+```
+
+
+
+## Paraview
+
+One particular output viewing software that may be of interest to some readers is Paraview. Paraview is a widely used software for data analysis and visualisation within the scientific community. While paraview could read in our textfile outputs to generate a graph, this does not demonstrate much of the power of the software. Instead the code has been written such that it will generate a 2-Dimensional plot of the flux that can be manipulated in Paraview.
+
+To do so, we must generate an output file which uses the VTK file format and translate our resulting data to this format. We have also made use of the more modern .VTU file type, a form of VTK file which makes use of the html file structure. In addition to the readability we gain from such a structure, it is also recommended that users avoid the .VTK legacy file type if possible. A snippet from **OutputFile.vtu** can be seen below, where we have specified that this is a 'VTKFile' using the 'Unstructured Grid' format. Contained within the Unstructured Grid, we define the number of points and cells within the problem. We then go on to describe the relevant point and cell data. The vtk file format is described here: https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf.
+
+```html
+<?xml version="1.0"?>
+<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian">
+  <UnstructuredGrid>
+    <Piece NumberOfPoints="18" NumberOfCells="8">
+```
+## Solving Mathematical Problems
 
 - Discuss how a mathematical problem can be converted into something solveable
 
-![MatGenImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/MatGenImg.png)
-
-- Discretisation in space using data stored within other modules
-
-![DiscretiseImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/DiscretiseImg.png)
-
-## Compressed Row Storage Module
-
-- How data storage can be optimised for efficiency
-
-![CRSImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/CRSImg.png)
-
-## Conjugate Gradient Module
-
 - How you can write your own modules to solve systems of equations
-
-![SolveImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/SolveImg.png)
 
 - Brief aside on preconditioners
 
-![PreCondImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/PreCondImg.png)
+In order to generate a solution to our problem we must first convert the general equation that we wish to solve into a system of equations. Scientific problems will often consist of a series of known properties of a system which, when multiplied by an unknown parameter, generate known values. Such systems of equations can be converted into a matrix and vector problem of the form $Ax=b$, where $A$ is our matrix describing the properties of the system, $x$ is a vector containing our unknown parameter of interest and $b$ is a known parameter of the system. 
 
-## One of the PETSc Modules
+Simple matrix mathematics tells us that this could be trivially solved if we can invert the matrix $A$, such that:
+
+$$ A x = b$$
+
+$$ A^{-1} A x = A^{-1} b $$
+
+$$ x = A^{-1} b $$
+
+Where $A^{-1}$ is the inverse of the matrix $A$. Our system produces a realtively simple Tri-Diagonal matrix (where only the 3 main diagonals contain data), and as such can be inverted through a number of relatively simple algorithms (such as the Thomas Algorithm). While this would be an oprimal way of solving such a problem, this is only for a specific case and not generally applicable to a wide range of problems. As such, we have instead incorporated an iterative solver which progressively approximates the solution to the problem. As the algorithm iterates, the error between the values of $Ax$ and $b$ are compared, where the problem is 'solved' once this error passes below a certain threshold.
+
+Such solvers are widely used throughout scientific computing as they are widely applicable to a range of different problems involving a range of different matrices. While the commonly used Conjugate Gradient (CG) method is servicable for a number of different problems, it does require the matrix $A$ to be symmetric, a limitation which we would ideally like to avoid for this code. As such we have implemented the Bi-Conjugate Gradient (BCG) method for our solver, a modified form of the CG algorithm which can handle asymmetric matrices.
+
+
+## Discretisation of a spatial dimension
+
+- Discretisation in space using data stored within other modules
+
+
+## Optimised data storage
+
+- How data storage can be optimised for efficiency
+
+
+## Incorporating External Libraries
 
 - Writing a wrapper for a library
 
-![WrapperImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/WrapperImg.png)
 
 - Compiling the code with PETSc
 
-![PETScDirsImg](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/PETScDirsImg.png)
 
 - Why we use external libraries
 

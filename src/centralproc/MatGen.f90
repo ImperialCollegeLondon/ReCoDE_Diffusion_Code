@@ -71,7 +71,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
     class(t_MatGen) :: this
     type(t_material), dimension(:) :: Material 
     type(t_Problem) :: Problem
-    Integer :: ii, jj, N_Regions, N_Nodes, NodeID, SolverID
+    Integer :: ii, jj, N_Regions, N_Nodes, NodeID
     Integer, allocatable, dimension(:) :: RegionNodes
     Integer, dimension(2) :: Boundary_Conditions
     Real(kind=dp) :: D_Value, Dm1_Value, Dp1_Value, Delta_Value, Sig_a_Value, Source_Value, a, b, c
@@ -84,7 +84,6 @@ Subroutine Solve(this,Material,Problem,Vecx)
     RegionNodes = Problem%GetNodes()
     N_Nodes = Problem%GetN_Nodes()
     Boundary_Conditions = Problem%GetBoundary_Conditions()
-    SolverID = Problem%GetSolverID()
     Allocate(Delta(N_Regions),Vecx(N_Nodes))
 
     !!Calculate Delta throughout problem
@@ -165,13 +164,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
     EndIf
 
     !!Solve the problem
-    If (SolverID == 1) Then
-        call ThomAlg_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    ElseIf (SolverID == 2) Then
-        call BCG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    ElseIf (SolverID == 3) Then
-        call CG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    EndIf
+    call BCG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
     
 # endif
 
