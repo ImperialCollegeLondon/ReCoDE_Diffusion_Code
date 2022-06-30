@@ -10,17 +10,21 @@ PETSC_ARCH = $(PETSC_DIR)/linux_opt/
 PETSC_INC_PATH = -I$(PETSC_DIR)/include/  -I$(PETSC_ARCH)/include/
 PETSC_LINK_PATH =  -L$(PETSC_DIR)/lib/ -L$(PETSC_ARCH)/lib/
 PETSC_LOAD_PATH = -Wl,-rpath=$(PETSC_ARCH)/lib/
-PETSC_LIBS = -lpetsc -lblas -llapack
+PETSC_LIBS = -lpetsc
 
 
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # PATHS
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INCLUDE_PATH = $(PETSC_INC_PATH)
-LINK_PATH =  $(PETSC_LINK_PATH)
-LOAD_PATH =  $(PETSC_LOAD_PATH)
-LIBS =$(PETSC_LIBS)
+petsc: INCLUDE_PATH = $(PETSC_INC_PATH)
+petsc_debug: INCLUDE_PATH = $(PETSC_INC_PATH)
+petsc: LINK_PATH =  $(PETSC_LINK_PATH)
+petsc_debug: LINK_PATH =  $(PETSC_LINK_PATH)
+petsc: LOAD_PATH =  $(PETSC_LOAD_PATH)
+petsc_debug: LOAD_PATH =  $(PETSC_LOAD_PATH)
+petsc: LIBS =$(PETSC_LIBS)
+petsc_debug: LIBS =$(PETSC_LIBS)
 
 
 # Compiler options
@@ -41,17 +45,16 @@ petsc_debug:   LD_FLAGS = $(LD_FLAGS_DEBUG)
 #Set the objects
 #Note the order below is determined by dependencies between object files
 OBJS= stdlib/Constants.o \
- stdlib/StdLib.o \
  inoutproc/Materials.o \
  inoutproc/Problem.o \
  inoutproc/Output.o \
+ centralproc/Matrix_Base.o \
  centralproc/CRS.o \
  centralproc/Solver.o \
- centralproc/DiamondDiff.o \
+ centralproc/MatGen.o \
  main.o \
 
 OBJS_PETSC= stdlib/Constants.o \
- stdlib/StdLib.o \
  PETSc/PETSc_Init.o \
  PETSc/PETSc_Vec.o \
  PETSc/PETSc_Mat.o \
@@ -60,7 +63,7 @@ OBJS_PETSC= stdlib/Constants.o \
  inoutproc/Problem.o \
  inoutproc/Output.o \
  centralproc/PETScSolver.o \
- centralproc/DiamondDiff.o \
+ centralproc/MatGen.o \
  main.o \
 
 
@@ -71,8 +74,8 @@ MODS= $(OBJS:.o=.mod)
 MODS_PETSC= $(OBJS:.o=.mod)
 
 #Set the executable name
-EXEC=../transport
-EXEC_PETSC=../transport_petsc
+EXEC=../diffusion
+EXEC_PETSC=../diffusion_petsc
 
 #Default make command requires the executable to be up to date
 all : $(EXEC)

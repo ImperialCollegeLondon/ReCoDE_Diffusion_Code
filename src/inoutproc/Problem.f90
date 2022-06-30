@@ -4,17 +4,22 @@ Module Problem_Mod
   use Materials_Mod
   !!Reads through an input deck and passes the required data to external routines
 
+  Implicit None
+
   type, public :: t_Problem
-      Integer :: N_Regions, N_Nodes
+      Integer :: N_Regions, N_Nodes, SolverID
       Integer, allocatable, dimension(:) :: Nodes
+      Integer, dimension(2) :: Boundary_Conditions
       Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos 
   contains
   !!Procedures which handle the storing, calculation and retrieval of material data
       procedure, public :: ReadInput
+      procedure, public :: GetSolverID
       procedure, public :: GetN_Regions
       procedure, public :: GetNodes 
       procedure, public :: GetN_Nodes
       procedure, public :: GetBoundary_Pos
+      procedure, public :: GetBoundary_Conditions
       procedure, public :: DestroyProblem
   end type
 
@@ -22,7 +27,6 @@ contains
 
 Subroutine ReadInput(this,Material)
 !!Read the Input File
-  Implicit None
   class(t_Problem) :: this
   type(t_material), allocatable, dimension(:) :: Material
   Integer :: ii
@@ -30,8 +34,24 @@ Subroutine ReadInput(this,Material)
   Character(len=32) :: String_Read
 
 
-  !!Open onput file containing problem specification
+  !!Open input file containing problem specification
   Open(InputFile, File='input.in', Status='Old')
+
+  !!Read in the solver type
+  String_Read = ''
+  Do While (String_Read .NE. 'Solver:')
+    Read(InputFile,*) String_Read
+  EndDo
+  Read(InputFile,*) String_Read
+  If (String_Read == 'Thomas') Then 
+    this%SolverID = 1
+  ElseIf (String_Read == 'BCG') Then 
+    this%SolverID = 2
+  ElseIf (String_Read == 'CG') Then 
+    this%SolverID = 3
+  Else 
+    Write(*,*) "ERROR: Unrecognised Solver Type"
+  EndIf
 
   !!Read in the number of Regions
   String_Read = ''
@@ -75,13 +95,29 @@ Subroutine ReadInput(this,Material)
     Read(InputFile,*) String_Read
     Call Material(ii)%SetName(String_Read)
     If (String_Read == 'Fuel') Then 
-      Call Material(ii)%SetProps(1._dp,10._dp)
+      Call Material(ii)%SetProps(1._dp,6._dp)
     ElseIf (String_Read == 'Water') Then 
-      Call Material(ii)%SetProps(3._dp,4._dp)
+      Call Material(ii)%SetProps(2._dp,0.1_dp)
     ElseIf  (String_Read == 'Steel') Then 
-      Call Material(ii)%SetProps(5._dp,1._dp)
+      Call Material(ii)%SetProps(5._dp,0.1_dp)
     Else 
       Write(*,*) "ERROR: Unrecognised Material"
+    EndIf
+  EndDo
+
+  !!Read in the boundary conditions of the problem
+  String_Read = ''
+  Do While (String_Read .NE. 'Boundary_Conditions:')
+    Read(InputFile,*) String_Read
+  EndDo
+  Do ii = 1, 2
+    Read(InputFile,*) String_Read
+    If (String_Read == 'Zero') Then 
+      this%Boundary_Conditions(ii) = 0
+    ElseIf (String_Read == 'Reflective') Then 
+      this%Boundary_Conditions(ii) = 1
+    Else 
+      Write(*,*) "ERROR: Unrecognised Boundary Condition"
     EndIf
   EndDo
 
@@ -90,8 +126,15 @@ Subroutine ReadInput(this,Material)
 End Subroutine ReadInput
 
 
+Function GetSolverID(this) Result(Res)
+    class(t_problem) :: this
+    Integer :: Res
+    !!Get the solver type
+    Res = this%SolverID
+End Function GetSolverID
+
+
 Function GetN_Regions(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Integer :: Res
     !!Get the number of regions in the problem
@@ -100,7 +143,6 @@ End Function GetN_Regions
 
 
 Function GetNodes(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Integer, dimension(this%N_Regions) :: Res
     !!Get an array containing the number of nodes in each region
@@ -109,7 +151,6 @@ End Function GetNodes
 
 
 Function GetN_Nodes(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Integer :: Res
     !!Get the total number of nodes in the problem
@@ -118,7 +159,6 @@ End Function GetN_Nodes
 
 
 Function GetBoundary_Pos(this) Result(Res)
-    Implicit None
     class(t_problem) :: this
     Real(kind=dp), dimension(this%N_Regions+1) :: Res
     !!Get the positions of the boundaries in the problem
@@ -126,9 +166,16 @@ Function GetBoundary_Pos(this) Result(Res)
 End Function GetBoundary_Pos
 
 
+Function GetBoundary_Conditions(this) Result(Res)
+    class(t_problem) :: this
+    Integer, dimension(2) :: Res
+    !!Get the boundary condition of the problem
+    Res = this%Boundary_Conditions
+End Function GetBoundary_Conditions
+
+
 Subroutine DestroyProblem(this,Material)
   !!Destroy the data stored in the problem class
-  Implicit None
   class(t_Problem) :: this
   type(t_material), allocatable, dimension(:) :: Material
 

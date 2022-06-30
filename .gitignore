@@ -1,5 +1,5 @@
 *.o
 *.mod
-transport
-transport_petsc
+diffusion
+diffusion_petsc
 /.vscode

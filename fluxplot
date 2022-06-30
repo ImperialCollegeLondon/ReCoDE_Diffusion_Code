@@ -1,0 +1,8 @@
+set samples 100
+
+set xlabel "x"
+set ylabel "flux"
+
+set xrange [0:1]
+
+plot "OutputFile.txt" w l t 'Flux Profile'

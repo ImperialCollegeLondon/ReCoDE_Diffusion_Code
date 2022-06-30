@@ -9,16 +9,14 @@ Module PETScSolver_Mod
 
     Implicit None
     Private
+    public :: PETSc_Solve
 
     type, public :: t_PETScSolver
-    contains
-        procedure, public :: Solve
+
     end type
 contains
 
-Subroutine Solve(this,pMatA,pVecb,pVecx)
-    Implicit none
-    class(t_PETScSolver) :: this
+Subroutine PETSc_Solve(pMatA,pVecb,pVecx)
     type(pMat) :: pMatA
     type(pVec) :: pVecb, pVecx
     type(pSol) :: pSolve
@@ -29,7 +27,7 @@ Subroutine Solve(this,pMatA,pVecb,pVecx)
 
     call pSolve%Destroy()
 
-End Subroutine Solve
+End Subroutine PETSc_Solve
 
 
 End Module
