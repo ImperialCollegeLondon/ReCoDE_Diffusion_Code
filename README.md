@@ -103,9 +103,6 @@ Close( Output File)
   The code is designed such that the user can easily change the problem which the code is attempting to solve. The code uses the input file **Input.txt** to read details about the problem, such as the positions of boundaries or materials in the problem. An example of such an input can be seen below:
   ```
   ------------------------------------------
-  Solver: - Thomas, BCG or CG (only active for non-PETSc usage)
-  BCG
-  ------------------------------------------
   Regions: - Integer number of regions in the problem
   2
   ------------------------------------------
@@ -128,7 +125,6 @@ Close( Output File)
   ------------------------------------------
   ```
    For this example problem, we are stating that we have a geometry ranging from *x = 0.0* to *1.0*, half fuel and half steel with a central boundary at *x = 0.5*. As seen from the above input, the code needs four different parameters to be described to it.
-  - **Solver** - This tells our code what solver we will be using. The specific types of solvers utilised are discussed later in the readme, but this can be left as BCG if you are not interested in specific solver routines. Note that CG should not be used unless both boundary conditions are set to 'Zero'. 
   - **Regions** - An integer number of regions that exists within the problem. We have 1 region from *0.0* to *0.5* and another from *0.5* to *1.0*, hence we give the code the integer number **2**.
   - **Boundaries** - The positions of the boundaries within the problem. Our first boundary is at the start of our geometry so we enter the number **0.0**. We then have an internal boundary halfway through the problem seperating the regions so we enter the number **0.5**. Finally we have the exterior boundary of our geometry, so we enter the number **1.0**. The code will always read one more value here than the number of regions in the problem.
   - **Nodes** - This desribes how refined we want the geometry in each region. For the example we want a quick solve with just enough nodes to see the flux profile. As we need to describe this for each region we enter the value **10** twice. The code will always read the same number of values here as the number of regions in the problem.

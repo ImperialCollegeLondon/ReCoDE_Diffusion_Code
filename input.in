@@ -1,7 +1,4 @@
 ------------------------------------------
-Solver: - Thomas, BCG or CG (only active for non-PETSc usage)
-BCG
-------------------------------------------
 Regions: - Integer number of regions in the problem
 2
 ------------------------------------------

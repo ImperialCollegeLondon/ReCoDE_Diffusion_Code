@@ -165,13 +165,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
     EndIf
 
     !!Solve the problem
-    If (SolverID == 1) Then
-        call ThomAlg_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    ElseIf (SolverID == 2) Then
-        call BCG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    ElseIf (SolverID == 3) Then
-        call CG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    EndIf
+    call BCG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
     
 # endif
 
