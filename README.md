@@ -466,7 +466,9 @@ End Subroutine PETSc_Init
 
 
 # Exercises
-This section contains a number of suggested exercises that will give the user a deeper understanding of the topics covered in the above descriptions and utilised throughout this code. Solutions to the exercises can be found in the 'solutions' directory, where a version of the main code exists, modified such that it solves the problem. The exercises will increase progressively in complexity, with jumps in challenge roughly seperated by the numeric ID of the exercise.
+This section contains a number of suggested exercises that will give the user a deeper understanding of the topics covered in the above descriptions and utilised throughout this code.  The exercises will increase progressively in complexity, with jumps in challenge roughly seperated by the numeric ID of the exercise. 
+
+Solutions to the exercises can be found in the 'solutions' directory, where a version of the main code exists, modified such that it solves the problem. Where possible, changes made to the main code have been appropriately commented with a double dollar symbol such that users can more readily find these modifications. For example, changes made for exercise 1a can be found by searching for '$$ Exercise 1a' within the appropriate solution directory.
 
 ## Exercise 1a
 
@@ -558,7 +560,7 @@ Currently the non-PETSc version of the code utilises a CRS system for handling t
 
 
 
-## Exercise 3c
+## Possible Extension Exercise
 
 **Task:** Make a wrapper for the blas/lapack library and use instead of PETSc/CG
 
@@ -567,7 +569,7 @@ Currently the non-PETSc version of the code utilises a CRS system for handling t
 - Gain experience installing external libraries
 - Understand how one can incorporate an external library into the code
 
-This final exercise involves incorporating an additional external library into the code. BLAS and LAPACK are often used in professional codes as the utilise a number of highly optimised mathematical routines. To solve the problem, the user should utilise DGETRF and DGETRI to perform LU decomposition and inversion of the matrix, then multiply it by the source vector using DGEMV. The code can be installed easily on a linux OS with the commands:
+This extension exercise involves incorporating an additional external library into the code. BLAS and LAPACK are often used in professional codes as the utilise a number of highly optimised mathematical routines. To solve the problem, the user should utilise DGETRF and DGETRI to perform LU decomposition and inversion of the matrix, then multiply it by the source vector using DGEMV. The code can be installed easily on a linux OS with the commands:
 
 ```bash
 sudo apt-get install libblas-dev liblapack-dev
