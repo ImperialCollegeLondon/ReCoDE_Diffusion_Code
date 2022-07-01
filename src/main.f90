@@ -24,17 +24,10 @@ Program Main
   type(t_MatGen) :: MatGen
   Real(kind=dp) :: time_start, time_stop
   Real(kind=dp), allocatable, dimension(:) :: Flux
-  !! $$ Exercise 1b
-  ! Integer :: ii
 
   call cpu_time(time_start)
   call Problem%ReadInput(Material)
   Write(*,*) ">Input Read"
-
-  !! $$ Exercise 1b
-  ! Do ii = 1, Size(Material)
-  !   call Material(ii)%PrintMaterial()
-  ! EndDo
 
   call MatGen%Create(Problem)
   Write(*,*) ">Matrices Created"

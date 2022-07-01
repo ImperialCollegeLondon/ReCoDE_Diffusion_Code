@@ -16,8 +16,6 @@ Module Materials_Mod
         procedure, public :: SetProps => SetMaterialProperties
         procedure, public :: GetSig_a
         procedure, public :: GetS
-        !! $$ Exercise 1b
-        ! procedure, public :: PrintMaterial
   end type
 contains
 
@@ -27,8 +25,6 @@ contains
         Character(len=20) :: name
         !!Set the name of the material
         this%name = name
-        !! $$ Exercise 1a
-        ! Write(*,*) name
     End Subroutine SetMaterialName
 
 
@@ -63,19 +59,6 @@ contains
         !!Get source of material
         Res = this%S
     End Function GetS
-
-    !! $$ Exercise 1b
-    ! Subroutine PrintMaterial(this)
-    !     class(t_material) :: this
-    !     !!Print the material data
-    !     Write(*,*) "=========="
-    !     Write(*,*) "Material Name: ", this%name
-    !     Write(*,'(g0)',advance='no') " Absorption: "
-    !     Write(*,'(E14.6)') this%Sig_a
-    !     Write(*,'(g0)',advance='no') " Source:"
-    !     Write(*,'(E14.6)') this%S
-    !     Write(*,*) "=========="
-    ! End Subroutine PrintMaterial
 
 
 End Module
