@@ -14,12 +14,6 @@
         <DataArray Name="Cell" format="ascii" type="Int32" >
           1 2 3 4 5 6 7 8 
         </DataArray>
-        <DataArray Name="Absorption" format="ascii" type="Int32" >
-            0.100000E+01   0.100000E+01   0.100000E+01   0.100000E+01   0.100000E+01   0.100000E+01   0.100000E+01   0.100000E+01 
-        </DataArray>
-        <DataArray Name="Source" format="ascii" type="Int32" >
-            0.600000E+01   0.600000E+01   0.600000E+01   0.600000E+01   0.600000E+01   0.600000E+01   0.600000E+01   0.600000E+01 
-        </DataArray>
       </CellData>
       <Points>
         <DataArray Name="Coordinates" NumberOfComponents="3" format="ascii" type="Float64" >
@@ -34,7 +28,7 @@
           4 8 12 16 20 24 28 32 
          </DataArray>
           <DataArray type="Int32" Name="types" format="ascii">
-          5 5 5 5 5 5 5 5 
+          9 9 9 9 9 9 9 9 
          </DataArray>
       </Cells>
     </Piece>

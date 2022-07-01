@@ -64,6 +64,8 @@ Subroutine GenerateVTU(Problem,Material,Flux)
     Write(vtufile,'(g0)',advance='no') "    "
     Write(vtufile,'(g0)',advance='no') '<Piece NumberOfPoints="'
     Write(vtufile,'(g0)',advance='no') N_Nodes*2
+    !! $$ Exercise 3a
+    ! Write(vtufile,'(g0)',advance='no') N_Nodes*4
     Write(vtufile,'(g0)',advance='no') '" NumberOfCells="'
     Write(vtufile,'(g0)',advance='no') N_Nodes-1
     Write(vtufile,'(g0)') '">'
@@ -85,6 +87,17 @@ Subroutine GenerateVTU(Problem,Material,Flux)
         Write(vtufile,'(E14.6)',advance='no') Flux(ii)
         Write(vtufile,'(g0)',advance='no') " "
     EndDo
+    !! $$ Exercise 3a
+    !!Copy of flux to be smeared in z
+    ! Do ii = 1, N_Nodes
+    !     Write(vtufile,'(E14.6)',advance='no') Flux(ii)
+    !     Write(vtufile,'(g0)',advance='no') " "
+    ! EndDo
+    ! Do ii = 1, N_Nodes
+    !     Write(vtufile,'(E14.6)',advance='no') Flux(ii)
+    !     Write(vtufile,'(g0)',advance='no') " "
+    ! EndDo
+
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') "</DataArray>"
@@ -129,7 +142,7 @@ Subroutine GenerateVTU(Problem,Material,Flux)
     !! $$ Exercise 2b - Needs material passed in
     !!Loop over the problem to find the absorption and source
     ! Write(vtufile,'(g0)',advance='no') "        "
-    ! Write(vtufile,'(g0)') '<DataArray Name="Absorption" format="ascii" type="Int32" >'
+    ! Write(vtufile,'(g0)') '<DataArray Name="Absorption" format="ascii" type="Float64" >'
     ! Write(vtufile,'(g0)',advance='no') "          "
     ! Do ii = 1, N_Regions
     !     Absorption = Material(ii)%GetSig_a()
@@ -142,7 +155,7 @@ Subroutine GenerateVTU(Problem,Material,Flux)
     ! Write(vtufile,'(g0)',advance='no') "        "
     ! Write(vtufile,'(g0)') "</DataArray>"
     ! Write(vtufile,'(g0)',advance='no') "        "
-    ! Write(vtufile,'(g0)') '<DataArray Name="Source" format="ascii" type="Int32" >'
+    ! Write(vtufile,'(g0)') '<DataArray Name="Source" format="ascii" type="Float64" >'
     ! Write(vtufile,'(g0)',advance='no') "          "
     ! Do ii = 1, N_Regions
     !     Source = Material(ii)%GetS()
@@ -191,11 +204,40 @@ Subroutine GenerateVTU(Problem,Material,Flux)
     !!Final Node
     Write(vtufile,'(E14.6)',advance='no') Boundary_Pos(N_Regions+1)
     Write(vtufile,'(g0)',advance='no') " 0.100000E+01 0.000000E+00 "
+
+    !! $$ Exercise 3a
+    !!Copy of 2D results smeared in z for vtu visualisation
+    ! Position = 0._dp
+    ! Do ii = 1, N_Regions
+    !     Do jj = 1, RegionNodes(ii)-1
+    !         Write(vtufile,'(E14.6)',advance='no') Position
+    !         Write(vtufile,'(g0)',advance='no') " 0.000000E+00 0.100000E+01 "
+    !         Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
+    !     EndDo 
+    ! EndDo
+    ! !!Final Node
+    ! Write(vtufile,'(E14.6)',advance='no') Boundary_Pos(N_Regions+1)
+    ! Write(vtufile,'(g0)',advance='no') " 0.000000E+00 0.100000E+01 "
+    ! Position = 0._dp
+    ! Do ii = 1, N_Regions
+    !     Do jj = 1, RegionNodes(ii)-1
+    !         Write(vtufile,'(E14.6)',advance='no') Position
+    !         Write(vtufile,'(g0)',advance='no') " 0.100000E+01 0.100000E+01 "
+    !         Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
+    !     EndDo 
+    ! EndDo
+    ! !!Final Node
+    ! Write(vtufile,'(E14.6)',advance='no') Boundary_Pos(N_Regions+1)
+    ! Write(vtufile,'(g0)',advance='no') " 0.100000E+01 0.100000E+01 "
+
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') "</DataArray>"
     Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') "</Points>"
+
+    
+
 
 
     !!Fill in the cell data
@@ -215,6 +257,25 @@ Subroutine GenerateVTU(Problem,Material,Flux)
         Write(vtufile,'(g0)',advance='no') ii-1+N_Nodes
         Write(vtufile,'(g0)',advance='no') " "
     EndDo
+    !! $$ Exercise 3a
+    ! Do ii = 1, N_Nodes-1
+    !     Write(vtufile,'(g0)',advance='no') ii-1
+    !     Write(vtufile,'(g0)',advance='no') " "
+    !     Write(vtufile,'(g0)',advance='no') ii
+    !     Write(vtufile,'(g0)',advance='no') " "
+    !     Write(vtufile,'(g0)',advance='no') ii+N_Nodes
+    !     Write(vtufile,'(g0)',advance='no') " "
+    !     Write(vtufile,'(g0)',advance='no') ii-1+N_Nodes
+    !     Write(vtufile,'(g0)',advance='no') " "
+    !     Write(vtufile,'(g0)',advance='no') ii-1+(N_Nodes*2)
+    !     Write(vtufile,'(g0)',advance='no') " "
+    !     Write(vtufile,'(g0)',advance='no') ii+(N_Nodes*2)
+    !     Write(vtufile,'(g0)',advance='no') " "
+    !     Write(vtufile,'(g0)',advance='no') ii+(N_Nodes*3)
+    !     Write(vtufile,'(g0)',advance='no') " "
+    !     Write(vtufile,'(g0)',advance='no') ii-1+(N_Nodes*3)
+    !     Write(vtufile,'(g0)',advance='no') " "
+    ! EndDo
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') " </DataArray>"
@@ -226,6 +287,11 @@ Subroutine GenerateVTU(Problem,Material,Flux)
         Write(vtufile,'(g0)',advance='no') ii*4
         Write(vtufile,'(g0)',advance='no') " "
     EndDo
+    !! $$ Exercise 3a
+    ! Do ii = 1, N_Nodes-1
+    !     Write(vtufile,'(g0)',advance='no') ii*8
+    !     Write(vtufile,'(g0)',advance='no') " "
+    ! EndDo
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') " </DataArray>"
@@ -235,9 +301,14 @@ Subroutine GenerateVTU(Problem,Material,Flux)
     Write(vtufile,'(g0)') '<DataArray type="Int32" Name="types" format="ascii">'
     Write(vtufile,'(g0)',advance='no') "          "
     Do ii = 1, N_Nodes-1
-        Write(vtufile,'(g0)',advance='no') 5
+        Write(vtufile,'(g0)',advance='no') 9
         Write(vtufile,'(g0)',advance='no') " "
     EndDo
+    !! $$ Exercise 3a
+    ! Do ii = 1, N_Nodes-1
+    !     Write(vtufile,'(g0)',advance='no') 12
+    !     Write(vtufile,'(g0)',advance='no') " "
+    ! EndDo
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') " </DataArray>"
