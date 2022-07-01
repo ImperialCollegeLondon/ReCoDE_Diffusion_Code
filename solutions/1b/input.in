@@ -1,0 +1,21 @@
+------------------------------------------
+Regions: - Integer number of regions in the problem
+2
+------------------------------------------
+Boundaries: - Real number positions of the boundaries between the regions (one per line)
+0.0
+0.5
+1.0
+------------------------------------------
+Nodes: - Integer number of nodes in each region (one per line)
+5
+5
+------------------------------------------
+Materials: - Fuel, Water or Steel (one per line)
+Fuel
+Fuel
+------------------------------------------
+Boundary_Conditions: - Zero or Reflective (two parameters - one per line)
+Zero
+Zero
+------------------------------------------

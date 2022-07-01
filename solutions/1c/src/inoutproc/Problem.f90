@@ -84,6 +84,9 @@ Subroutine ReadInput(this,Material)
       Call Material(ii)%SetProps(2._dp,0.1_dp)
     ElseIf  (String_Read == 'Steel') Then 
       Call Material(ii)%SetProps(5._dp,0.1_dp)
+    !! $$ Exercise 1c
+    ElseIf  (String_Read == 'Iron') Then 
+      Call Material(ii)%SetProps(4._dp,0.1_dp)
     Else 
       Write(*,*) "ERROR: Unrecognised Material"
     EndIf

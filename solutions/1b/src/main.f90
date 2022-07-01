@@ -42,7 +42,7 @@ Program Main
   call MatGen%Solve(Material,Problem,Flux)
   Write(*,*) ">Problem Assembled"
 
-  call GenerateVTU(Problem,Material,Flux)
+  call GenerateVTU(Problem,Flux)
   Write(*,*) ">Output Generated"
 
   call MatGen%Destroy(Flux)
