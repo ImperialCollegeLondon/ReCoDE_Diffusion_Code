@@ -399,24 +399,70 @@ Such solvers are widely used throughout scientific computing as they are widely 
 
 While our code could solve problems that involve homogenous systems, real systems will have properties that vary in some dimensions. A 1-Dimensional code such as this example code can facilitate variations in properties in the x dimension. To do so, we must have some method of disretising our spatial x dimension which allows us to consistently generate relevant systems of equations to describe the system. The specific deisretisation scheme that we utilise in our code is known as 'finite difference', a scheme that generates very simple systems of equations, especially in a one-dimensional case.
 
+This discretisation scheme can be seen in the image below, whre we split out domain into nodes from $0$ to $n$. Each non-boundary node $i$ will therefore have corresponding neighbouring nodes $i-1$ and $i+1$ which will need to be incorporated into a specific equation for the resulting solution to the node, described in further detail in the [Theory](#Theory) section. 
+
 ![FD](https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code/blob/main/images/FD.png)
+
+This therefore generates a system of equations of the form:
+
+$$ P_{i-1}\phi_{i-1} + P_{i}\phi_{i} + P_{i+1}\phi_{i+1} = S_{i} $$
+
+Where $P$ is some property of the system given by the scientific equation of interest, $\phi$ are the properties of interest that are being solved for (in our case neutron flux), and $S$ is a known result of the system (in our case the source of neutrons). As can be seen from the above equation, the solution at one node $i$ only depends on its immediate neighbours, so any matrix created for the system will be tridiagonal, meaning that only the main and adjacecnt diagonals will be filled.
 
 
 ## Optimised data storage
 
-- How data storage can be optimised for efficiency
+In addition to using faster codes such as fortran, we can also achieve some significant speed increases by being careful with our use of memory. One important optimisation in our code will be how we store the data in our matrix $A$. The matrix $A$ for a 3-node and 5-node system can be seen below, where $a$, $b$ and $c$ are our lower, main and upper diagonals respectively. We can already begin to see that we are storing a large portion of $0$ 's in our system, a probelm which will only increase as we increase our node numbers by orders of magnitude. 
+
+$$
+\left(\begin{array}{ccc} 
+b & c & 0\\
+a & b & c\\
+0 & a & b\\
+\end{array}\right)
+\rightarrow
+\left(\begin{array}{ccccc} 
+b & c & 0 & 0 & 0\\
+a & b & c & 0 & 0\\
+0 & a & b & c & 0\\
+0 & 0 & a & b & c\\
+0 & 0 & 0 & a & b\\
+\end{array}\right)
+$$ 
+
+These matrices are known as 'sparse', as much of the data that they contain is of value $0$. We can therefore drastically reduce the amount of memory needed to store this matrix by only saving the values and the positions that they occupy. A number of efficient storage systems exist for this problem, but we have chosen to use Compressed Row Storage (CRS) in this case as it makes no assumptions about the structure of the matrix and can therefore be applied to a large range of problems. A good explanation of this methodology can be found at http://netlib.org/linalg/html_templates/node91.html.
 
 
 ## Incorporating External Libraries
 
-- Writing a wrapper for a library
+While we can make many efforts to write our own optimised data storage and solver routines, a number of libraries exist which will do this far more optimally. In many cases, people will have spent huge amounts of time to write libraries that can perform an action as efficiently as possible, so it is sensible for us to expect their routines to provided a performance increase when compared to ours.
 
+For some smaller routines, you will often be able to find optimal examples shared online, but for larger problems you will often need to incorporate a whole library. In our code, we have facilitated the use of the 'Portable, Extensible Toolkit for Scientific Computation' (PETSc). Installing and using this library is explained in the respective [Installation](##Installing-PETSc) and [Compilation](##Compiling-with-PETSc) sections.
 
-- Compiling the code with PETSc
+When using an external library, we will generally have to write a 'wrapper' in our code, which provides an interface between our own routines and the routines of the library. An example of this is shown in the code snippets below for the **PETSc_Init** module, which initialises the PETSc library. We first create our module and use the **#include** statements to tell the code to use our main path specified in our makefile and then look for this specific file **petscsys.h**. We then tell it to **use petscsys**, allowing us to perform actions which require this file, such as initialising PETSc.
 
+```Fortran
+Module PETSc_Init_Mod
+!!Initialize the PETSc Database
+#include <petsc/finclude/petscsys.h>
+use petscsys
+```
 
-- Why we use external libraries
+We then write our subroutine which does the actual initialisation, **PETSc_Init**. We check if the routine has been called already and if not we call **PETScInitialize**, a routine of the PETSc library. This sets up PETSc such that we can now define our relevant vectors or matrices and then solve the system of equations.
 
+```Fortran
+Subroutine PETSc_Init
+  PetscErrorCode ierr
+  Logical :: Called = .FALSE.
+  If (.NOT. Called) Then
+    Call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
+    Called = .TRUE.
+    If (ierr .NE. 0) Then
+      Error Stop "Failed to Initialize PETSc"
+    EndIf
+  EndIf
+End Subroutine PETSc_Init
+```
 
 
 # Exercises
