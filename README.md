@@ -13,16 +13,16 @@
 This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
 This project aims to provide examples of:
-- [Compiled Codes and Makefiles](##compiled-codes-and-makefiles)
-- [Compiler Directives](##compiler-directives)
-- [Object Oriented Programming](##object-oriented-programming)
-- [Reading input data from file](##reading-input-data-from-file)
-- [Generating output files](##generating-output-files)
-- [Paraview](##paraview)
-- [Solving mathematical problems](##solving-mathematical-problems)
-- [Discretisation of a spatial dimension](##discretisation-of-a-spatial-dimension)
-- [Optimised data storage](##optimised-data-storage-and-solvers)
-- [Incorporating external libraries (PETSc)](##incorporating-external-libraries)
+- [Compiled Codes and Makefiles](#compiled-codes-and-makefiles)
+- [Compiler Directives](#compiler-directives)
+- [Object Oriented Programming](#object-oriented-programming)
+- [Reading input data from file](#reading-input-data-from-file)
+- [Generating output files](#generating-output-files)
+- [Paraview](#paraview)
+- [Solving mathematical problems](#solving-mathematical-problems)
+- [Discretisation of a spatial dimension](#discretisation-of-a-spatial-dimension)
+- [Optimised data storage](#optimised-data-storage)
+- [Incorporating external libraries (PETSc)](#incorporating-external-libraries)
 
 
 # Structure of the Code
