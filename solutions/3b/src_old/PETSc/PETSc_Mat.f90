@@ -6,7 +6,6 @@ Module PETSc_Mat_Mod
     use petscMat
     use Constants_Mod
     use PETSc_Vec_Mod
-    Implicit None
 
   type :: PMat
     type(tmat) :: mat
@@ -32,6 +31,7 @@ contains
 
 
 Subroutine Create_PETSc_Mat(This,N_row,N_col,N_nz)
+  Implicit None
   Class(PMat), intent(inout) :: This
   Integer :: N_row, N_col, N_nz
   PetscErrorCode ierr
@@ -40,6 +40,7 @@ End Subroutine Create_PETSc_Mat
 
 
 Subroutine Destroy_PETSc_Mat(This)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Call MatDestroy(This%mat,ierr); CHKERRQ(ierr)
@@ -47,6 +48,7 @@ End Subroutine Destroy_PETSc_Mat
 
 
 Subroutine SwitchAssemble_PETSc_Mat(This)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   call MatAssemblyBegin(This%mat,MAT_FLUSH_ASSEMBLY,ierr)
@@ -55,6 +57,7 @@ End Subroutine SwitchAssemble_PETSc_Mat
 
 
 Subroutine Assemble_PETSc_Mat(This)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   call MatAssemblyBegin(This%mat,MAT_FINAL_ASSEMBLY,ierr)
@@ -63,6 +66,7 @@ End Subroutine Assemble_PETSc_Mat
 
 
 Subroutine InsertVal_PETSc_Mat(This,V_row,V_col,Value)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: V_row, V_Col
@@ -78,13 +82,15 @@ End Subroutine InsertVal_PETSc_Mat
 
 
 Subroutine AddVal_PETSc_Mat(This,V_row,V_col,Value)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: V_row, V_Col
   Real(kind=dp) :: Value
   If ((V_row .LT. 1) .OR. (V_col .LT. 1)) Then
     Write(*,*) "### Error ###"
-    Error Stop "Inserting Value outside of bounds"
+    Write(*,*) "Inserting Value outside of bounds"
+    Stop
   EndIf
   !!Convert the row and col integers to P format
   call MatSetValue(This%mat,V_row-1,V_col-1,Value,ADD_VALUES,ierr)
@@ -92,6 +98,7 @@ End Subroutine AddVal_PETSc_Mat
 
 
 Subroutine InsertMat_PETSc_Mat(This,V_rows,V_cols,Values)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: N_rows, N_cols
@@ -110,6 +117,7 @@ End Subroutine InsertMat_PETSc_Mat
 
 
 Subroutine AddMat_PETSc_Mat(This,V_rows,V_cols,Values)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: N_rows, N_cols
@@ -128,6 +136,7 @@ End Subroutine AddMat_PETSc_Mat
 
 
 Subroutine GetSizeMat_PETSc_Mat(This,N_rows,N_cols)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: N_rows, N_cols
@@ -136,6 +145,7 @@ End Subroutine GetSizeMat_PETSc_Mat
 
 
 Function GetValMat_PETSc_Mat(This,V_row,V_col) Result(Value)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: V_row, V_col
@@ -151,6 +161,7 @@ End Function GetValMat_PETSc_Mat
 
 
 Subroutine GetValsMat_PETSc_Mat(This,V_rows,V_cols,Values)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: N_rows, N_cols
@@ -169,6 +180,7 @@ End Subroutine GetValsMat_PETSc_Mat
 
 
 Subroutine MultMat_PETSc_Mat(This,In_Vec,Out_Vec)
+  Implicit None
   Class(PMat), intent(inout) :: This
   class(pVec) :: In_Vec, Out_Vec
   PetscErrorCode ierr
@@ -177,6 +189,7 @@ End Subroutine MultMat_PETSc_Mat
 
 
 Subroutine MultAddMat_PETSc_Mat(This,In_Vec,Add_Vec,Out_Vec)
+  Implicit None
   Class(PMat), intent(inout) :: This
   Class(pVec) :: In_Vec, Add_Vec, Out_Vec
   PetscErrorCode ierr
@@ -185,6 +198,7 @@ End Subroutine MultAddMat_PETSc_Mat
 
 
 Subroutine MatView_PETSc_Mat(This)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   call MatView(This%mat,PETSC_VIEWER_STDOUT_WORLD,ierr)
@@ -192,6 +206,7 @@ End Subroutine MatView_PETSc_Mat
 
 
 Subroutine Symmetry_PETSc_Mat(This,SymLog)
+  Implicit None
   Class(PMat), intent(inout) :: This
   PetscErrorCode ierr
   Logical :: SymLog

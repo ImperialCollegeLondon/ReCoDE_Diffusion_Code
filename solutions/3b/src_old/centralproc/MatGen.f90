@@ -1,6 +1,7 @@
 Module MatGen_Mod
 
     use Constants_Mod
+    use StdLib_Mod
     use Materials_Mod
     use Problem_Mod
 # ifdef PETSC
@@ -167,8 +168,9 @@ Subroutine Solve(this,Material,Problem,Vecx)
     EndIf
 
     !!Solve the problem
-    call BCG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    
+    call ThomAlg_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
+    !!CG Alg Version
+    ! call CG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
 # endif
 
 

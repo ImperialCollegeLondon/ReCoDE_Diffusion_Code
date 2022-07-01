@@ -7,6 +7,9 @@ Module Materials_Mod
 
   type, public :: t_material
         private
+        !!Currently only storing the absorption and source terms
+        !!For a multigroup code these would be allocatable arrays
+        !!There would also be an associated allocatable scattering matrix
         Real(kind=dp) :: Sig_a, S
         Character(len=20) :: Name
     contains
@@ -31,7 +34,7 @@ contains
     Function GetMaterialName(this) Result(Res)
         class(t_material) :: this
         Character(len=20) :: Res
-        !!Get the name of the material
+        !!Get the name of the material (generally for debugging purposes)
         Res = this%name
     End Function GetMaterialName
 
@@ -59,6 +62,5 @@ contains
         !!Get source of material
         Res = this%S
     End Function GetS
-
 
 End Module

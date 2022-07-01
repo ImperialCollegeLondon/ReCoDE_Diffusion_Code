@@ -33,7 +33,7 @@ Subroutine ReadInput(this,Material)
   Character(len=32) :: String_Read
 
 
-  !!Open input file containing problem specification
+  !!Open onput file containing problem specification
   Open(InputFile, File='input.in', Status='Old')
 
   !!Read in the number of Regions
@@ -68,7 +68,6 @@ Subroutine ReadInput(this,Material)
     this%N_Nodes = this%N_Nodes + this%Nodes(ii)
   EndDo
   this%N_Nodes = this%N_Nodes - (this%N_Regions - 1)
-
 
   !!Read in the materials and set the data
   String_Read = ''

@@ -5,7 +5,7 @@ Module PETSc_Vec_Mod
     use petscSys
     use petscVec
     use Constants_Mod
-  Implicit None
+
   type :: PVec
     type(tvec) :: vec
   contains
@@ -27,6 +27,7 @@ contains
 
 
 Subroutine Create_PETSc_Vec(This,N_vec)
+  Implicit None
   Class(PVec), intent(inout) :: This
   Integer :: N_vec
   PetscErrorCode ierr
@@ -37,6 +38,7 @@ End Subroutine Create_PETSc_Vec
 
 
 Subroutine Destroy_PETSc_Vec(This)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   Call VecDestroy(This%vec,ierr); CHKERRQ(ierr)
@@ -44,6 +46,7 @@ End Subroutine Destroy_PETSc_Vec
 
 
 Subroutine Assemble_PETSc_Vec(This)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   call VecAssemblyBegin(This%vec,ierr)
@@ -52,6 +55,7 @@ End Subroutine Assemble_PETSc_Vec
 
 
 Subroutine ConvTo_PETSc_Vec(This,Val_vec)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: N_Vec, ii
@@ -69,6 +73,7 @@ End Subroutine ConvTo_PETSc_Vec
 
 
 Subroutine ConvFrom_PETSc_Vec(This,Val_vec)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: N_Vec, ii
@@ -77,7 +82,8 @@ Subroutine ConvFrom_PETSc_Vec(This,Val_vec)
   call This%GetSize(N_Vec)
   If (N_Vec .NE. Size(Val_vec)) Then
     Write(*,*) "### Error ###"
-    Error Stop "PVec and Output vec size do not match"
+    Write(*,*) "PVec and Output vec size do not match"
+    Stop
   EndIf
   Allocate(Pos_vec(N_Vec))
   Do ii = 1, N_Vec
@@ -90,6 +96,7 @@ End Subroutine ConvFrom_PETSc_Vec
 
 
 Subroutine GetSize_PETSc_Vec(This,N_GetSize)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   Integer :: N_GetSize
@@ -98,6 +105,7 @@ End Subroutine GetSize_PETSc_Vec
 
 
 Subroutine VecView_PETSc_Vec(This)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   call VecView(This%vec,PETSC_VIEWER_STDOUT_WORLD,ierr); CHKERRQ(ierr)
@@ -105,6 +113,7 @@ End Subroutine VecView_PETSc_Vec
 
 
 Subroutine Reset_PETSc_Vec(This)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   call VecZeroEntries(this%vec,ierr)
@@ -112,6 +121,7 @@ End Subroutine Reset_PETSc_Vec
 
 
 Subroutine InsertValue_PETSc_Vec(this,Position,Value)
+  Implicit None 
   Class(PVec), intent(inout) :: this
   Real(kind=dp) :: Value 
   Integer :: Position 
@@ -120,6 +130,7 @@ End Subroutine InsertValue_PETSc_Vec
 
 
 Subroutine AddValue_PETSc_Vec(this,Position,Value)
+  Implicit None 
   Class(PVec), intent(inout) :: this
   Real(kind=dp) :: Value 
   Integer :: Position
@@ -128,6 +139,7 @@ End Subroutine AddValue_PETSc_Vec
 
 
 Subroutine SetAll_PETSc_Vec(This,Val_All)
+  Implicit None
   Class(PVec), intent(inout) :: This
   PetscErrorCode ierr
   Real(kind=dp) :: Val_All

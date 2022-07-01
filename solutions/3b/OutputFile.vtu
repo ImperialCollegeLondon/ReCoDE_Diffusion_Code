@@ -28,7 +28,7 @@
           4 8 12 16 20 24 28 32 
          </DataArray>
           <DataArray type="Int32" Name="types" format="ascii">
-          5 5 5 5 5 5 5 5 
+          9 9 9 9 9 9 9 9 
          </DataArray>
       </Cells>
     </Piece>

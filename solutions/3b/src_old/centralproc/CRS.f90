@@ -5,17 +5,16 @@ module CRS_Mod
   implicit none
 
   type, extends(t_matrix_base)  ::  t_crs
-    private
     integer, dimension(:), allocatable                        ::  col_index !The column of each non-zero entry into the matrix
     integer, dimension(:), allocatable                        ::  row_start !The index of the first entry in each row in the values array
     real(kind=dp), dimension(:), allocatable                  ::  values !The values of each non-zero entry in the matrix
     
     contains
-      procedure, public ::  construct => construct_crs
-      procedure, public ::  destroy => destroy_crs
-      procedure, public ::  get => get_crs
-      procedure, public ::  set => set_crs
-      procedure, public ::  operate => operate_crs
+      procedure ::  construct => construct_crs
+      procedure ::  destroy => destroy_crs
+      procedure ::  get => get_crs
+      procedure ::  set => set_crs
+      procedure ::  operate => operate_crs
       procedure ::  check_explicit => check_explicit_crs
       procedure ::  remove_zeroes => remove_zeroes_crs
       procedure ::  find_row_by_values_index => find_row_by_values_index_crs
@@ -152,7 +151,7 @@ module CRS_Mod
         !First, check if the vector to be multiplied has the same number of rows as the matrix
         if (size(vector_in).ne.this%n_column) then
           write(*, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
-          Error Stop "Incorrectly sized vector for matrix multiplication"
+          stop
         end if
   
         !Set the output to zero start with, then add up all contributions
@@ -183,13 +182,13 @@ module CRS_Mod
       !The case that the matrix does not have a positive number of entries
       if (this%n_row<1 .or. this%n_column<1)then
         write(*, '(A, 2(I0, A))') "Error: check_explicit_crs was asked for a value when the matrix only has ", this%n_row, " row(s) and ", this%n_column, " column(s). Terminating."
-        Error Stop "Unitialised matrix"
+        stop
       end if
 
       !The case that the value asked for falls outside the matrix
       if (row<1 .or. row>this%n_row .or. column<1 .or. column>this%n_column)then
-        write(*, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", this%n_row, " and the matrix's columns extend from 1 to ", this%n_column, ". Terminating."
-        Error Stop "Matrix access out of bounds"
+        write(*, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", this%n_row, " and the matrix's columsn extend from 1 to ", this%n_column, ". Terminating."
+        stop
       end if
 
       !The case that the row of the requested value is before the first non-zero row or after the last non-zero row
