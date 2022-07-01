@@ -13,13 +13,19 @@ Module Output_Mod
     end type
 contains
 
-Subroutine GenerateVTU(Problem,Flux)
+Subroutine GenerateVTU(Problem,Material,Flux)
     type(t_problem) :: Problem 
+    !! $$ Exercise 2b
+    type(t_material), dimension(:) :: Material
     Integer :: ii, jj, N_Nodes, N_Regions, NodeID
     Integer, allocatable, dimension(:) :: RegionNodes
     Integer, parameter :: textfile = 201, vtufile = 202 
     Real(kind=dp) :: Position
     Real(kind=dp), allocatable, dimension(:) :: Flux, Boundary_Pos
+
+    !! $$ Exercise 2b
+    Real(kind=dp) :: Absorption, Source
+
     !!Generate the VTU file using the resultand flux sorted in the PETSc vector x
 
     !!Extract relevant problem information
@@ -90,6 +96,8 @@ Subroutine GenerateVTU(Problem,Flux)
     !!Cell data section 
     Write(vtufile,'(g0)',advance='no') "      "
     Write(vtufile,'(g0)') '<CellData Scalars="Region, Cell">'
+    !! $$ Exercise 2b
+    ! Write(vtufile,'(g0)') '<CellData Scalars="Region, Cell, Absorption, Source">'
 
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') '<DataArray Name="Region" format="ascii" type="Int32" >'
@@ -117,6 +125,35 @@ Subroutine GenerateVTU(Problem,Flux)
     Write(vtufile,'(g0)') ""
     Write(vtufile,'(g0)',advance='no') "        "
     Write(vtufile,'(g0)') "</DataArray>"
+
+    !! $$ Exercise 2b - Needs material passed in
+    !!Loop over the problem to find the absorption and source
+    ! Write(vtufile,'(g0)',advance='no') "        "
+    ! Write(vtufile,'(g0)') '<DataArray Name="Absorption" format="ascii" type="Int32" >'
+    ! Write(vtufile,'(g0)',advance='no') "          "
+    ! Do ii = 1, N_Regions
+    !     Absorption = Material(ii)%GetSig_a()
+    !     Do jj = 1, RegionNodes(ii)-1
+    !         Write(vtufile,'(E14.6)',advance='no') Absorption
+    !         Write(vtufile,'(g0)',advance='no') " "
+    !     EndDo    
+    ! EndDo
+    ! Write(vtufile,'(g0)') ""
+    ! Write(vtufile,'(g0)',advance='no') "        "
+    ! Write(vtufile,'(g0)') "</DataArray>"
+    ! Write(vtufile,'(g0)',advance='no') "        "
+    ! Write(vtufile,'(g0)') '<DataArray Name="Source" format="ascii" type="Int32" >'
+    ! Write(vtufile,'(g0)',advance='no') "          "
+    ! Do ii = 1, N_Regions
+    !     Source = Material(ii)%GetS()
+    !     Do jj = 1, RegionNodes(ii)-1
+    !         Write(vtufile,'(E14.6)',advance='no') Source
+    !         Write(vtufile,'(g0)',advance='no') " "
+    !     EndDo    
+    ! EndDo
+    ! Write(vtufile,'(g0)') ""
+    ! Write(vtufile,'(g0)',advance='no') "        "
+    ! Write(vtufile,'(g0)') "</DataArray>"
     
 
     Write(vtufile,'(g0)',advance='no') "      "

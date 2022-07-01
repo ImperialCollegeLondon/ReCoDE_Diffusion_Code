@@ -521,7 +521,7 @@ Currently, the code reads in a material name and then assigns material propertie
 
 ## Exercise 2b
 
-**Task:** Add another set of cell data to the .vtu file where the material properties of each cell can be viewed e.g. absorption 
+**Task:** Add another two sets of cell data to the .vtu file where the absorption and source material properties of each cell can be viewed 
 
 **Aims:** 
 
