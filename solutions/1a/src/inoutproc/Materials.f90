@@ -25,6 +25,8 @@ contains
         Character(len=20) :: name
         !!Set the name of the material
         this%name = name
+        !! $$ Exercise 1a
+        Write(*,*) name
     End Subroutine SetMaterialName
 
 
