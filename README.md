@@ -262,6 +262,18 @@ This flag can then be checked with C pre-processor language to allow for differn
 # endif
 ```
 
+To test this we can enter the following commands to view the modified output with additional information:
+```bash
+make clean
+make debug
+```
+
+Then in our main directory we can run the newly compiled 'debug' version of the code
+```bash
+./diffusion
+```
+
+
 ## Reading input data from file
 
 Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the **Problem** module, where an input file has been opened and the boundary conditions read in.
