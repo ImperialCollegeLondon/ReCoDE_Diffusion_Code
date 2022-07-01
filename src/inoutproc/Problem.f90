@@ -31,6 +31,8 @@ Subroutine ReadInput(this,Material)
   Integer :: ii
   Integer, parameter :: InputFile = 101
   Character(len=32) :: String_Read
+  !! $$ Exercise 2a
+  ! Real(kind=dp) :: Absorption, Source
 
 
   !!Open input file containing problem specification
@@ -69,6 +71,7 @@ Subroutine ReadInput(this,Material)
   EndDo
   this%N_Nodes = this%N_Nodes - (this%N_Regions - 1)
 
+
   !!Read in the materials and set the data
   String_Read = ''
   Do While (String_Read .NE. 'Materials:')
@@ -83,13 +86,26 @@ Subroutine ReadInput(this,Material)
       Call Material(ii)%SetProps(2._dp,0.1_dp)
     ElseIf  (String_Read == 'Steel') Then 
       Call Material(ii)%SetProps(5._dp,0.1_dp)
-    !! $$ Exercise 1c
+    !! $$ Exercise 1c - Add Iron to input deck
     ! ElseIf  (String_Read == 'Iron') Then 
     !   Call Material(ii)%SetProps(4._dp,0.1_dp)
     Else 
       Write(*,*) "ERROR: Unrecognised Material"
     EndIf
   EndDo
+
+  ! !! $$ Exercise 2a - Carry across change to input deck
+  ! !!Read in the materials and set the data
+  ! String_Read = ''
+  ! Do While (String_Read .NE. 'Materials:')
+  !   Read(InputFile,*) String_Read
+  ! EndDo
+  ! Do ii = 1, this%N_Regions
+  !   Read(InputFile,*) String_Read
+  !   Call Material(ii)%SetName(String_Read)
+  !   Read(InputFile,*) Absorption, Sourcec
+  !   Call Material(ii)%SetProps(Absorption,Source)
+  ! EndDo
 
   !!Read in the boundary conditions of the problem
   String_Read = ''
