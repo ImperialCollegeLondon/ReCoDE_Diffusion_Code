@@ -3,3 +3,6 @@
 diffusion
 diffusion_petsc
 /.vscode
+site/
+venv/
+
