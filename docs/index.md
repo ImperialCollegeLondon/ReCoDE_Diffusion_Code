@@ -1,4 +1,4 @@
 {%
-include-markdown "../README-new.md"
+include-markdown "../README.md"
 
 %}
