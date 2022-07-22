@@ -28,7 +28,7 @@ petsc_debug: LIBS =$(PETSC_LIBS)
 
 
 # Compiler options
-FC_FLAGS_COMMON = -ffree-line-length-800 -Wall -std=f2018
+FC_FLAGS_COMMON = -ffree-line-length-none -Wall -std=f2018
 FC_FLAGS_DEBUG = $(FC_FLAGS_COMMON) -O0 -g -pg -fcheck=bounds -DDEBUG
 FC_FLAGS = $(FC_FLAGS_COMMON) -O3 
 petsc:   FC_FLAGS = $(FC_FLAGS_COMMON) -DPETSC
@@ -44,26 +44,26 @@ petsc_debug:   LD_FLAGS = $(LD_FLAGS_DEBUG)
 
 #Set the objects
 #Note the order below is determined by dependencies between object files
-OBJS= stdlib/Constants.o \
- inoutproc/Materials.o \
- inoutproc/Problem.o \
- inoutproc/Output.o \
- centralproc/Matrix_Base.o \
- centralproc/CRS.o \
- centralproc/Solver.o \
- centralproc/MatGen.o \
+OBJS= Constants.o \
+ Materials.o \
+ Problem.o \
+ Output.o \
+ Matrix_Base.o \
+ CRS.o \
+ Solver.o \
+ MatGen.o \
  main.o \
 
-OBJS_PETSC= stdlib/Constants.o \
+OBJS_PETSC= Constants.o \
  PETSc/PETSc_Init.o \
  PETSc/PETSc_Vec.o \
  PETSc/PETSc_Mat.o \
  PETSc/PETSc_Ksp.o \
- inoutproc/Materials.o \
- inoutproc/Problem.o \
- inoutproc/Output.o \
- centralproc/PETScSolver.o \
- centralproc/MatGen.o \
+ Materials.o \
+ Problem.o \
+ Output.o \
+ PETScSolver.o \
+ MatGen.o \
  main.o \
 
 
