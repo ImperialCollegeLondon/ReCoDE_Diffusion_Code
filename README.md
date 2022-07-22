@@ -1,10 +1,43 @@
 # ReCoDE - Neutron Diffusion Model
 
-<!-- TODO: needs to be placed within template form -->
+## Description
 
 This code is part of the Research Computing and Data Science Examples (ReCoDE) project. The code itself is a 1-dimensional neutron diffusion solver written in Fortran in an object-oriented format. The example will focus on features of the code that can be used as a teaching aid to give readers some experience with the concepts such that they can implement them in the exercises or directly in their own codes. An understanding of neutron diffusion and reactor physics is not required for this example, but a discussion of the theory can be found in the bottom section of this readme.
 
-## Compiling the Code
+## Learning Outcomes
+
+- Compiled Codes and Makefiles
+- Compiler Directives
+- Object-Oriented Programming
+- Reading input data from file
+- Generating output files
+- Using ParaView to visualise numerical results
+- Solving mathematical problems
+- Discretisation of a spatial dimension
+- Optimised data storage
+- Incorporating external libraries (PETSc)
+
+## Requirements
+
+### Academic
+
+Entry level researcher with basic knowledge of Fortran syntax.
+For a Fortran crash course see [here](https://www.tutorialspoint.com/fortran/fortran_basic_syntax.htm)
+
+### System
+
+| Program    | Version  |
+| ---------- | -------- |
+| `gfortran` | >=9.0.0  |
+| `gcc`      | >=9.0.0  |
+| `GNU make` | >=4.2.0  |
+| `Anaconda` | >=4.13.0 |
+
+<!-- Anaconda: cmake and fpm -->
+
+## Getting Started
+
+### Compiling the Code
 
 As Fortran is a compiled language, the code must first be compiled before it can be executed. To do so, navigate to the **src** directory within the code and enter the commands:
 
@@ -21,7 +54,7 @@ The **make clean** command first leans the directory of any module files or exec
 
 This command tells the executable to run and will generate relevant output files containing the solution to the problem.
 
-## Changing Input Options
+### Changing Input Options
 
 The code is designed such that the user can easily change the problem which the code is attempting to solve. The code uses the input file **Input.txt** to read details about the problem, such as the positions of boundaries or materials in the problem. An example of such an input can be seen below:
 
@@ -57,7 +90,7 @@ For this example problem, we are stating that we have a geometry ranging from _x
 - **Materials** - This described the materials that are present within the system. The first half of our geometry is fuel, with the latter half being Steel, so we enter **Fuel** and **Steel**. The code will always read the same number of values here as the number of regions in the problem.
 - **Boundary Conditions** - This tells the code what boundaries exist at the edges of our problem. Two boundary conditions have been implemented in out code, that of 'Zero' and 'Reflective'. The former simply ensures that the flux will tend to zero at the boundary, while the latter ensures that the derivative of the flux will tend to zero at the boundary.
 
-## Reading Output Files
+### Reading Output Files
 
 The code generates two output files, **Output.txt** and **Output.vtu**. The former is a simple text file containing the position and flux of the solution to the problem. These are simply given in two columns such that they can be read easily by something like a GNUPlot or Python script. An example of such a flux profile can be seen below:
 
@@ -96,3 +129,32 @@ Instructions on how to install ParaView can be found at:
 <https://www.ParaView.org/Wiki/ParaView:Build_And_Install>
 
 A user guide for ParaView can be found at: https://docs.ParaView.org/en/latest/
+
+<!-- TODO: update once renamed -->
+
+## Project Structure
+
+```tree
+.
+├── docs
+│   └── images
+├── solutions
+│   ├── 1a
+│   │   └── src
+│   │       ├── centralproc
+│   │       ├── inoutproc
+│   │       ├── PETSc
+│   │       └── stdlib
+│   ├── ...
+│   ├── 3b
+│   │   └── src
+│   │       ├── centralproc
+│   │       ├── inoutproc
+│   │       ├── PETSc
+│   │       └── stdlib
+└── src
+    ├── centralproc
+    ├── inoutproc
+    ├── PETSc
+    └── stdlib
+```
