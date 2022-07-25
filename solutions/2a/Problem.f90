@@ -80,7 +80,7 @@ Subroutine ReadInput(this,Material)
   Do ii = 1, this%N_Regions
     Read(InputFile,*) String_Read
     Call Material(ii)%SetName(String_Read)
-    Read(InputFile,*) Absorption, Sourcec
+    Read(InputFile,*) Absorption, Source
     Call Material(ii)%SetProps(Absorption,Source)
   EndDo
 
