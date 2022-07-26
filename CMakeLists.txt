@@ -39,17 +39,17 @@ endif()
 if(PETSC_FOUND)
     message(STATUS "Using PETSc version ${PETSC_VERSION}")
     set(SOURCES
-        src/Constants.f90
-        src/PETSc/PETSc_Init.f90
-        src/PETSc/PETSc_Vec.f90
-        src/PETSc/PETSc_Mat.f90
-        src/PETSc/PETSc_Ksp.f90
-        src/Materials.f90
-        src/Problem.f90
-        src/Output.f90
-        src/Matrix_Base.f90
-        src/PETScSolver.f90
-        src/MatGen.f90)
+        src/Constants.F90
+        src/PETSc/PETSc_Init.F90
+        src/PETSc/PETSc_Vec.F90
+        src/PETSc/PETSc_Mat.F90
+        src/PETSc/PETSc_Ksp.F90
+        src/Materials.F90
+        src/Problem.F90
+        src/Output.F90
+        src/Matrix_Base.F90
+        src/PETScSolver.F90
+        src/MatGen.F90)
 
     # Create the preprocessor definitions for PETSC
     add_compile_definitions(PETSC)
@@ -72,22 +72,22 @@ if(PETSC_FOUND)
 # No PETSc
 else()
     set(SOURCES
-        src/Constants.f90
-        src/Materials.f90
-        src/Problem.f90
-        src/Output.f90
-        src/Matrix_Base.f90
-        src/CRS.f90
-        src/Solver.f90
-        src/MatGen.f90)
+        src/Constants.F90
+        src/Materials.F90
+        src/Problem.F90
+        src/Output.F90
+        src/Matrix_Base.F90
+        src/CRS.F90
+        src/Solver.F90
+        src/MatGen.F90)
 endif()
 
 if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
     message("GNU (gfortran) compiler detected")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC -Wall -cpp -ffree-line-length-none")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC -Wall -ffree-line-length-none")
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
     message("Intel (ifort/ifx) compiler detected")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all -fpp")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
 endif()
 
 set(INSTALL_MOD_DIR "include")
@@ -98,7 +98,7 @@ set(MODULE_DIR ${CMAKE_BINARY_DIR}/include) # CMAKE_BINARY_DIR is the build dir
 # Create targets. The names should be amongst targets
 add_library(${LIB_NAME} SHARED ${SOURCES})
 add_library(${LIB_NAME}-static STATIC ${SOURCES})
-add_executable(${BIN_NAME} ${SOURCES} app/main.f90)
+add_executable(${BIN_NAME} ${SOURCES} app/main.F90)
 
 # Set additional properties for static library target
 set_target_properties(${LIB_NAME}-static
@@ -156,8 +156,8 @@ if(BUILD_SOLUTIONS)
     set(SOL_DIRS 1a 1c 2a 3a 3b)
 
     foreach(SOL ${SOL_DIRS})
-        file(GLOB SRC_SOL_FILES solutions/${SOL}/*.f90)
-        add_executable(${SOL} ${SRC_SOL_FILES} app/main.f90)
+        file(GLOB SRC_SOL_FILES solutions/${SOL}/*.F90)
+        add_executable(${SOL} ${SRC_SOL_FILES} app/main.F90)
         add_dependencies(${SOL} ${LIB_NAME}-static)
         target_link_libraries(${SOL} PRIVATE ${LIB_NAME}-static)
         set_target_properties(${SOL}
@@ -190,8 +190,8 @@ if(BUILD_SOLUTIONS)
     set(SOL 1b) # Test name
     unset(SRC_SOL_FILES) # Reset the list of files to be compiled
     set(MAIN_SRCS ${SOURCES}) # Copy the file names under `src/`
-    file(GLOB SRC_SOL_FILES solutions/${SOL}/*.f90) # Get all Fortran files for this solution
-    list(REMOVE_ITEM MAIN_SRCS src/Materials.f90) # Remove duplicate modules from MAIN_SRCS
+    file(GLOB SRC_SOL_FILES solutions/${SOL}/*.F90) # Get all Fortran files for this solution
+    list(REMOVE_ITEM MAIN_SRCS src/Materials.F90) # Remove duplicate modules from MAIN_SRCS
     add_executable(${SOL} ${SRC_SOL_FILES} ${MAIN_SRCS})
     set_target_properties(${SOL}
         PROPERTIES
@@ -205,8 +205,8 @@ if(BUILD_SOLUTIONS)
     set(SOL 2b)
     unset(SRC_SOL_FILES)
     set(MAIN_SRCS ${SOURCES})
-    file(GLOB SRC_SOL_FILES solutions/${SOL}/*.f90)
-    list(REMOVE_ITEM MAIN_SRCS src/Output.f90)
+    file(GLOB SRC_SOL_FILES solutions/${SOL}/*.F90)
+    list(REMOVE_ITEM MAIN_SRCS src/Output.F90)
     add_executable(${SOL} ${SRC_SOL_FILES} ${MAIN_SRCS})
     set_target_properties(${SOL}
         PROPERTIES
