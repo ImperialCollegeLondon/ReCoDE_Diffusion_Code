@@ -1,4 +1,5 @@
 Module PETSc_Init_Mod
+#ifdef PETSC
 !!Initialize the PETSc Database
 #include <petsc/finclude/petscsys.h>
 use petscsys
@@ -15,4 +16,5 @@ contains
       EndIf
     EndIf
   End Subroutine PETSc_Init
-End Module
+#endif
+End Module PETSc_Init_Mod

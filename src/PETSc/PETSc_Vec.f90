@@ -1,5 +1,6 @@
 Module PETSc_Vec_Mod
 
+#ifdef PETSC
 #include <petsc/finclude/petscvec.h>
 #include <petsc/finclude/petscsys.h>
     use petscSys
@@ -133,6 +134,6 @@ Subroutine SetAll_PETSc_Vec(This,Val_All)
   Real(kind=dp) :: Val_All
   call VecSet(This%vec,Val_All,ierr)
 End Subroutine SetAll_PETSc_Vec
+#endif
 
-
-End Module
+End Module PETSc_Vec_Mod

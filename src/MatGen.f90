@@ -3,16 +3,15 @@ Module MatGen_Mod
     use Constants_Mod
     use Materials_Mod
     use Problem_Mod
-# ifdef PETSC
+#ifdef PETSC
     use PETSc_Init_Mod
     use PETSc_Vec_Mod
     use PETSc_Mat_Mod
     use PETScSolver_Mod
-# endif
-# ifndef PETSC
+#else
     use CRS_Mod
     use Solver_Mod
-# endif
+#endif
     use Output_Mod
 
     Implicit None
@@ -21,13 +20,12 @@ Module MatGen_Mod
     type, public :: t_MatGen
         Integer :: N_Regions
         Real(kind=dp), allocatable, dimension(:) :: Vecb
-# ifndef PETSC
+#ifndef PETSC
         class(t_matrix_base), pointer :: matrix
-# endif
-# ifdef PETSC
+#else
         type(pMat) :: pMatA
         type(pVec) :: pVecb, pVecx
-# endif
+#endif
     contains
         procedure, public :: Create
         procedure, public :: Solve
@@ -46,14 +44,12 @@ Subroutine Create(this,Problem)
     N_Nodes = Problem%GetN_Nodes()
     Allocate(this%Vecb(N_Nodes))
 
-# ifndef PETSC 
+#ifndef PETSC 
     !! Allocate the matrix to be a CRS matrix
     allocate(t_crs :: this%matrix)
     !! Construct the matrix
     call this%matrix%construct(N_Nodes, N_Nodes)
-# endif
-
-# ifdef PETSC 
+#else
     !!Initialize PETSc
     call PETSc_Init()
 
@@ -61,7 +57,7 @@ Subroutine Create(this,Problem)
     call this%pMatA%Create(N_Nodes,N_Nodes,5)
     call this%pVecb%Create(N_Nodes)
     call this%pVecx%Create(N_Nodes)
-# endif
+#endif
 
 End Subroutine Create
 
@@ -99,7 +95,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
     EndDo
 
     !!Non-PETSc Implementation
-# ifndef PETSC 
+#ifndef PETSC 
     !!Fill matrix with problem information
     !!Loop over each region within the geometry
     NodeID = 0
@@ -165,12 +161,9 @@ Subroutine Solve(this,Material,Problem,Vecx)
 
     !!Solve the problem
     call BCG_Solve(this%matrix,this%Vecb,N_Nodes,Vecx)
-    
-# endif
-
 
     !PETSc Implementation
-# ifdef PETSC  
+#else
     !!Fill PETSc Matrices and Vectors with problem information
     !!Loop over each region within the geometry
     NodeID = 0
@@ -256,7 +249,7 @@ Subroutine Solve(this,Material,Problem,Vecx)
     !!Solve the problem
     call PETSc_Solve(this%pMatA,this%pVecb,this%pVecx)
     call this%pVecx%ConvFrom(Vecx)
-# endif
+#endif
 
 
 End Subroutine Solve
@@ -270,17 +263,14 @@ Subroutine Destroy(this,Flux)
     If(Allocated(Flux)) Deallocate(Flux)
     If(Allocated(this%Vecb)) Deallocate(this%Vecb)
 
-# ifndef PETSC 
+#ifndef PETSC 
     call this%matrix%destroy()
-    
-# endif
-
-# ifdef PETSC 
+#else
     !!Destroy the PETSc Matrices and Vectors
     call this%pMatA%Destroy()
     call this%pVecb%Destroy()
     call this%pVecx%Destroy()
-# endif
+#endif
 
 End Subroutine Destroy
 

@@ -1,5 +1,6 @@
 Module PETScSolver_Mod
 
+#ifdef PETSC
     use Constants_Mod
     use PETSc_Init_Mod
     use PETSc_Vec_Mod
@@ -28,6 +29,6 @@ Subroutine PETSc_Solve(pMatA,pVecb,pVecx)
     call pSolve%Destroy()
 
 End Subroutine PETSc_Solve
+#endif
 
-
-End Module
+End Module PETScSolver_Mod

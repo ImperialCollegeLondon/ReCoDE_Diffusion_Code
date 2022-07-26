@@ -6,16 +6,15 @@ Program Main
   use Materials_Mod
   use Output_Mod
   use MatGen_Mod
-# ifdef PETSC
+#ifdef PETSC
     use PETSc_Init_Mod
     use PETSc_Vec_Mod
     use PETSc_Mat_Mod
     use PETScSolver_Mod
-# endif
-# ifndef PETSC
+#else
     use CRS_Mod
     use Solver_Mod
-# endif
+#endif
   
   Implicit None
   

@@ -1,5 +1,6 @@
 Module PETSc_Ksp_Mod
 
+#ifdef PETSC
 #include <petsc/finclude/petscksp.h>
 #include <petsc/finclude/petscsys.h>
     use petscSys
@@ -135,7 +136,6 @@ Subroutine Solve_PETSc_Ksp(This,b,x)
 #   endif
 
 End Subroutine Solve_PETSc_Ksp
+#endif
 
-
-
-End Module
+End Module PETSc_Ksp_Mod

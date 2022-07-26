@@ -98,7 +98,7 @@ set(MODULE_DIR ${CMAKE_BINARY_DIR}/include) # CMAKE_BINARY_DIR is the build dir
 # Create targets. The names should be amongst targets
 add_library(${LIB_NAME} SHARED ${SOURCES})
 add_library(${LIB_NAME}-static STATIC ${SOURCES})
-add_executable(${BIN_NAME} ${SOURCES} src/main.f90)
+add_executable(${BIN_NAME} ${SOURCES} app/main.f90)
 
 # Set additional properties for static library target
 set_target_properties(${LIB_NAME}-static
@@ -157,7 +157,7 @@ if(BUILD_SOLUTIONS)
 
     foreach(SOL ${SOL_DIRS})
         file(GLOB SRC_SOL_FILES solutions/${SOL}/*.f90)
-        add_executable(${SOL} ${SRC_SOL_FILES} src/main.f90)
+        add_executable(${SOL} ${SRC_SOL_FILES} app/main.f90)
         add_dependencies(${SOL} ${LIB_NAME})
         target_link_libraries(${SOL} PRIVATE ${LIB_NAME})
         set_target_properties(${SOL}

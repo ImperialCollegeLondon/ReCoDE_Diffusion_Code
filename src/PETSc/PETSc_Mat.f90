@@ -1,5 +1,6 @@
 Module PETSc_Mat_Mod
 
+#ifdef PETSC
 #include <petsc/finclude/petscmat.h>
 #include <petsc/finclude/petscsys.h>
     use petscSys
@@ -197,5 +198,6 @@ Subroutine Symmetry_PETSc_Mat(This,SymLog)
   Logical :: SymLog
   call MatIsSymmetric(This%mat,1E-6_dp,SymLog,ierr)
 End Subroutine Symmetry_PETSc_Mat
+#endif
 
-End Module
+End Module PETSc_Mat_Mod
