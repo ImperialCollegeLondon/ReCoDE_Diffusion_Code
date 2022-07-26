@@ -108,7 +108,7 @@ set_target_properties(${LIB_NAME}-static
     PREFIX lib
     endif()
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-    Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/src) # Dump .mod files to src dir to not pollute the build dir
+    Fortran_MODULE_DIRECTORY ${MODULE_DIR}) # Place .mod files in the module dir
 
 # Set additional properties for shared library target
 set_target_properties(${LIB_NAME}
@@ -118,7 +118,7 @@ set_target_properties(${LIB_NAME}
     PREFIX lib
     endif()
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-    Fortran_MODULE_DIRECTORY ${MODULE_DIR}) # Place .mod files in the module dir
+    Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/src) # Dump .mod files to src dir to not pollute the build dir
 
 # Set additional properties for executable target
 set_target_properties(${BIN_NAME}
@@ -158,8 +158,8 @@ if(BUILD_SOLUTIONS)
     foreach(SOL ${SOL_DIRS})
         file(GLOB SRC_SOL_FILES solutions/${SOL}/*.f90)
         add_executable(${SOL} ${SRC_SOL_FILES} app/main.f90)
-        add_dependencies(${SOL} ${LIB_NAME})
-        target_link_libraries(${SOL} PRIVATE ${LIB_NAME})
+        add_dependencies(${SOL} ${LIB_NAME}-static)
+        target_link_libraries(${SOL} PRIVATE ${LIB_NAME}-static)
         set_target_properties(${SOL}
             PROPERTIES
             OUTPUT_NAME ${SOL}
@@ -218,6 +218,7 @@ if(BUILD_SOLUTIONS)
         Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/solutions/${SOL})
 
     # Copy the solution binaries to the install directory under `sol/`
+    list(APPEND SOL_DIRS 1b 2b)
     install(TARGETS ${SOL_DIRS}
         RUNTIME DESTINATION ${INSTALL_BIN_DIR}/sol
         ARCHIVE DESTINATION ${INSTALL_BIN_DIR}/sol)
