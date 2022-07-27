@@ -6,15 +6,12 @@ module PETScSolver_Mod
   use PETSc_Vec_Mod
   use PETSc_Mat_Mod
   use PETSc_Ksp_Mod
-    !!Solves the system of equations with PETSc to generate a result which can be fed into the output module
+  !!Solves the system of equations with PETSc to generate a result which can be fed into the output module
 
   implicit none
-  Private
+  private
   public :: PETSc_Solve
 
-  type, public :: t_PETScSolver
-
-  end type
 contains
 
   subroutine PETSc_Solve(pMatA, pVecb, pVecx)

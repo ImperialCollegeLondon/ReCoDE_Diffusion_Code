@@ -16,7 +16,7 @@ module MatGen_Mod
 
   implicit none
 
-    !!Discretises the problem and sets up the system of equations which can then be solved
+  !!Discretises the problem and sets up the system of equations which can then be solved
   type, public :: t_MatGen
     integer :: N_Regions
     real(kind=dp), allocatable, dimension(:) :: Vecb
@@ -269,4 +269,4 @@ contains
 
   end subroutine Destroy
 
-end module
+end module MatGen_Mod

@@ -70,16 +70,16 @@ module Matrix_Base
     subroutine operate_matrix_base(this, vector_in, vector_out)
       use Constants_Mod
       import t_matrix_base
-      class(t_matrix_base), intent(in)            ::  this !The matrix to multiply the vector by
-      real(kind=dp), dimension(:), intent(in)     ::  vector_in !The vector to be multiplied
-      real(kind=dp), dimension(:), intent(inout)  ::  vector_out !The vector which results from the multiplication
+      class(t_matrix_base), intent(in)            ::  this !!The matrix to multiply the vector by
+      real(kind=dp), dimension(:), intent(in)     ::  vector_in !!The vector to be multiplied
+      real(kind=dp), dimension(:), intent(inout)  ::  vector_out !!The vector which results from the multiplication
     end subroutine operate_matrix_base
   end interface
 
 contains
 
   subroutine print_matrix(this)
-    class(t_matrix_base), intent(in)                    ::  this
+    class(t_matrix_base), intent(in)            ::  this
     real(kind=dp), dimension(:), allocatable    ::  row_values
     integer                                     ::  ii, jj
 

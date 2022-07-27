@@ -20,4 +20,4 @@ module Constants_Mod
   character(len=2), parameter  :: tab = "  "
   character, parameter  :: space = " "
 
-end module
+end module Constants_Mod

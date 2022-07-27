@@ -25,29 +25,29 @@ module Problem_Mod
 contains
 
   subroutine ReadInput(this, Material)
-!!Read the Input File
+    !!Read the Input File
     class(t_Problem) :: this
     type(t_material), allocatable, dimension(:) :: Material
     integer :: ii
     integer, parameter :: InputFile = 101
     character(len=32) :: String_Read
 
-  !!Open input file containing problem specification
+    !!Open input file containing problem specification
     open(InputFile, File='input.in', Status='Old')
 
-  !!Read in the number of Regions
+    !!Read in the number of Regions
     String_Read = ''
     do while (String_Read /= 'Regions:')
       read(InputFile, *) String_Read
     end do
     read(InputFile, *) this%N_Regions
 
-  !!Allocate the relevant arrays
+    !!Allocate the relevant arrays
     allocate(this%Boundary_Pos(this%N_Regions + 1))
     allocate(this%Nodes(this%N_Regions))
     allocate(Material(this%N_Regions))
 
-  !!Read in the boundary positions
+    !!Read in the boundary positions
     String_Read = ''
     do while (String_Read /= 'Boundaries:')
       read(InputFile, *) String_Read
@@ -56,7 +56,7 @@ contains
       read(InputFile, *) this%Boundary_Pos(ii)
     end do
 
-  !!Read in the number of nodes in each region
+    !!Read in the number of nodes in each region
     String_Read = ''
     do while (String_Read /= 'Nodes:')
       read(InputFile, *) String_Read
@@ -68,7 +68,7 @@ contains
     end do
     this%N_Nodes = this%N_Nodes - (this%N_Regions - 1)
 
-  !!Read in the materials and set the data
+    !!Read in the materials and set the data
     String_Read = ''
     do while (String_Read /= 'Materials:')
       read(InputFile, *) String_Read
@@ -87,7 +87,7 @@ contains
       end if
     end do
 
-  !!Read in the boundary conditions of the problem
+    !!Read in the boundary conditions of the problem
     String_Read = ''
     do while (String_Read /= 'Boundary_Conditions:')
       read(InputFile, *) String_Read
@@ -108,48 +108,48 @@ contains
   end subroutine ReadInput
 
   function GetN_Regions(this) Result(Res)
+    !!Get the number of regions in the problem
     class(t_problem) :: this
     integer :: Res
-    !!Get the number of regions in the problem
     Res = this%N_Regions
   end function GetN_Regions
 
   function GetNodes(this) Result(Res)
+    !!Get an array containing the number of nodes in each region
     class(t_problem) :: this
     integer, dimension(this%N_Regions) :: Res
-    !!Get an array containing the number of nodes in each region
     Res = this%Nodes
   end function GetNodes
 
   function GetN_Nodes(this) Result(Res)
+    !!Get the total number of nodes in the problem
     class(t_problem) :: this
     integer :: Res
-    !!Get the total number of nodes in the problem
     Res = this%N_Nodes
   end function GetN_Nodes
 
   function GetBoundary_Pos(this) Result(Res)
+    !!Get the positions of the boundaries in the problem
     class(t_problem) :: this
     real(kind=dp), dimension(this%N_Regions + 1) :: Res
-    !!Get the positions of the boundaries in the problem
     Res = this%Boundary_Pos
   end function GetBoundary_Pos
 
   function GetBoundary_Conditions(this) Result(Res)
+    !!Get the boundary condition of the problem
     class(t_problem) :: this
     integer, dimension(2) :: Res
-    !!Get the boundary condition of the problem
     Res = this%Boundary_Conditions
   end function GetBoundary_Conditions
 
   subroutine DestroyProblem(this, Material)
-  !!Destroy the data stored in the problem class
+    !!Destroy the data stored in the problem class
     class(t_Problem) :: this
     type(t_material), allocatable, dimension(:) :: Material
 
-  !!Deallocate the relevant arrays
+    !!Deallocate the relevant arrays
     deallocate(this%Boundary_Pos, this%Nodes)
     deallocate(Material)
   end subroutine DestroyProblem
 
-end module
+end module Problem_Mod

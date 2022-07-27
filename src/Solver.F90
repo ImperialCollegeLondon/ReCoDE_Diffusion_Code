@@ -7,8 +7,8 @@ module Solver_Mod
   private
   public :: BCG_Solve
 
-    !!Solves the system of equations to generate a result which can be fed into the output module
-    !!Solver used when code is compiled without PETSc
+  !!Solves the system of equations to generate a result which can be fed into the output module
+  !!Solver used when code is compiled without PETSc
 contains
 
   subroutine BCG_Solve(mat_CRS, Vecb, N_Size, phi)
@@ -69,7 +69,7 @@ contains
       error stop "Solver failed to converge"
     end if
 
-  !!Debug writes residual and iterations to terminal
+    !!Debug writes residual and iterations to terminal
 # ifdef DEBUG
     write(output_unit, *) "---BCG Convergence Succeeded---"
     write(output_unit, '(g0)', advance='no') "Succeeded after iterations:  "
