@@ -69,52 +69,52 @@ contains
     Call KSPGetResidualNorm(This%ksp, RNorm, ierr)
     Call KSPGetConvergedReason(This%ksp, Reason, ierr)
     If (Reason < 0) Then
-      Write(*, *) "---KSP Convergence Failed---"
-      Write(*, *) "Failed after iterations:", Its, "with residual norm:", RNorm, "for reason:", Reason
-      Write(*, *) "----------------------------"
+      Write(output_unit, *) "---KSP Convergence Failed---"
+      Write(output_unit, *) "Failed after iterations:", Its, "with residual norm:", RNorm, "for reason:", Reason
+      Write(output_unit, *) "----------------------------"
       Select Case (Reason)
       Case (-3)
-        Write(*, *) "Reason => Did not converge after required iterations"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Did not converge after required iterations"
+        Write(output_unit, *) "-------------------------------"
       Case (-4)
-        Write(*, *) "Reason => Residual norm increased by Divtol"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Residual norm increased by Divtol"
+        Write(output_unit, *) "-------------------------------"
       Case (-5)
-        Write(*, *) "Reason => Breakdown in method"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Breakdown in method"
+        Write(output_unit, *) "-------------------------------"
       Case (-6)
-        Write(*, *) "Reason => Initial residual orth to preconditioned initial residual"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Initial residual orth to preconditioned initial residual"
+        Write(output_unit, *) "-------------------------------"
       Case (-7)
-        Write(*, *) "Reason => Asymmetric matrix"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Asymmetric matrix"
+        Write(output_unit, *) "-------------------------------"
       Case (-9)
-        Write(*, *) "Reason => Residual term becan NaN"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Residual term becan NaN"
+        Write(output_unit, *) "-------------------------------"
       Case Default
-        Write(*, *) "Reason => Description not implemented"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Description not implemented"
+        Write(output_unit, *) "-------------------------------"
       End Select
       Error Stop "KSP Convergence Failed"
     Else
-      Write(*, *) "---KSP Convergence Succeeded---"
-      Write(*, '(g0)', advance='no') "Succeeded after iterations:  "
-      Write(*, '(g0)', advance='no') Its
-      Write(*, '(g0)', advance='no') "  with residual norm:"
-      Write(*, '(E14.6)', advance='no') RNorm
-      Write(*, '(g0)', advance='no') "  for reason  :"
-      Write(*, '(g0)') Reason
-      Write(*, *) "-------------------------------"
+      Write(output_unit, *) "---KSP Convergence Succeeded---"
+      Write(output_unit, '(g0)', advance='no') "Succeeded after iterations:  "
+      Write(output_unit, '(g0)', advance='no') Its
+      Write(output_unit, '(g0)', advance='no') "  with residual norm:"
+      Write(output_unit, '(E14.6)', advance='no') RNorm
+      Write(output_unit, '(g0)', advance='no') "  for reason  :"
+      Write(output_unit, '(g0)') Reason
+      Write(output_unit, *) "-------------------------------"
       Select Case (Reason)
       Case (2)
-        Write(*, *) "Reason => Passed Relative Tolerance"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Passed Relative Tolerance"
+        Write(output_unit, *) "-------------------------------"
       Case (3)
-        Write(*, *) "Reason => Passed Absolute Tolerance"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Passed Absolute Tolerance"
+        Write(output_unit, *) "-------------------------------"
       Case Default
-        Write(*, *) "Reason => Description not implemented"
-        Write(*, *) "-------------------------------"
+        Write(output_unit, *) "Reason => Description not implemented"
+        Write(output_unit, *) "-------------------------------"
       End Select
     End If
 

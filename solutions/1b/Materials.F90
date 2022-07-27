@@ -61,13 +61,13 @@ contains
   Subroutine PrintMaterial(this)
     class(t_material) :: this
         !!Print the material data
-    Write(*, *) "=========="
-    Write(*, *) "Material Name: ", this%name
-    Write(*, '(g0)', advance='no') " Absorption: "
-    Write(*, '(E14.6)') this%Sig_a
-    Write(*, '(g0)', advance='no') " Source:"
-    Write(*, '(E14.6)') this%S
-    Write(*, *) "=========="
+    Write(output_unit, *) "=========="
+    Write(output_unit, *) "Material Name: ", this%name
+    Write(output_unit, '(g0)', advance='no') " Absorption: "
+    Write(output_unit, '(E14.6)') this%Sig_a
+    Write(output_unit, '(g0)', advance='no') " Source:"
+    Write(output_unit, '(E14.6)') this%S
+    Write(output_unit, *) "=========="
   End Subroutine PrintMaterial
 
 End Module

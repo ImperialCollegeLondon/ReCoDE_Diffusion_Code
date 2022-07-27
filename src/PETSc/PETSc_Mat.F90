@@ -64,8 +64,8 @@ contains
     Integer :: V_row, V_Col
     Real(kind=dp) :: Value
     If ((V_row < 1) .OR. (V_col < 1)) Then
-      Write(*, *) "### Error ###"
-      Write(*, *) "Inserting Value outside of bounds"
+      Write(output_unit, *) "### Error ###"
+      Write(output_unit, *) "Inserting Value outside of bounds"
       Stop
     End If
   !!Convert the row and col integers to P format
@@ -78,7 +78,7 @@ contains
     Integer :: V_row, V_Col
     Real(kind=dp) :: Value
     If ((V_row < 1) .OR. (V_col < 1)) Then
-      Write(*, *) "### Error ###"
+      Write(output_unit, *) "### Error ###"
       Error Stop "Inserting Value outside of bounds"
     End If
   !!Convert the row and col integers to P format

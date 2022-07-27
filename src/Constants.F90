@@ -1,5 +1,7 @@
 module Constants_Mod
 
+  use iso_fortran_env, only: output_unit
+
   Implicit None
 
   !! Precision Definitions

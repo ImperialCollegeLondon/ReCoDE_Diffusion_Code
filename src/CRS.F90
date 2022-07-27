@@ -1,5 +1,6 @@
 module CRS_Mod
 
+  use iso_fortran_env, only: output_unit
   use Matrix_Base
 
   implicit none
@@ -151,7 +152,7 @@ contains
 
     !First, check if the vector to be multiplied has the same number of rows as the matrix
     if (size(vector_in) /= this%n_column) then
-      Write(*, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
+      Write(output_unit, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
       Error Stop "Incorrectly sized vector for matrix multiplication"
     end if
 
@@ -182,13 +183,13 @@ contains
 
     !The case that the matrix does not have a positive number of entries
     if (this%n_row < 1 .or. this%n_column < 1) then
-      Write(*, '(A, 2(I0, A))') "Error: check_explicit_crs was asked for a value when the matrix only has ", this%n_row, " row(s) and ", this%n_column, " column(s). Terminating."
+      Write(output_unit, '(A, 2(I0, A))') "Error: check_explicit_crs was asked for a value when the matrix only has ", this%n_row, " row(s) and ", this%n_column, " column(s). Terminating."
       Error Stop "Unitialised matrix"
     end if
 
     !The case that the value asked for falls outside the matrix
     if (row < 1 .or. row > this%n_row .or. column < 1 .or. column > this%n_column) then
-      Write(*, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", this%n_row, " and the matrix's columns extend from 1 to ", this%n_column, ". Terminating."
+      Write(output_unit, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", this%n_row, " and the matrix's columns extend from 1 to ", this%n_column, ". Terminating."
       Error Stop "Matrix access out of bounds"
     end if
 

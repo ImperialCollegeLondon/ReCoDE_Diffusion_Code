@@ -95,7 +95,7 @@ contains
       ElseIf (String_Read == 'Reflective') Then
         this%Boundary_Conditions(ii) = 1
       Else
-        Write(*, *) "ERROR: Unrecognised Boundary Condition"
+        Write(output_unit, *) "ERROR: Unrecognised Boundary Condition"
       End If
     End Do
 

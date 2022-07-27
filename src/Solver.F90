@@ -62,21 +62,21 @@ contains
 
     !!Exit if convergence failed
     If (.Not. BCG_Conv) Then
-      Write(*, *) "---BCG Convergence Failed---"
-      Write(*, *) "Maximum number of iterations reached"
-      Write(*, *) "Terminating"
-      Write(*, *) "-------------------------------"
+      Write(output_unit, *) "---BCG Convergence Failed---"
+      Write(output_unit, *) "Maximum number of iterations reached"
+      Write(output_unit, *) "Terminating"
+      Write(output_unit, *) "-------------------------------"
       Error Stop "Solver failed to converge"
     End If
 
   !!Debug writes residual and iterations to terminal
 # ifdef DEBUG
-    Write(*, *) "---BCG Convergence Succeeded---"
-    Write(*, '(g0)', advance='no') "Succeeded after iterations:  "
-    Write(*, '(g0)', advance='no') BCG_Iterations
-    Write(*, '(g0)', advance='no') "  with residual:"
-    Write(*, '(E14.6)') rho1
-    Write(*, *) "-------------------------------"
+    Write(output_unit, *) "---BCG Convergence Succeeded---"
+    Write(output_unit, '(g0)', advance='no') "Succeeded after iterations:  "
+    Write(output_unit, '(g0)', advance='no') BCG_Iterations
+    Write(output_unit, '(g0)', advance='no') "  with residual:"
+    Write(output_unit, '(E14.6)') rho1
+    Write(output_unit, *) "-------------------------------"
 # endif
 
   End subroutine BCG_Solve

@@ -27,7 +27,7 @@ Program Main
 
   call cpu_time(time_start)
   call Problem%ReadInput(Material)
-  Write(*, *) ">Input Read"
+  Write(output_unit, *) ">Input Read"
 
   !! $$ Exercise 1b
   Do ii = 1, Size(Material)
@@ -35,19 +35,19 @@ Program Main
   End Do
 
   call MatGen%Create(Problem)
-  Write(*, *) ">Matrices Created"
+  Write(output_unit, *) ">Matrices Created"
 
   call MatGen%Solve(Material, Problem, Flux)
-  Write(*, *) ">Problem Assembled"
+  Write(output_unit, *) ">Problem Assembled"
 
   call GenerateVTU(Problem, Flux)
-  Write(*, *) ">Output Generated"
+  Write(output_unit, *) ">Output Generated"
 
   call MatGen%Destroy(Flux)
   call Problem%DestroyProblem(Material)
 
   call cpu_time(time_stop)
-  Write(*, '(g0)', advance='no') " >Problem Solved in:"
-  Write(*, '(E14.6)', advance='no') time_stop - time_start
-  Write(*, '(g0)') " seconds"
+  Write(output_unit, '(g0)', advance='no') " >Problem Solved in:"
+  Write(output_unit, '(E14.6)', advance='no') time_stop - time_start
+  Write(output_unit, '(g0)') " seconds"
 End program

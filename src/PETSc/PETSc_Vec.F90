@@ -71,7 +71,7 @@ contains
     Real(kind=dp) :: Val_vec(:)
     call This%GetSize(N_Vec)
     If (N_Vec /= Size(Val_vec)) Then
-      Write(*, *) "### Error ###"
+      Write(output_unit, *) "### Error ###"
       Error Stop "PVec and Output vec size do not match"
     End If
     Allocate (Pos_vec(N_Vec))

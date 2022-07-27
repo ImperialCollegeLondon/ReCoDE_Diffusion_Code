@@ -25,7 +25,7 @@ contains
         !!Set the name of the material
     this%name = name
         !! $$ Exercise 1a
-    Write(*, *) name
+    Write(output_unit, *) name
   End Subroutine SetMaterialName
 
   Function GetMaterialName(this) Result(Res)

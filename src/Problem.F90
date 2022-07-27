@@ -83,7 +83,7 @@ contains
       ElseIf (String_Read == 'Steel') Then
         Call Material(ii)%SetProps(5._dp, 0.1_dp)
       Else
-        Write(*, *) "ERROR: Unrecognised Material"
+        Write(output_unit, *) "ERROR: Unrecognised Material"
       End If
     End Do
 
@@ -99,7 +99,7 @@ contains
       ElseIf (String_Read == 'Reflective') Then
         this%Boundary_Conditions(ii) = 1
       Else
-        Write(*, *) "ERROR: Unrecognised Boundary Condition"
+        Write(output_unit, *) "ERROR: Unrecognised Boundary Condition"
       End If
     End Do
 
