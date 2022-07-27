@@ -7,9 +7,6 @@ Module Solver_Mod
   private
   public :: BCG_Solve
 
-  type, public :: t_Solver
-
-  end type
     !!Solves the system of equations to generate a result which can be fed into the output module
     !!Solver used when code is compiled without PETSc
 contains
