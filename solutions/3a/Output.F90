@@ -48,7 +48,7 @@ contains
 
     !!Describe the format
     write(vtufile, '(g0)') "<?xml version=""1.0""?>"
-    write(vtufile, '(g0)') "<VTKFile type=""UnstructuredGrid"" version=""0.1"" byte_order=""Littleendian"">"
+    write(vtufile, '(g0)') "<VTKFile type=""UnstructuredGrid"" version=""0.1"" byte_order=""LittleEndian"">"
     write(vtufile, '(g0)', advance='no') "  "
     write(vtufile, '(g0)') "<UnstructuredGrid>"
 
