@@ -7,9 +7,12 @@ module CRS_Mod
 
   type, extends(t_matrix_base)  ::  t_crs
     private
-    integer, dimension(:), allocatable                        ::  col_index !The column of each non-zero entry into the matrix
-    integer, dimension(:), allocatable                        ::  row_start !The index of the first entry in each row in the values array
-    real(kind=dp), dimension(:), allocatable                  ::  values !The values of each non-zero entry in the matrix
+    integer, dimension(:), allocatable       ::  col_index
+      !! The column of each non-zero entry into the matrix
+    integer, dimension(:), allocatable       ::  row_start
+      !! The index of the first entry in each row in the values array
+    real(kind=dp), dimension(:), allocatable ::  values
+      !! The values of each non-zero entry in the matrix
 
   contains
     procedure, public ::  construct => construct_crs
@@ -46,7 +49,7 @@ contains
   !===============================================
 
   subroutine destroy_crs(this)
-    class(t_crs), intent(inout)          ::  this
+    class(t_crs), intent(inout) ::  this
 
     this%n_row = 0
     this%n_column = 0
@@ -70,7 +73,7 @@ contains
     !Check to see if the value is explicitly stored
     explicit = this%check_explicit(row, column)
 
-    !The case where the value rquested is not explicitly stored and, so, is zero.
+    !The case where the value requested is not explicitly stored and, so, is zero.
     if (.not. explicit) then
       evaluation = 0.0_dp
       return
@@ -81,7 +84,8 @@ contains
       if (column == this%col_index(ii)) then !The case where the value is explicitly stored
         evaluation = this%values(ii)
         return
-      else if (column < this%col_index(ii)) then !The case where the value is not stored and so is implcitly zero
+      !The case where the value is not stored and so is implicitly zero
+      else if (column < this%col_index(ii)) then
         evaluation = 0.0_dp
         return
       end if
@@ -106,7 +110,8 @@ contains
     !The case where the location has an explicit value already
     if (this%check_explicit(row, column)) then
       do ii = this%row_start(row), row_last_index !Loop over the entire row
-        if (column == this%col_index(ii)) then !Replace the value with the new value once one of the matching column has been found
+        !Replace the value with the new value once one of the matching column has been found
+        if (column == this%col_index(ii)) then
           this%values(ii) = value
         end if
       end do
@@ -144,15 +149,16 @@ contains
   !===============================================
 
   subroutine operate_crs(this, vector_in, vector_out)
-    class(t_crs), intent(in)                      ::  this !The matrix to multiply the vector by
-    real(kind=dp), dimension(:), intent(in)       ::  vector_in !The vector to be multiplied
-    real(kind=dp), dimension(:), intent(inout)    ::  vector_out !The vector which results from the multiplication
-    integer                                       ::  ii !Generic counting variable
-    integer                                       ::  current_row
+    class(t_crs), intent(in)                   ::  this !!The matrix to multiply the vector by
+    real(kind=dp), dimension(:), intent(in)    ::  vector_in !!The vector to be multiplied
+    real(kind=dp), dimension(:), intent(inout) ::  vector_out !!The vector which results from the multiplication
+    integer                                    ::  ii !!Generic counting variable
+    integer                                    ::  current_row
 
     !First, check if the vector to be multiplied has the same number of rows as the matrix
     if (size(vector_in) /= this%n_column) then
-      write(output_unit, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
+      write(output_unit, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), &
+        " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
       error stop "Incorrectly sized vector for matrix multiplication"
     end if
 
@@ -176,20 +182,23 @@ contains
   !===============================================
 
   function check_explicit_crs(this, row, column) result(explicit)
-    class(t_crs), intent(in)     ::  this
-    integer, intent(in)               ::  row, column
-    integer                           ::  ii, row_last_index
-    logical                           ::  explicit
+    class(t_crs), intent(in) ::  this
+    integer, intent(in)      ::  row, column
+    integer ::  ii, row_last_index
+    logical ::  explicit
 
     !The case that the matrix does not have a positive number of entries
     if (this%n_row < 1 .or. this%n_column < 1) then
-      write(output_unit, '(A, 2(I0, A))') "Error: check_explicit_crs was asked for a value when the matrix only has ", this%n_row, " row(s) and ", this%n_column, " column(s). Terminating."
-      error stop "Unitialised matrix"
+      write(output_unit, '(A, 2(I0, A))') "Error: check_explicit_crs was asked for a value when the matrix only has ", &
+        this%n_row, " row(s) and ", this%n_column, " column(s). Terminating."
+      error stop "Uninitialised matrix"
     end if
 
     !The case that the value asked for falls outside the matrix
     if (row < 1 .or. row > this%n_row .or. column < 1 .or. column > this%n_column) then
-      write(output_unit, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", this%n_row, " and the matrix's columns extend from 1 to ", this%n_column, ". Terminating."
+      write(output_unit, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", &
+         row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", &
+         this%n_row, " and the matrix's columns extend from 1 to ", this%n_column, ". Terminating."
       error stop "Matrix access out of bounds"
     end if
 
@@ -199,9 +208,11 @@ contains
       return
     end if
 
-    !If this is the last row then, as we already know it is not after the last non-zero row, it must contain non-zeroes so do not evaluate the contained if statement
+    !If this is the last row then, as we already know it is not after the last non-zero row,
+    !it must contain non-zeroes so do not evaluate the contained if statement
     if (row /= this%n_row) then
-      !The case that the row of the requested value is not before the first non-zero row or after the last non-zero row but is in a row of zeroes
+      !The case that the row of the requested value is not before the first non-zero row
+      !or after the last non-zero row but is in a row of zeroes
       if (this%row_start(row) == this%row_start(row + 1)) then
         explicit = .false.
         return
@@ -227,15 +238,16 @@ contains
 
   subroutine remove_zeroes_crs(this)
     class(t_crs), intent(inout)  ::  this
-    integer                           ::  ii, n_zeroes
+    integer ::  ii, n_zeroes
 
-    !Move any values in the values array which are after a zero one to the left. Also track the number of zeroes
+    !Move any values in the values array which are after a zero one to the left.
+    !Also track the number of zeroes
     n_zeroes = 0
     do ii = 1, size(this%values)
       if (abs(this%values(ii - n_zeroes)) < 1.0e-200_dp) then
-!          print*, "ZERO-REMOVAL"
-!          print*, ii-n_zeroes, this%find_row_by_values_index(ii-n_zeroes)
-        this%row_start(this%find_row_by_values_index(ii - n_zeroes) + 1:) = this%row_start(this%find_row_by_values_index(ii - n_zeroes) + 1:) - 1
+        this%row_start(this%find_row_by_values_index(ii - n_zeroes) + 1:) = &
+          this%row_start(this%find_row_by_values_index(ii - n_zeroes) + 1:) - 1
+
         this%col_index(ii - n_zeroes:size(this%values) - 1) = this%col_index(ii - n_zeroes + 1:size(this%values))
         this%values(ii - n_zeroes:size(this%values) - 1) = this%values(ii - n_zeroes + 1:size(this%values))
         n_zeroes = n_zeroes + 1
@@ -251,9 +263,9 @@ contains
   !===============================================
 
   function find_row_by_values_index_crs(this, values_index) result(row)
-    class(t_crs), intent(in)     ::  this
-    integer, intent(in)               ::  values_index
-    integer                           ::  row, ii
+    class(t_crs), intent(in) ::  this
+    integer, intent(in)      ::  values_index
+    integer ::  row, ii
 
     do ii = 1, this%n_row - 1
       if (values_index >= this%row_start(ii) .and. values_index < this%row_start(ii + 1)) then
@@ -270,15 +282,16 @@ contains
   !===============================================
 
   subroutine change_array_sizes_crs(this, new_size)
-    class(t_crs), intent(inout)          ::  this
-    integer, intent(in)                       ::  new_size
+    class(t_crs), intent(inout) ::  this
+    integer, intent(in)         ::  new_size
     integer, dimension(:), allocatable        ::  col_index_temp
     real(kind=dp), dimension(:), allocatable  ::  values_temp
     integer                                   ::  n_kept
 
     n_kept = min(size(this%values), new_size)
 
-    !Warning: changing the size of arrays to a size below the original size will result in information being lost from the end of values and col_index
+    !Warning: changing the size of arrays to a size below the original size will
+    !result in information being lost from the end of values and col_index
 
     allocate(col_index_temp(n_kept), values_temp(n_kept))
 
@@ -305,7 +318,7 @@ contains
   function find_last_index_of_row_crs(this, row) result(row_last_index)
     class(t_crs), intent(in)  ::  this
     integer, intent(in)       ::  row
-    integer                   ::  row_last_index, ii
+    integer ::  row_last_index, ii
 
     !Initialise with a value which will cause an error if no value is returned for some reason
     row_last_index = -1
