@@ -30,12 +30,12 @@ This flag can then be checked with C pre-processor language to allow for differe
 
 ```fortran
 #ifdef DEBUG
-  Write(*,*) "---CG Convergence Succeeded---"
-  Write(*,'(g0)',advance='no') "Succeeded after iterations:  "
-  Write(*,'(g0)',advance='no') BCG_Iterations
-  Write(*,'(g0)',advance='no') "  with residual:"
-  Write(*,'(E14.6)') rho1
-  Write(*,*) "-------------------------------"
+  write(*,*) "---CG Convergence Succeeded---"
+  write(*,'(g0)',advance='no') "Succeeded after iterations:  "
+  write(*,'(g0)',advance='no') BCG_Iterations
+  write(*,'(g0)',advance='no') "  with residual:"
+  write(*,'(E14.6)') rho1
+  write(*,*) "-------------------------------"
 #endif
 ```
 

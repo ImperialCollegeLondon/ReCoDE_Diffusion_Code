@@ -32,36 +32,36 @@ Then generate the equations and solve for the flux
 Get Problem Data
 Get Material Data
 
-Do 1, Problem Size
+do i = 1, Problem Size
   Calculate Matrix Value
   Calculate Vector Value
-EndDo
+end do
 
-If (PETSc Used) Then
-  Do 1, Problem Size
+if (PETSc Used) then
+  do i = 1, Problem Size
     Fill PETSc Matrix
     Fill PETSc Vector
-  EndDo
+  end do
   Flux = PETScSolver( PETSc Matrix, PETSc Vector)
-Else
-  Do 1, Problem Size
+else
+  do i = 1, Problem Size
     Fill CRS Matrix
     Fill Vector
-  EndDo
+  end do
   Flux = Solver( CRS Matrix, Vector)
-EndIf
+end if
 ```
 
 Finally generate the output files
 
 ```fortran
-Open( Output File)
-Do 1, Problem Size
-  Write( Output File) Position, Flux
-  Write( Output File) Region Number
-  Write( Output File) Node Number
-EndDo
-Close( Output File)
+open( Output File)
+do i = 1, Problem Size
+  write( Output File) Position, Flux
+  write( Output File) Region Number
+  write( Output File) Node Number
+end do
+close( Output File)
 ```
 
 ## OOP Main
@@ -71,17 +71,17 @@ Close( Output File)
 As discussed previously in the [Structure of the Code](#oop-intro) section, this code utilises Object Oriented Programming. An example of such an abject orented structure can be seen in the code snippet below. This shows some of the **Materials** module, which handles the storage of data pertaining the material properties of the problem.
 
 ```fortran
-Module Materials_Mod
+module Materials_Mod
 
     use Constants_Mod
     !!Stores standard material data and material data explicitly set via an input file
 
-    Implicit None
+    implicit none
 
   type, public :: t_material
         private
-        Real(kind=dp) :: Sig_a, S
-        Character(len=20) :: Name
+        real(kind=dp) :: Sig_a, S
+        character(len=20) :: Name
     contains
     !!Procedures which handle the storing, calculation and retrieval of material data
         procedure, public :: SetName => SetMaterialName
@@ -95,7 +95,7 @@ Module Materials_Mod
 We first define the name of the module such that it can be used by other modules in our code.
 
 ```fortran
-Module Materials_Mod
+module Materials_Mod
 ```
 
 We then tell our module to make use of the **Constants** module.
@@ -109,8 +109,8 @@ This method of declaring the name of this specific module and the modules which 
 ```fortran
 type, public :: t_material
         private
-        Real(kind=dp) :: Sig_a, S
-        Character(len=20) :: Name
+        real(kind=dp) :: Sig_a, S
+        character(len=20) :: Name
 ```
 
 We can then also choose what public procedures this module should utilise, which other pieces of code can then utilise. The most common routines you will often utilise in a code are 'gets' and 'sets' which pull stored data and set stored data respectively. In fortran you can also utilise pointers to point to certain pieces of memory. A nice example of this can be seen in the code block below where **SetName** points to **SetMaterialName** allowing us to use quick subroutine names when repeatedly calling a routine, but verbose names within the actual module.

@@ -7,7 +7,7 @@ For some smaller routines, you will often be able to find optimal examples share
 When using an external library, we will generally have to write a 'wrapper' in our code, which provides an interface between our own routines and the routines of the library. An example of this is shown in the code snippets below for the **PETSc_Init** module, which initialises the PETSc library. We first create our module and use the **#include** statements to tell the code to use our main path specified in our makefile and then look for this specific file **petscsys.h**. We then tell it to **use petscsys**, allowing us to perform actions which require this file, such as initialising PETSc.
 
 ```fortran
-Module PETSc_Init_Mod
+module PETSc_Init_Mod
 !!Initialize the PETSc Database
 #include <petsc/finclude/petscsys.h>
 use petscsys
@@ -18,15 +18,13 @@ We then write our subroutine which does the actual initialisation, **PETSc_Init*
 ```fortran
 Subroutine PETSc_Init
   PetscErrorCode ierr
-  Logical :: Called = .FALSE.
-  If (.NOT. Called) Then
+  logical :: Called = .false.
+  if (.not. Called) then
     Call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
-    Called = .TRUE.
-    If (ierr .NE. 0) Then
-      Error Stop "Failed to Initialize PETSc"
-    EndIf
-  EndIf
-End Subroutine PETSc_Init
+    Called = .true.
+    if (ierr /= 0) error stop "Failed to Initialize PETSc"
+  end if
+end subroutine PETSc_Init
 ```
 
 ## Installing PETSc
