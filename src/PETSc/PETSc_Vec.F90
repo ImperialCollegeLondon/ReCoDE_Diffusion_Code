@@ -1,4 +1,4 @@
-Module PETSc_Vec_Mod
+module PETSc_Vec_Mod
 
 #ifdef PETSC
 #include <petsc/finclude/petscvec.h>
@@ -6,7 +6,7 @@ Module PETSc_Vec_Mod
   use petscSys
   use petscVec
   use Constants_Mod
-  Implicit None
+  implicit none
   type :: PVec
     type(tvec) :: vec
   contains
@@ -25,103 +25,103 @@ Module PETSc_Vec_Mod
 
 contains
 
-  Subroutine Create_PETSc_Vec(This, N_vec)
-    Class(PVec), intent(inout) :: This
-    Integer :: N_vec
-    PetscErrorCode ierr
+  subroutine Create_PETSc_Vec(This, N_vec)
+    class(PVec), intent(inout) :: This
+    integer :: N_vec
+    PetscErrorCode :: ierr
     call VecCreate(PETSC_COMM_WORLD, This%vec, ierr); CHKERRQ(ierr)
     call VecSetType(This%vec, 'seq', ierr); CHKERRQ(ierr)
     call VecSetSizes(This%vec, PETSC_DECIDE, N_vec, ierr); CHKERRQ(ierr)
-  End Subroutine Create_PETSc_Vec
+  end subroutine Create_PETSc_Vec
 
-  Subroutine Destroy_PETSc_Vec(This)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
-    Call VecDestroy(This%vec, ierr); CHKERRQ(ierr)
-  End Subroutine Destroy_PETSc_Vec
+  subroutine Destroy_PETSc_Vec(This)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
+    call VecDestroy(This%vec, ierr); CHKERRQ(ierr)
+  end subroutine Destroy_PETSc_Vec
 
-  Subroutine Assemble_PETSc_Vec(This)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
+  subroutine Assemble_PETSc_Vec(This)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
     call VecAssemblyBegin(This%vec, ierr)
-    call VecAssemblyEnd(This%vec, ierr)
-  End Subroutine Assemble_PETSc_Vec
+    call VecAssemblyend(This%vec, ierr)
+  end subroutine Assemble_PETSc_Vec
 
-  Subroutine ConvTo_PETSc_Vec(This, Val_vec)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
-    Integer :: N_Vec, ii
-    Integer, allocatable, dimension(:) :: Pos_vec
-    Real(kind=dp) :: Val_vec(:)
+  subroutine ConvTo_PETSc_Vec(This, Val_vec)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
+    integer :: N_Vec, ii
+    integer, allocatable, dimension(:) :: Pos_vec
+    real(kind=dp) :: Val_vec(:)
     N_Vec = Size(Val_vec)
-    Allocate (Pos_vec(N_Vec))
-    Do ii = 1, N_Vec
+    allocate(Pos_vec(N_Vec))
+    do ii = 1, N_Vec
       Pos_vec(ii) = ii - 1
-    End Do
+    end do
     call VecSetValues(This%vec, N_vec, Pos_vec, Val_vec, INSERT_VALUES, ierr)
-    Deallocate (Pos_vec)
+    deallocate(Pos_vec)
     call This%Assemble()
-  End Subroutine ConvTo_PETSc_Vec
+  end subroutine ConvTo_PETSc_Vec
 
-  Subroutine ConvFrom_PETSc_Vec(This, Val_vec)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
-    Integer :: N_Vec, ii
-    Integer, allocatable, dimension(:) :: Pos_vec
-    Real(kind=dp) :: Val_vec(:)
+  subroutine ConvFrom_PETSc_Vec(This, Val_vec)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
+    integer :: N_Vec, ii
+    integer, allocatable, dimension(:) :: Pos_vec
+    real(kind=dp) :: Val_vec(:)
     call This%GetSize(N_Vec)
-    If (N_Vec /= Size(Val_vec)) Then
-      Write(output_unit, *) "### Error ###"
-      Error Stop "PVec and Output vec size do not match"
-    End If
-    Allocate (Pos_vec(N_Vec))
-    Do ii = 1, N_Vec
+    if (N_Vec /= Size(Val_vec)) then
+      write(output_unit, *) "### Error ###"
+      error stop "PVec and Output vec size do not match"
+    end if
+    allocate(Pos_vec(N_Vec))
+    do ii = 1, N_Vec
       Pos_vec(ii) = ii - 1
-    End Do
-    Call VecGetValues(This%vec, N_vec, Pos_vec, Val_vec, ierr)
-    Deallocate (Pos_vec)
+    end do
+    call VecGetValues(This%vec, N_vec, Pos_vec, Val_vec, ierr)
+    deallocate(Pos_vec)
     ! call This%Destroy()
-  End Subroutine ConvFrom_PETSc_Vec
+  end subroutine ConvFrom_PETSc_Vec
 
-  Subroutine GetSize_PETSc_Vec(This, N_GetSize)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
-    Integer :: N_GetSize
-    Call VecGetSize(This%vec, N_GetSize, ierr)
-  End Subroutine GetSize_PETSc_Vec
+  subroutine GetSize_PETSc_Vec(This, N_GetSize)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
+    integer :: N_GetSize
+    call VecGetSize(This%vec, N_GetSize, ierr)
+  end subroutine GetSize_PETSc_Vec
 
-  Subroutine VecView_PETSc_Vec(This)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
+  subroutine VecView_PETSc_Vec(This)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
     call VecView(This%vec, PETSC_VIEWER_STDOUT_WORLD, ierr); CHKERRQ(ierr)
-  End Subroutine VecView_PETSc_Vec
+  end subroutine VecView_PETSc_Vec
 
-  Subroutine Reset_PETSc_Vec(This)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
+  subroutine Reset_PETSc_Vec(This)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
     call VecZeroEntries(this%vec, ierr)
-  End Subroutine Reset_PETSc_Vec
+  end subroutine Reset_PETSc_Vec
 
-  Subroutine InsertValue_PETSc_Vec(this, Position, Value)
-    Class(PVec), intent(inout) :: this
-    Real(kind=dp) :: Value
-    Integer :: Position
+  subroutine InsertValue_PETSc_Vec(this, Position, Value)
+    class(PVec), intent(inout) :: this
+    real(kind=dp) :: Value
+    integer :: Position
     call VecSetValue(this%vec, Position - 1, Value, INSERT_VALUES)
-  End Subroutine InsertValue_PETSc_Vec
+  end subroutine InsertValue_PETSc_Vec
 
-  Subroutine AddValue_PETSc_Vec(this, Position, Value)
-    Class(PVec), intent(inout) :: this
-    Real(kind=dp) :: Value
-    Integer :: Position
+  subroutine AddValue_PETSc_Vec(this, Position, Value)
+    class(PVec), intent(inout) :: this
+    real(kind=dp) :: Value
+    integer :: Position
     call VecSetValue(this%vec, Position - 1, Value, ADD_VALUES)
-  End Subroutine AddValue_PETSc_Vec
+  end subroutine AddValue_PETSc_Vec
 
-  Subroutine SetAll_PETSc_Vec(This, Val_All)
-    Class(PVec), intent(inout) :: This
-    PetscErrorCode ierr
-    Real(kind=dp) :: Val_All
+  subroutine SetAll_PETSc_Vec(This, Val_All)
+    class(PVec), intent(inout) :: This
+    PetscErrorCode :: ierr
+    real(kind=dp) :: Val_All
     call VecSet(This%vec, Val_All, ierr)
-  End Subroutine SetAll_PETSc_Vec
+  end subroutine SetAll_PETSc_Vec
 #endif
 
-End Module PETSc_Vec_Mod
+end module PETSc_Vec_Mod

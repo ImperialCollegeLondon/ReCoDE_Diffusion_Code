@@ -1,16 +1,16 @@
-Module Problem_Mod
+module Problem_Mod
 
   use Constants_Mod
   use Materials_Mod
   !!Reads through an input deck and passes the required data to external routines
 
-  Implicit None
+  implicit none
 
   type, public :: t_Problem
-    Integer :: N_Regions, N_Nodes
-    Integer, allocatable, dimension(:) :: Nodes
-    Integer, dimension(2) :: Boundary_Conditions
-    Real(kind=dp), allocatable, dimension(:) :: Boundary_Pos
+    integer :: N_Regions, N_Nodes
+    integer, allocatable, dimension(:) :: Nodes
+    integer, dimension(2) :: Boundary_Conditions
+    real(kind=dp), allocatable, dimension(:) :: Boundary_Pos
   contains
   !!Procedures which handle the storing, calculation and retrieval of material data
     procedure, public :: ReadInput
@@ -24,128 +24,128 @@ Module Problem_Mod
 
 contains
 
-  Subroutine ReadInput(this, Material)
+  subroutine ReadInput(this, Material)
 !!Read the Input File
     class(t_Problem) :: this
     type(t_material), allocatable, dimension(:) :: Material
-    Integer :: ii
-    Integer, parameter :: InputFile = 101
-    Character(len=32) :: String_Read
+    integer :: ii
+    integer, parameter :: InputFile = 101
+    character(len=32) :: String_Read
   !! $$ Exercise 2a
-    Real(kind=dp) :: Absorption, Source
+    real(kind=dp) :: Absorption, Source
 
   !!Open input file containing problem specification
-    Open (InputFile, File='input.in', Status='Old')
+    open(InputFile, File='input.in', Status='Old')
 
   !!Read in the number of Regions
     String_Read = ''
-    Do While (String_Read /= 'Regions:')
-      Read(InputFile, *) String_Read
-    End Do
-    Read(InputFile, *) this%N_Regions
+    do while (String_Read /= 'Regions:')
+      read(InputFile, *) String_Read
+    end do
+    read(InputFile, *) this%N_Regions
 
   !!Allocate the relevant arrays
-    Allocate (this%Boundary_Pos(this%N_Regions + 1))
-    Allocate (this%Nodes(this%N_Regions))
-    Allocate (Material(this%N_Regions))
+    allocate(this%Boundary_Pos(this%N_Regions + 1))
+    allocate(this%Nodes(this%N_Regions))
+    allocate(Material(this%N_Regions))
 
   !!Read in the boundary positions
     String_Read = ''
-    Do While (String_Read /= 'Boundaries:')
-      Read(InputFile, *) String_Read
-    End Do
-    Do ii = 1, this%N_Regions + 1
-      Read(InputFile, *) this%Boundary_Pos(ii)
-    End Do
+    do while (String_Read /= 'Boundaries:')
+      read(InputFile, *) String_Read
+    end do
+    do ii = 1, this%N_Regions + 1
+      read(InputFile, *) this%Boundary_Pos(ii)
+    end do
 
   !!Read in the number of nodes in each region
     String_Read = ''
-    Do While (String_Read /= 'Nodes:')
-      Read(InputFile, *) String_Read
-    End Do
+    do while (String_Read /= 'Nodes:')
+      read(InputFile, *) String_Read
+    end do
     this%N_Nodes = 0
-    Do ii = 1, this%N_Regions
-      Read(InputFile, *) this%Nodes(ii)
+    do ii = 1, this%N_Regions
+      read(InputFile, *) this%Nodes(ii)
       this%N_Nodes = this%N_Nodes + this%Nodes(ii)
-    End Do
+    end do
     this%N_Nodes = this%N_Nodes - (this%N_Regions - 1)
 
   !!Read in the materials and set the data
   !! $$ Exercise 2a
     String_Read = ''
-    Do While (String_Read /= 'Materials:')
-      Read(InputFile, *) String_Read
-    End Do
-    Do ii = 1, this%N_Regions
-      Read(InputFile, *) String_Read
-      Call Material(ii)%SetName(String_Read)
-      Read(InputFile, *) Absorption, Source
-      Call Material(ii)%SetProps(Absorption, Source)
-    End Do
+    do while (String_Read /= 'Materials:')
+      read(InputFile, *) String_Read
+    end do
+    do ii = 1, this%N_Regions
+      read(InputFile, *) String_Read
+      call Material(ii)%SetName(String_Read)
+      read(InputFile, *) Absorption, Source
+      call Material(ii)%SetProps(Absorption, Source)
+    end do
 
   !!Read in the boundary conditions of the problem
     String_Read = ''
-    Do While (String_Read /= 'Boundary_Conditions:')
-      Read(InputFile, *) String_Read
-    End Do
-    Do ii = 1, 2
-      Read(InputFile, *) String_Read
-      If (String_Read == 'Zero') Then
+    do while (String_Read /= 'Boundary_Conditions:')
+      read(InputFile, *) String_Read
+    end do
+    do ii = 1, 2
+      read(InputFile, *) String_Read
+      if (String_Read == 'Zero') then
         this%Boundary_Conditions(ii) = 0
-      ElseIf (String_Read == 'Reflective') Then
+      else if (String_Read == 'Reflective') then
         this%Boundary_Conditions(ii) = 1
-      Else
-        Write(output_unit, *) "ERROR: Unrecognised Boundary Condition"
-      End If
-    End Do
+      else
+        write(output_unit, *) "ERROR: Unrecognised Boundary Condition"
+      end if
+    end do
 
-    Close(InputFile)
+    close(InputFile)
 
-  End Subroutine ReadInput
+  end subroutine ReadInput
 
-  Function GetN_Regions(this) Result(Res)
+  function GetN_Regions(this) Result(Res)
     class(t_problem) :: this
-    Integer :: Res
+    integer :: Res
     !!Get the number of regions in the problem
     Res = this%N_Regions
-  End Function GetN_Regions
+  end function GetN_Regions
 
-  Function GetNodes(this) Result(Res)
+  function GetNodes(this) Result(Res)
     class(t_problem) :: this
-    Integer, dimension(this%N_Regions) :: Res
+    integer, dimension(this%N_Regions) :: Res
     !!Get an array containing the number of nodes in each region
     Res = this%Nodes
-  End Function GetNodes
+  end function GetNodes
 
-  Function GetN_Nodes(this) Result(Res)
+  function GetN_Nodes(this) Result(Res)
     class(t_problem) :: this
-    Integer :: Res
+    integer :: Res
     !!Get the total number of nodes in the problem
     Res = this%N_Nodes
-  End Function GetN_Nodes
+  end function GetN_Nodes
 
-  Function GetBoundary_Pos(this) Result(Res)
+  function GetBoundary_Pos(this) Result(Res)
     class(t_problem) :: this
-    Real(kind=dp), dimension(this%N_Regions + 1) :: Res
+    real(kind=dp), dimension(this%N_Regions + 1) :: Res
     !!Get the positions of the boundaries in the problem
     Res = this%Boundary_Pos
-  End Function GetBoundary_Pos
+  end function GetBoundary_Pos
 
-  Function GetBoundary_Conditions(this) Result(Res)
+  function GetBoundary_Conditions(this) Result(Res)
     class(t_problem) :: this
-    Integer, dimension(2) :: Res
+    integer, dimension(2) :: Res
     !!Get the boundary condition of the problem
     Res = this%Boundary_Conditions
-  End Function GetBoundary_Conditions
+  end function GetBoundary_Conditions
 
-  Subroutine DestroyProblem(this, Material)
+  subroutine DestroyProblem(this, Material)
   !!Destroy the data stored in the problem class
     class(t_Problem) :: this
     type(t_material), allocatable, dimension(:) :: Material
 
   !!Deallocate the relevant arrays
-    Deallocate (this%Boundary_Pos, this%Nodes)
-    Deallocate (Material)
-  End Subroutine DestroyProblem
+    deallocate(this%Boundary_Pos, this%Nodes)
+    deallocate(Material)
+  end subroutine DestroyProblem
 
-End Module
+end module

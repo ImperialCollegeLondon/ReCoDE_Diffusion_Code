@@ -1,4 +1,4 @@
-Module PETSc_Ksp_Mod
+module PETSc_Ksp_Mod
 
 #ifdef PETSC
 #include <petsc/finclude/petscksp.h>
@@ -8,11 +8,11 @@ Module PETSc_Ksp_Mod
   use Constants_Mod
   use PETSc_Mat_Mod
   use PETSc_Vec_Mod
-  Implicit None
+  implicit none
   type :: pSol
     type(tksp) :: ksp
-    Integer :: Max_Its
-    Real(kind=dp) :: Rel_Tol, Abs_Tol
+    integer :: Max_Its
+    real(kind=dp) :: Rel_Tol, Abs_Tol
   contains
     procedure :: Create => Create_PETSc_Ksp
     procedure :: Destroy => Destroy_PETSc_Ksp
@@ -22,14 +22,14 @@ Module PETSc_Ksp_Mod
 
 contains
 
-  Subroutine Create_PETSc_Ksp(This, A, PC_type, Rel_Tol, Abs_Tol, Max_Its)
+  subroutine Create_PETSc_Ksp(This, A, PC_type, Rel_Tol, Abs_Tol, Max_Its)
     class(pSol) :: This
     class(pMat) :: A
     PC Precon
-    PetscErrorCode ierr
-    Real(kind=dp) :: Rel_Tol, Abs_Tol
-    Integer :: Max_Its
-    Character :: PC_type
+    PetscErrorCode :: ierr
+    real(kind=dp) :: Rel_Tol, Abs_Tol
+    integer :: Max_Its
+    character :: PC_type
 
     This%Rel_Tol = Rel_Tol
     This%Abs_Tol = Abs_Tol
@@ -52,84 +52,84 @@ contains
     end select
     call KSPSetTolerances(This%ksp, This%Rel_Tol, This%Abs_Tol, PETSC_DEFAULT_REAL, This%Max_Its, ierr)
     call KSPSetFromOptions(This%ksp, ierr)
-  End Subroutine Create_PETSc_Ksp
+  end subroutine Create_PETSc_Ksp
 
-  Subroutine Destroy_PETSc_Ksp(This)
+  subroutine Destroy_PETSc_Ksp(This)
     class(pSol) :: This
-    PetscErrorCode ierr
+    PetscErrorCode :: ierr
     call KSPDestroy(This%ksp, ierr)
-  End Subroutine Destroy_PETSc_Ksp
+  end subroutine Destroy_PETSc_Ksp
 
-  Subroutine Analysis_PETSc_Ksp(This)
+  subroutine Analysis_PETSc_Ksp(This)
     class(pSol) :: This
-    PetscErrorCode ierr
-    Integer :: Its, Reason
-    Real(kind=dp) :: RNorm
-    Call KSPGetIterationNumber(This%ksp, Its, ierr)
-    Call KSPGetResidualNorm(This%ksp, RNorm, ierr)
-    Call KSPGetConvergedReason(This%ksp, Reason, ierr)
-    If (Reason < 0) Then
-      Write(output_unit, *) "---KSP Convergence Failed---"
-      Write(output_unit, *) "Failed after iterations:", Its, "with residual norm:", RNorm, "for reason:", Reason
-      Write(output_unit, *) "----------------------------"
-      Select Case (Reason)
-      Case (-3)
-        Write(output_unit, *) "Reason => Did not converge after required iterations"
-        Write(output_unit, *) "-------------------------------"
-      Case (-4)
-        Write(output_unit, *) "Reason => Residual norm increased by Divtol"
-        Write(output_unit, *) "-------------------------------"
-      Case (-5)
-        Write(output_unit, *) "Reason => Breakdown in method"
-        Write(output_unit, *) "-------------------------------"
-      Case (-6)
-        Write(output_unit, *) "Reason => Initial residual orth to preconditioned initial residual"
-        Write(output_unit, *) "-------------------------------"
-      Case (-7)
-        Write(output_unit, *) "Reason => Asymmetric matrix"
-        Write(output_unit, *) "-------------------------------"
-      Case (-9)
-        Write(output_unit, *) "Reason => Residual term becan NaN"
-        Write(output_unit, *) "-------------------------------"
-      Case Default
-        Write(output_unit, *) "Reason => Description not implemented"
-        Write(output_unit, *) "-------------------------------"
-      End Select
-      Error Stop "KSP Convergence Failed"
-    Else
-      Write(output_unit, *) "---KSP Convergence Succeeded---"
-      Write(output_unit, '(g0)', advance='no') "Succeeded after iterations:  "
-      Write(output_unit, '(g0)', advance='no') Its
-      Write(output_unit, '(g0)', advance='no') "  with residual norm:"
-      Write(output_unit, '(E14.6)', advance='no') RNorm
-      Write(output_unit, '(g0)', advance='no') "  for reason  :"
-      Write(output_unit, '(g0)') Reason
-      Write(output_unit, *) "-------------------------------"
-      Select Case (Reason)
-      Case (2)
-        Write(output_unit, *) "Reason => Passed Relative Tolerance"
-        Write(output_unit, *) "-------------------------------"
-      Case (3)
-        Write(output_unit, *) "Reason => Passed Absolute Tolerance"
-        Write(output_unit, *) "-------------------------------"
-      Case Default
-        Write(output_unit, *) "Reason => Description not implemented"
-        Write(output_unit, *) "-------------------------------"
-      End Select
-    End If
+    PetscErrorCode :: ierr
+    integer :: Its, Reason
+    real(kind=dp) :: RNorm
+    call KSPGetIterationNumber(This%ksp, Its, ierr)
+    call KSPGetResidualNorm(This%ksp, RNorm, ierr)
+    call KSPGetConvergedReason(This%ksp, Reason, ierr)
+    if (Reason < 0) then
+      write(output_unit, *) "---KSP Convergence Failed---"
+      write(output_unit, *) "Failed after iterations:", Its, "with residual norm:", RNorm, "for reason:", Reason
+      write(output_unit, *) "----------------------------"
+      select case (Reason)
+      case (-3)
+        write(output_unit, *) "Reason => Did not converge after required iterations"
+        write(output_unit, *) "-------------------------------"
+      case (-4)
+        write(output_unit, *) "Reason => Residual norm increased by Divtol"
+        write(output_unit, *) "-------------------------------"
+      case (-5)
+        write(output_unit, *) "Reason => Breakdown in method"
+        write(output_unit, *) "-------------------------------"
+      case (-6)
+        write(output_unit, *) "Reason => Initial residual orth to preconditioned initial residual"
+        write(output_unit, *) "-------------------------------"
+      case (-7)
+        write(output_unit, *) "Reason => Asymmetric matrix"
+        write(output_unit, *) "-------------------------------"
+      case (-9)
+        write(output_unit, *) "Reason => Residual term becan NaN"
+        write(output_unit, *) "-------------------------------"
+      case default
+        write(output_unit, *) "Reason => Description not implemented"
+        write(output_unit, *) "-------------------------------"
+      end select
+      error stop "KSP Convergence Failed"
+    else
+      write(output_unit, *) "---KSP Convergence Succeeded---"
+      write(output_unit, '(g0)', advance='no') "Succeeded after iterations:  "
+      write(output_unit, '(g0)', advance='no') Its
+      write(output_unit, '(g0)', advance='no') "  with residual norm:"
+      write(output_unit, '(E14.6)', advance='no') RNorm
+      write(output_unit, '(g0)', advance='no') "  for reason  :"
+      write(output_unit, '(g0)') Reason
+      write(output_unit, *) "-------------------------------"
+      select case (Reason)
+      case (2)
+        write(output_unit, *) "Reason => Passed Relative Tolerance"
+        write(output_unit, *) "-------------------------------"
+      case (3)
+        write(output_unit, *) "Reason => Passed Absolute Tolerance"
+        write(output_unit, *) "-------------------------------"
+      case default
+        write(output_unit, *) "Reason => Description not implemented"
+        write(output_unit, *) "-------------------------------"
+      end select
+    end if
 
-  End Subroutine Analysis_PETSc_Ksp
+  end subroutine Analysis_PETSc_Ksp
 
-  Subroutine Solve_PETSc_Ksp(This, b, x)
-    Class(pSol) :: This
+  subroutine Solve_PETSc_Ksp(This, b, x)
+    class(pSol) :: This
     class(pVec) :: b, x
-    PetscErrorCode ierr
+    PetscErrorCode :: ierr
     call KSpSolve(This%ksp, b%vec, x%vec, ierr); CHKERRQ(ierr)
 #   ifdef DEBUG
     call This%analysis()
 #   endif
 
-  End Subroutine Solve_PETSc_Ksp
+  end subroutine Solve_PETSc_Ksp
 #endif
 
-End Module PETSc_Ksp_Mod
+end module PETSc_Ksp_Mod

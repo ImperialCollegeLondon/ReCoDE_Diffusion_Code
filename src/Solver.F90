@@ -1,8 +1,8 @@
-Module Solver_Mod
+module Solver_Mod
 
   use Constants_Mod
   use CRS_Mod
-  Implicit None
+  implicit none
 
   private
   public :: BCG_Solve
@@ -11,21 +11,21 @@ Module Solver_Mod
     !!Solver used when code is compiled without PETSc
 contains
 
-  Subroutine BCG_Solve(mat_CRS, Vecb, N_Size, phi)
-    Class(t_matrix_base), pointer :: mat_CRS, M
-    Integer :: N_Size
-    Integer :: ii, BCG_Iterations
-    Real(kind=dp) :: alpha, beta, omega, rho1, rho2
-    Real(kind=dp), dimension(N_Size) :: phi, p, ph, s, sh, t, v, r, rh, Ax, b
-    Real(kind=dp), dimension(:) :: Vecb
-    Logical :: BCG_Conv = .False.
+  subroutine BCG_Solve(mat_CRS, Vecb, N_Size, phi)
+    class(t_matrix_base), pointer :: mat_CRS, M
+    integer :: N_Size
+    integer :: ii, BCG_Iterations
+    real(kind=dp) :: alpha, beta, omega, rho1, rho2
+    real(kind=dp), dimension(N_Size) :: phi, p, ph, s, sh, t, v, r, rh, Ax, b
+    real(kind=dp), dimension(:) :: Vecb
+    logical :: BCG_Conv = .False.
 
     !!Inverse Jacobi Preconditioner Matrix M
-    allocate (t_crs :: M)
+    allocate(t_crs :: M)
     call M%construct(N_Size, N_Size)
-    Do ii = 1, N_Size
+    do ii = 1, N_Size
       call M%set(ii, ii, (1._dp/mat_CRS%get(ii, ii)))
-    End Do
+    end do
 
     !!Biconjugate Gradient Algorithm
     phi = 1._dp
@@ -34,18 +34,18 @@ contains
     r = b - Ax
     rh = r
 
-    Do BCG_Iterations = 1, N_Size
+    do BCG_Iterations = 1, N_Size
       rho1 = dot_product(rh, r)
-      If (SQRT(rho1) < 1E-4) Then
+      if (SQRT(rho1) < 1E-4) then
         BCG_Conv = .True.
         exit
-      End If
-      If (BCG_Iterations /= 1) Then
+      end if
+      if (BCG_Iterations /= 1) then
         beta = (rho1/rho2)*(alpha/omega)
         p = r + beta*(p - omega*v)
-      Else
+      else
         p = r
-      End If
+      end if
       call M%operate(p, ph)
       call mat_CRS%operate(ph, v)
       alpha = rho1/dot_product(rh, v)
@@ -56,29 +56,29 @@ contains
       phi = phi + alpha*ph + omega*sh
       r = s - omega*t
       rho2 = rho1
-    End Do
+    end do
 
     call M%Destroy()
 
     !!Exit if convergence failed
-    If (.Not. BCG_Conv) Then
-      Write(output_unit, *) "---BCG Convergence Failed---"
-      Write(output_unit, *) "Maximum number of iterations reached"
-      Write(output_unit, *) "Terminating"
-      Write(output_unit, *) "-------------------------------"
-      Error Stop "Solver failed to converge"
-    End If
+    if (.Not. BCG_Conv) then
+      write(output_unit, *) "---BCG Convergence Failed---"
+      write(output_unit, *) "Maximum number of iterations reached"
+      write(output_unit, *) "Terminating"
+      write(output_unit, *) "-------------------------------"
+      error stop "Solver failed to converge"
+    end if
 
   !!Debug writes residual and iterations to terminal
 # ifdef DEBUG
-    Write(output_unit, *) "---BCG Convergence Succeeded---"
-    Write(output_unit, '(g0)', advance='no') "Succeeded after iterations:  "
-    Write(output_unit, '(g0)', advance='no') BCG_Iterations
-    Write(output_unit, '(g0)', advance='no') "  with residual:"
-    Write(output_unit, '(E14.6)') rho1
-    Write(output_unit, *) "-------------------------------"
+    write(output_unit, *) "---BCG Convergence Succeeded---"
+    write(output_unit, '(g0)', advance='no') "Succeeded after iterations:  "
+    write(output_unit, '(g0)', advance='no') BCG_Iterations
+    write(output_unit, '(g0)', advance='no') "  with residual:"
+    write(output_unit, '(E14.6)') rho1
+    write(output_unit, *) "-------------------------------"
 # endif
 
-  End subroutine BCG_Solve
+  end subroutine BCG_Solve
 
-End Module
+end module

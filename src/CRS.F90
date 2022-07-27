@@ -36,7 +36,7 @@ contains
     this%n_row = n_row
     this%n_column = n_column
 
-    allocate (this%row_start(n_row), this%values(0), this%col_index(0))
+    allocate(this%row_start(n_row), this%values(0), this%col_index(0))
 
     this%row_start = 1
 
@@ -51,9 +51,9 @@ contains
     this%n_row = 0
     this%n_column = 0
 
-    if (allocated(this%col_index)) deallocate (this%col_index)
-    if (allocated(this%row_start)) deallocate (this%row_start)
-    if (allocated(this%values)) deallocate (this%values)
+    if (allocated(this%col_index)) deallocate(this%col_index)
+    if (allocated(this%row_start)) deallocate(this%row_start)
+    if (allocated(this%values)) deallocate(this%values)
 
   end subroutine destroy_crs
 
@@ -152,8 +152,8 @@ contains
 
     !First, check if the vector to be multiplied has the same number of rows as the matrix
     if (size(vector_in) /= this%n_column) then
-      Write(output_unit, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
-      Error Stop "Incorrectly sized vector for matrix multiplication"
+      write(output_unit, '(2(A, I0),A)') "operate has been given a vector of size ", size(vector_in), " to multiply which is of a different size to the matrix which has ", this%n_column, " columns. Terminating."
+      error stop "Incorrectly sized vector for matrix multiplication"
     end if
 
     !Set the output to zero start with, then add up all contributions
@@ -183,14 +183,14 @@ contains
 
     !The case that the matrix does not have a positive number of entries
     if (this%n_row < 1 .or. this%n_column < 1) then
-      Write(output_unit, '(A, 2(I0, A))') "Error: check_explicit_crs was asked for a value when the matrix only has ", this%n_row, " row(s) and ", this%n_column, " column(s). Terminating."
-      Error Stop "Unitialised matrix"
+      write(output_unit, '(A, 2(I0, A))') "Error: check_explicit_crs was asked for a value when the matrix only has ", this%n_row, " row(s) and ", this%n_column, " column(s). Terminating."
+      error stop "Unitialised matrix"
     end if
 
     !The case that the value asked for falls outside the matrix
     if (row < 1 .or. row > this%n_row .or. column < 1 .or. column > this%n_column) then
-      Write(output_unit, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", this%n_row, " and the matrix's columns extend from 1 to ", this%n_column, ". Terminating."
-      Error Stop "Matrix access out of bounds"
+      write(output_unit, '(A, 4(I0, A))') "Error: check_explicit_crs was asked for the value at location (", row, ", ", column, ") of the matrix when the matrix's row numbers extend from 1 to ", this%n_row, " and the matrix's columns extend from 1 to ", this%n_column, ". Terminating."
+      error stop "Matrix access out of bounds"
     end if
 
     !The case that the row of the requested value is before the first non-zero row or after the last non-zero row
@@ -280,14 +280,14 @@ contains
 
     !Warning: changing the size of arrays to a size below the original size will result in information being lost from the end of values and col_index
 
-    allocate (col_index_temp(n_kept), values_temp(n_kept))
+    allocate(col_index_temp(n_kept), values_temp(n_kept))
 
     col_index_temp(1:n_kept) = this%col_index(1:n_kept)
     values_temp = this%values(1:n_kept)
 
-    deallocate (this%col_index, this%values)
+    deallocate(this%col_index, this%values)
 
-    allocate (this%col_index(new_size), this%values(new_size))
+    allocate(this%col_index(new_size), this%values(new_size))
 
     this%col_index = 0
     this%values = 0.0_dp
@@ -295,7 +295,7 @@ contains
     this%col_index(1:n_kept) = col_index_temp(1:n_kept)
     this%values(1:n_kept) = values_temp(1:n_kept)
 
-    deallocate (col_index_temp, values_temp)
+    deallocate(col_index_temp, values_temp)
 
   end subroutine change_array_sizes_crs
 

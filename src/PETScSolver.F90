@@ -1,4 +1,4 @@
-Module PETScSolver_Mod
+module PETScSolver_Mod
 
 #ifdef PETSC
   use Constants_Mod
@@ -8,7 +8,7 @@ Module PETScSolver_Mod
   use PETSc_Ksp_Mod
     !!Solves the system of equations with PETSc to generate a result which can be fed into the output module
 
-  Implicit None
+  implicit none
   Private
   public :: PETSc_Solve
 
@@ -17,7 +17,7 @@ Module PETScSolver_Mod
   end type
 contains
 
-  Subroutine PETSc_Solve(pMatA, pVecb, pVecx)
+  subroutine PETSc_Solve(pMatA, pVecb, pVecx)
     type(pMat) :: pMatA
     type(pVec) :: pVecb, pVecx
     type(pSol) :: pSolve
@@ -28,7 +28,7 @@ contains
 
     call pSolve%Destroy()
 
-  End Subroutine PETSc_Solve
+  end subroutine PETSc_Solve
 #endif
 
-End Module PETScSolver_Mod
+end module PETScSolver_Mod

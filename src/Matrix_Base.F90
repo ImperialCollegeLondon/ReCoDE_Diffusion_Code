@@ -83,7 +83,7 @@ contains
     real(kind=dp), dimension(:), allocatable    ::  row_values
     integer                                     ::  ii, jj
 
-    allocate (row_values(this%n_column))
+    allocate(row_values(this%n_column))
 
     do ii = 1, this%n_row
       do jj = 1, this%n_column

@@ -39,7 +39,7 @@ contains
     call this%destroy()
 
     if (n_column /= n_row) then
-      Error Stop "In cds_construct, the number of rows and number of columns were not equal. Terminating."
+      error stop "In cds_construct, the number of rows and number of columns were not equal. Terminating."
     end if
 
     this%n_row = n_row
@@ -52,8 +52,8 @@ contains
     !! all arrays and returns the equivalent of a matrix of size 0.
     class(t_cds), intent(inout) :: this !! The instance of t_cds to be destroyed
 
-    if (allocated(this%distance)) Deallocate(this%distance)
-    if (allocated(this%values)) Deallocate(this%values)
+    if (allocated(this%distance)) deallocate(this%distance)
+    if (allocated(this%values)) deallocate(this%values)
 
   end subroutine cds_destroy
 
@@ -68,13 +68,13 @@ contains
     integer ::  diagref !! The first array index of the value to be returned in the values array of the t_cds type
     logical ::  padded !! Will be set to false if the value is not padded
 
-    !Check the called for value is within the matrix. If it's not then end the program
+    !Check the called for value is within the matrix. if it's not then end the program
     if (row > this%n_row .or. column > this%n_row .or. row < 1 .or. column < 1) then
       print *, "The value asked to be retrieved by cds_get is outside the size of the matrix. Terminating program."
       STOP
     end if
 
-    !Check the matrix is non-zero. If it is, return zero
+    !Check the matrix is non-zero. if it is, return zero
     if (this%ndiag == 0) then
       cds_get = 0.0_dp
       return
@@ -118,34 +118,34 @@ contains
       !The case where the diagonal is not explicitly stored in the matrix
       !If the values array of the cds is allocated then store the value array of the cds into the temporary array
       if (allocated(this%values)) then
-        Allocate(valuestemp(this%ndiag, this%n_row))
+        allocate(valuestemp(this%ndiag, this%n_row))
         valuestemp = this%values
-        !Reallocate the value array and put the values back in
-        Deallocate(this%values)
+        !reallocate the value array and put the values back in
+        deallocate(this%values)
       end if
 
       !Change values so it is the correct value in previously defined entries and zero in new diagonals
-      Allocate(this%values(this%ndiag + 1, this%n_row))
+      allocate(this%values(this%ndiag + 1, this%n_row))
       if (allocated(valuestemp)) this%values(1:this%ndiag, :) = valuestemp
       this%values(this%ndiag + 1:this%ndiag + 1, :) = 0.0_dp
 
       !Now do the same for distance
       if (allocated(this%distance)) then
-        Allocate(distancetemp(this%ndiag))
+        allocate(distancetemp(this%ndiag))
         distancetemp = this%distance
-        !Reallocate the value array and put the values back in
-        Deallocate(this%distance)
+        !reallocate the value array and put the values back in
+        deallocate(this%distance)
       end if
 
       !Change distance so it is the correct value in previously defined entries
       !and zero for new diagonals which are at the end
-      Allocate(this%distance(this%ndiag + 1))
+      allocate(this%distance(this%ndiag + 1))
       if (allocated(distancetemp)) this%distance(1:this%ndiag) = distancetemp
       this%distance(this%ndiag + 1:this%ndiag + 1) = 0
 
       !Deallocate the temporary arrays
-      if (allocated(distancetemp)) Deallocate(distancetemp)
-      if (allocated(valuestemp)) Deallocate(valuestemp)
+      if (allocated(distancetemp)) deallocate(distancetemp)
+      if (allocated(valuestemp)) deallocate(valuestemp)
 
       !Move the values and distances to make space for the new diagonal
       !First, find where the diagonal needs to be
@@ -222,7 +222,7 @@ contains
 
     !Initially assume the variable is in a padded cell
     padded = .true.
-    !Find out which diagonal stored in t_cds type the value to bre returned is and turn padded to false. If
+    !Find out which diagonal stored in t_cds type the value to bre returned is and turn padded to false. if
     do ii = 1, this%ndiag
       if (diagonal == this%distance(ii)) then
         padded = .false.
@@ -251,9 +251,9 @@ contains
     integer ::  ndel !! The number of diagonals to delete
     integer ::  ii, jj !! Generic counting variables
 
-    Allocate(diagdelref(this%ndiag))
+    allocate(diagdelref(this%ndiag))
 
-    !Check if there are zero diagonals. If so, return.
+    !Check if there are zero diagonals. if so, return.
     if (this%ndiag == 0) return
 
     !Initially set ndiagtemp to ndiag and reduce it as zero diagonals are found
@@ -304,11 +304,11 @@ contains
     ! before real(dp)locating the main array and inserting variables
     if (this%ndiag /= ndiagtemp) then
       this%ndiag = ndiagtemp
-      Allocate(distancetemp(ndiagtemp), valuestemp(ndiagtemp, this%n_row))
+      allocate(distancetemp(ndiagtemp), valuestemp(ndiagtemp, this%n_row))
       distancetemp = this%distance(1:ndiagtemp)
       valuestemp = this%values(1:ndiagtemp, :)
-      Deallocate(this%distance, this%values)
-      Allocate(this%distance(this%ndiag), this%values(this%ndiag, this%n_row))
+      deallocate(this%distance, this%values)
+      allocate(this%distance(this%ndiag), this%values(this%ndiag, this%n_row))
       this%distance = distancetemp
       this%values = valuestemp
     end if
