@@ -1,5 +1,7 @@
 module Constants_Mod
 
+  ! Public inheritance of the iso_fortran_env variable output_unit every time
+  ! the Constants_Mod module is USEd.
   use iso_fortran_env, only: output_unit
 
   implicit none

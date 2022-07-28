@@ -5,6 +5,7 @@ module Problem_Mod
   !!Reads through an input deck and passes the required data to external routines
 
   implicit none
+  private
 
   type, public :: t_Problem
     integer :: N_Regions, N_Nodes

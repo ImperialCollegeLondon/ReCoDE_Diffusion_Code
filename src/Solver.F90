@@ -1,6 +1,7 @@
 module Solver_Mod
 
   use Constants_Mod
+  use Matrix_Base
   use CRS_Mod
   implicit none
 

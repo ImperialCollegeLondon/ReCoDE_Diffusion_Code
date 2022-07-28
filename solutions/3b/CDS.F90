@@ -1,11 +1,13 @@
 !! $$ Exercise 3b
 module CDS_Mod
 
+  use Constants_Mod
   use Matrix_Base
 
   implicit none
+  private
 
-  type, extends(t_matrix_base)  ::  t_cds
+  type, extends(t_matrix_base), public ::  t_cds
     !! A type designed to store a matrix in Compressed Diagonal storage
     !! fromat using the Intel MKL diagonal storage format
     private

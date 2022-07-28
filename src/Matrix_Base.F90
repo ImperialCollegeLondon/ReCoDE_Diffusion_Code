@@ -3,8 +3,9 @@ module Matrix_Base
   use Constants_Mod
 
   implicit none
+  private
 
-  type, abstract :: t_matrix_base
+  type, abstract, public :: t_matrix_base
     integer ::  n_row, n_column !The number of rows and columns in the matrix
   contains
     private

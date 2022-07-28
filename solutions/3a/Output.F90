@@ -7,6 +7,7 @@ module Output_Mod
   !!Any other postprocessing of data would also go here
 
   implicit none
+  private
   public :: GenerateVTU
 
 contains

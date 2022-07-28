@@ -7,7 +7,10 @@ module PETSc_Mat_Mod
   use petscMat
   use Constants_Mod
   use PETSc_Vec_Mod
+
   implicit none
+  private
+  public :: PMat
 
   type :: PMat
     type(tmat) :: mat

@@ -11,12 +11,14 @@ module MatGen_Mod
 #else
   use CRS_Mod
   !! $$ Exercise 3b
+  use Matrix_Base
   use CDS_Mod
   use Solver_Mod
 #endif
   use Output_Mod
 
   implicit none
+  private
 
   !!Discretises the problem and sets up the system of equations which can then be solved
   type, public :: t_MatGen

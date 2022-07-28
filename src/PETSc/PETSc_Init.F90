@@ -4,6 +4,8 @@ module PETSc_Init_Mod
 #include <petsc/finclude/petscsys.h>
   use petscsys
   implicit none
+  private
+  public :: PETSc_Init
 contains
   subroutine PETSc_Init
     PetscErrorCode :: ierr

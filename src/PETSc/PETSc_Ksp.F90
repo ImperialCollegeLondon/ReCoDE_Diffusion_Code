@@ -8,7 +8,11 @@ module PETSc_Ksp_Mod
   use Constants_Mod
   use PETSc_Mat_Mod
   use PETSc_Vec_Mod
+  
   implicit none
+  private
+  public :: pSol
+
   type :: pSol
     type(tksp) :: ksp
     integer :: Max_Its

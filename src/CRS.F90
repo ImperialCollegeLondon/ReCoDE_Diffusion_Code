@@ -1,11 +1,12 @@
 module CRS_Mod
 
-  use iso_fortran_env, only: output_unit
+  use Constants_Mod
   use Matrix_Base
 
   implicit none
+  private
 
-  type, extends(t_matrix_base)  ::  t_crs
+  type, extends(t_matrix_base), public ::  t_crs
     private
     integer, dimension(:), allocatable       ::  col_index
       !! The column of each non-zero entry into the matrix

@@ -6,8 +6,11 @@ module PETSc_Vec_Mod
   use petscSys
   use petscVec
   use Constants_Mod
+
   implicit none
-  type :: PVec
+  private
+
+  type, public :: PVec
     type(tvec) :: vec
   contains
     procedure :: Create => Create_PETSc_Vec

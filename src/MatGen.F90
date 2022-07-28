@@ -9,6 +9,7 @@ module MatGen_Mod
   use PETSc_Mat_Mod
   use PETScSolver_Mod
 #else
+  use Matrix_Base
   use CRS_Mod
   use Solver_Mod
 #endif

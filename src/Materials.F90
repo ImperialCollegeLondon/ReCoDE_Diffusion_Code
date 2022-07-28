@@ -4,6 +4,7 @@ module Materials_Mod
   !!Stores standard material data and material data explicitly set via an input file
 
   implicit none
+  private
 
   type, public :: t_material
     private
