@@ -57,4 +57,4 @@ contains
     Res = this%S
   end function GetS
 
-end module
+end module Materials_Mod

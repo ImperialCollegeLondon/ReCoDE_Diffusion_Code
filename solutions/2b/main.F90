@@ -43,4 +43,4 @@ Program Main
   write(output_unit, '(g0)', advance='no') " >Problem Solved in:"
   write(output_unit, '(E14.6)', advance='no') time_stop - time_start
   write(output_unit, '(g0)') " seconds"
-end program
+end program Main

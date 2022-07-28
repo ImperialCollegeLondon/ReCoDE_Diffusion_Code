@@ -70,4 +70,4 @@ contains
     write(output_unit, *) repeat("=", 80)
   end subroutine PrintMaterial
 
-end module
+end module Materials_Mod
