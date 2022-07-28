@@ -130,31 +130,37 @@ Instructions on how to install ParaView can be found at:
 
 A user guide for ParaView can be found at: <https://docs.ParaView.org/en/latest/>
 
-<!-- TODO: update once renamed -->
+<!-- Generated via: tree  -I 'venv|build|[0-9][a-z]|[0-9]-*|assets|images|appendix.md|exercise.md|index.md|*.mod|*.png|*.vtu|*.txt' -->
 
 ## Project Structure
 
 ```tree
 .
+├── app
+│   └── main.F90
+├── data
 ├── docs
-│   └── images
+├── environment.yml
+├── fluxplot
+├── fpm.toml
+├── input.in
+├── mkdocs.yml
+├── README.md
 ├── solutions
-│   ├── 1a
-│   │   └── src
-│   │       ├── centralproc
-│   │       ├── inoutproc
-│   │       ├── PETSc
-│   │       └── stdlib
-│   ├── ...
-│   ├── 3b
-│   │   └── src
-│   │       ├── centralproc
-│   │       ├── inoutproc
-│   │       ├── PETSc
-│   │       └── stdlib
 └── src
-    ├── centralproc
-    ├── inoutproc
+    ├── Constants.F90
+    ├── CRS.F90
+    ├── Materials.F90
+    ├── MatGen.F90
+    ├── Matrix_Base.F90
+    ├── Output.F90
     ├── PETSc
-    └── stdlib
+    │   ├── PETSc_Init.F90
+    │   ├── PETSc_Ksp.F90
+    │   ├── PETSc_Mat.F90
+    │   └── PETSc_Vec.F90
+    ├── PETScSolver.F90
+    ├── Problem.F90
+    └── Solver.F90
+
 ```
