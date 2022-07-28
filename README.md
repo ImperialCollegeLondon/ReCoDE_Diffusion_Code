@@ -128,7 +128,7 @@ The **Output.vtu** file stores additional data such as the region and cell numbe
 Instructions on how to install ParaView can be found at:
 <https://www.ParaView.org/Wiki/ParaView:Build_And_Install>
 
-A user guide for ParaView can be found at: https://docs.ParaView.org/en/latest/
+A user guide for ParaView can be found at: <https://docs.ParaView.org/en/latest/>
 
 <!-- TODO: update once renamed -->
 

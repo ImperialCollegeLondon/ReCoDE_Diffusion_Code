@@ -70,7 +70,7 @@ The current vtu file output containts the Flux, Cell Number and Region Number da
 - Gain further experience writing data to an output file
 - Learn how to utilise vtu files to generate more complex outputs in ParaView
 
-The main version of the code already smears a 1-dimensional flux profile into a second dimension for the sake of a visualisation example. This could be furthered by also smearing the results in a third dimension. To do so, the user will need to make an additional set of nodes that have been translated in the z axis and ensure that these are then associated with the correct cells. Users should utilise the ParaView vtk format guide to do so, noting that they will now need to define the cells as a three dimensional shape. The vtk file format is described here: https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf
+The main version of the code already smears a 1-dimensional flux profile into a second dimension for the sake of a visualisation example. This could be furthered by also smearing the results in a third dimension. To do so, the user will need to make an additional set of nodes that have been translated in the z axis and ensure that these are then associated with the correct cells. Users should utilise the ParaView VTK format guide to do so, noting that they will now need to define the cells as a three-dimensional shape. The VTK file format is described here: <https://VTK.org/wp-content/uploads/2015/04/file-formats.pdf>
 
 ## Exercise 3b
 
@@ -100,4 +100,4 @@ sudo apt-get install libblas-dev liblapack-dev
 ```
 
 An explanation of how to use the code and each routine can be found at:
-http://www.netlib.org/lapack/explore-html/
+<http://www.netlib.org/lapack/explore-html/>
