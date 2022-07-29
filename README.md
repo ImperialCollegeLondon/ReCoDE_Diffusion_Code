@@ -63,6 +63,12 @@ To do so, a convenience script has been included to get you started:
 ./install.sh
 ```
 
+or alternatively
+
+```bash
+fpm build
+```
+
 This runs a few commands, feel free to peek into the `install.sh` file to see how the code is compiled, although we will be covering building/compiling in detail in
 sections _3 - Compilation Basics_ and [7 - Build Tools](docs/7-build-tools.md).
 The summary of the script is that it calls `cmake` which **configures**
@@ -74,6 +80,12 @@ To run the installed program, run the following command in a terminal:
 
 ```sh
 ./install/bin/diffusion
+```
+
+or alternatively
+
+```sh
+fpm run
 ```
 
 This command tells the executable to run and will generate relevant output files containing the solution to the problem.
