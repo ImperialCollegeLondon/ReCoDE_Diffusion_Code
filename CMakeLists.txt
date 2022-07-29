@@ -4,6 +4,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install"
     CACHE STRING "Select where to install the library.")
 
 project(diffusion)
+enable_language(Fortran)
 
 # Use MSVS folders to organize projects on windows
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -15,10 +16,19 @@ set(PROJECT_URL "https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code"
 set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Select which configuration to build.")
 
-enable_language(Fortran)
-
-option(BUILD_SOLUTIONS "Build the exemplar's solutions" ON)
+option(BUILD_SOLUTIONS "Build the exemplar's solutions" OFF)
 option(USE_PETSC "Use PETSc for the Linear Algebra" OFF)
+
+if(NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
+endif()
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Add the DEBUG compiler flag
+    add_compile_definitions(DEBUG)
+endif()
 
 # ------------------------------------------------------------------------------
 # Build with PETSc
@@ -83,11 +93,11 @@ else()
 endif()
 
 if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
-    message("GNU (gfortran) compiler detected")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC -Wall -ffree-line-length-none")
+    message(STATUS "GNU (gfortran) compiler detected")
+    add_compile_options(-Wall -ffree-line-length-none)
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
-    message("Intel (ifort/ifx) compiler detected")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
+    message(STATUS "Intel (ifort/ifx) compiler detected")
+    add_compile_options(-warn all)
 endif()
 
 set(INSTALL_MOD_DIR "include")
