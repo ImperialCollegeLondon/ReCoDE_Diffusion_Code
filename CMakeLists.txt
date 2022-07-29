@@ -14,13 +14,13 @@ set(BIN_NAME ${CMAKE_PROJECT_NAME})
 set(PROJECT_DESCRIPTION "1D neutron diffusion solver using Finite Difference")
 set(PROJECT_URL "https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code")
 set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Select which configuration to build.")
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Select which configuration to build.")
 
 option(BUILD_SOLUTIONS "Build the exemplar's solutions" OFF)
 option(USE_PETSC "Use PETSc for the Linear Algebra" OFF)
 
 if(NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
