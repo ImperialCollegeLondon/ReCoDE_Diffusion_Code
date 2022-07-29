@@ -1,5 +1,8 @@
 # 5 - Data Visualisation
 
+The 1D diffusion solver is computing the neutron transport equation and outputs the solution i.e. flux into a file.
+Here a few noteworthy methods of visualising the solution are discussed, ranging from easy-to-use, low level applications, to 3D interactive visualisation programs.
+
 ## gnuplot
 
 gnuplot is an easy to use, yet very versatile command-line plotting tool that is common in scientific computing.
