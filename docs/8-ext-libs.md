@@ -42,27 +42,57 @@ The Portable, Extensible Toolkit for Scientific Computation (PETSc) is an option
 - Check that the installation was successful by running:
 
 ```bash
-make all check
+make check
 ```
+
+> NOTE: save the `PETSC_DIR` and `PETSC_ARCH` variables for later, you will be needing them!
 
 ## Compiling with PETSc
 
-With PETSc installed on your system, the last stage is to set up the environment variables that the code will use to find your PETSc directory. The text below shows how this can be done on a Linux OS, by entering the following commands into your `.bashrc` file:
+With PETSc installed on your system, the last stage is to set up the environment variables that
+point to the installation of PETSc. In a terminal copy and paste the following commands
+but **using your own PETSC_DIR and PETSC_ARCH values from before!**
 
 ```bash
 export PETSC_DIR="/home/jack/petsc-3.16.0"
 export PETSC_ARCH="recode"
 ```
 
-Once you have installed PETSc (see [installation instructions](#installing-petsc)) and set up the required environment variables, the code can also be compiled to use it instead of the custom storage and solvers. To do so, navigate to the `src` directory within the code and enter the commands:
+Once you have installed PETSc (see [installation instructions](#installing-petsc)) and set up the required environment variables, the code can also be compiled to use it instead of the custom storage and solvers.
+
+### CMake
+
+Using `cmake` this can be done by navigating to the `build` directory and running the following command:
 
 ```bash
-make clean
-make petsc
+cmake .. -DUSE_PETSC=ON
+make all
+make install
 ```
 
-This will execute the makefile contained within the same directory with the PETSc options, converting the Fortran code to an optimised form that utilises the PETSc library. This then generates an executable named `diffusion_petsc`. Once this has been done, the code can be executed from the parent directory using the command:
+This should create in the project root the `install/bin/diffusion` executable, which can be run via
 
 ```bash
-./diffusion_petsc
+./install/bin/diffusion
 ```
+
+### FPM - Fortran Package Manager
+
+FPM again is noticeably simpler than `cmake`. To compile using PETSc in a terminal
+just type:
+
+```bash
+fpm run --flag "-DPETSC -I${PETSC_DIR}/include -I${PETSC_DIR}/${PETSC_ARCH}/include" --link-flag "-L${PETSC_DIR}/${PETSC_ARCH}/lib"
+```
+
+```log
+Project is up to date
+ >Input Read
+ >Matrices Created
+ >Problem Assembled
+ >Output Generated
+ >Problem Solved in:  0.658860E-01 seconds
+```
+
+The additional arguments are flags that are passed to the compiler and the linker
+to ensure that the PETSc libraries are included and linked correctly.
