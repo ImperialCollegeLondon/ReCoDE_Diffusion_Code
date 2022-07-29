@@ -64,7 +64,7 @@ To do so, a convenience script has been included to get you started:
 ```
 
 This runs a few commands, feel free to peek into the `install.sh` file to see how the code is compiled, although we will be covering building/compiling in detail in
-sections _3 - Compilation Basics_ and _8 - Build Tools_.
+sections _3 - Compilation Basics_ and [7 - Build Tools](docs/7-build-tools.md).
 The summary of the script is that it calls `cmake` which **configures**
 your project by checking for dependencies and generating the necessary `Makefiles` for compilation.
 It then **compiles** the project using the generated `Makefiles`, and then it finally

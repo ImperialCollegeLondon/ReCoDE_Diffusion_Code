@@ -22,7 +22,7 @@ make all   # Assuming we are using GNU Makefiles else use cmake --build .
 ```
 
 The greater discussion on build tools and more advanced forms of compilation
-is deferred for the later sections, see [8 - Build Tools](8-build-tools.md).
+is deferred for the later sections, see [7 - Build Tools](7-build-tools.md).
 
 Build tools such as `CMake` are particularly useful in a compiled code that utilises OOP as it allows for easy compilation of the required files since it automatically deduces the order of dependencies, thus removing this burden from the programmer.
 The code snippet below comes from the `CMakeLists.txt` used in the project.
