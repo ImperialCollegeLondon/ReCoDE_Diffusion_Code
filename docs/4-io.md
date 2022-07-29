@@ -2,7 +2,7 @@
 
 ## Reading input data from file
 
-Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the **Problem** module, where an input file has been opened, and the boundary conditions read in.
+Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the ``Problem`` module, where an input file has been opened, and the boundary conditions read in.
 
 ```fortran
 !!Open input file containing problem specification
