@@ -15,6 +15,7 @@ This code is part of the **Re**search **Co**mputing and **D**ata Science **E**xa
 - Solving mathematical problems
 - Discretisation of a spatial dimension
 - Optimised data storage
+- Using build tools `CMake` and `fpm`
 - Incorporating external libraries (PETSc)
 
 ## Requirements
