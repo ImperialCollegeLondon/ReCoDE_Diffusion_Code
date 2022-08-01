@@ -1,0 +1,22 @@
+name = "diffusion"
+version = "1.0.0"
+author = "Jack Trainor"
+copyright = "Copyright 2022, Jack Trainor"
+license = "MIT"
+description = "A 1D neutron diffusion solver using OOP and PETSc"
+homepage = "https://github.com/ImperialCollegeLondon/ReCoDE_Diffusion_Code"
+
+[build]
+auto-tests = false
+auto-examples = false
+auto-executables = false
+external-modules = ["petscsys", "petscksp", "petscvec", "petscmat"]
+
+[library]
+source-dir = "src"
+
+[[executable]]
+name = "diffusion"
+source-dir = "app"
+main = "main.F90"
+link = ["petsc"]

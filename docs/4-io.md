@@ -2,34 +2,34 @@
 
 ## Reading input data from file
 
-Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the **Problem** module, where an input file has been opened, and the boundary conditions read in.
+Scientific codes will often make use of an input file which contains the problem specification. These codes must therefore be able to open an input file and read through it, extracting the relevant data such that it can be used to solve the problem. This can be seen in the code snippet below taken from the ``Problem`` module, where an input file has been opened, and the boundary conditions read in.
 
 ```fortran
 !!Open input file containing problem specification
-Open(InputFile, File='input.in', Status='Old')
+open(InputFile, File='input.in', Status='Old')
 
 !!Read in the boundary conditions of the problem
 String_Read = ''
-Do While (String_Read .NE. 'Boundary_Conditions:')
-  Read(InputFile,*) String_Read
-EndDo
-Do ii = 1, 2
-  Read(InputFile,*) String_Read
-  If (String_Read == 'Zero') Then
+do while (String_Read .ne. 'Boundary_Conditions:')
+  read(InputFile,*) String_Read
+end do
+do ii = 1, 2
+  read(InputFile,*) String_Read
+  if (String_Read == 'Zero') then
     this%Boundary_Conditions(ii) = 0
-  ElseIf (String_Read == 'Reflective') Then
+  else if (String_Read == 'Reflective') then
     this%Boundary_Conditions(ii) = 1
-  Else
-    Write(*,*) "ERROR: Unrecognised Boundary Condition"
-  EndIf
-EndDo
+  else
+    write(*,*) "ERROR: Unrecognised Boundary Condition"
+  end if
+end do
 ```
 
 When reading an input file, Fortran needs an Integer ID, Filename and Status. The ID allows the file to be referred to easily in future, and is good practice to set through a parameter for readability. The Filename simply matches the name of the file, and the status describes the state of the file, in this case it is an 'Old' file which already exists in the directory.
 
 ```fortran
-Integer, parameter :: InputFile = 101
-Open(InputFile, File='input.in', Status='Old')
+integer, parameter :: InputFile = 101
+open(InputFile, file='input.in', status='Old')
 ```
 
 We then wish to read through our file until we reach the name of the boundary conditions. To do so, we loop through our file until we reach the 'Boundary_Conditions:' string. We now know that the next line will contain the name of our boundary condition, and hence this can be read in.
@@ -37,28 +37,28 @@ We then wish to read through our file until we reach the name of the boundary co
 ```fortran
 String_Read = ''
 String_Read = ''
-Do While (String_Read .NE. 'Boundary_Conditions:')
-  Read(InputFile,*) String_Read
-EndDo
+do while (String_Read /= 'Boundary_Conditions:')
+  read(InputFile,*) String_Read
+end do
 ```
 
 We finally need to check what type of boundary has been specified and store this information. Here we have an If statement which will loop over the known boundary condition names.
 
 ```fortran
 Read(InputFile,*) String_Read
-If (String_Read == 'Zero') Then
+if (String_Read == 'Zero') then
   this%Boundary_Conditions(ii) = 0
-ElseIf (String_Read == 'Reflective') Then
+else if (String_Read == 'Reflective') then
   this%Boundary_Conditions(ii) = 1
-Else
-  Write(*,*) "ERROR: Unrecognised Boundary Condition"
-EndIf
+else
+  write(*,*) "ERROR: Unrecognised Boundary Condition"
+end if
 ```
 
 Finally, we should close this file, achieved through the close command and the associated ID.
 
 ```fortran
-Close(InputFile)
+close(InputFile)
 ```
 
 ## Generating output files
@@ -69,7 +69,7 @@ First we tell the code to open the output file, specifying 'Replace' to tell the
 
 ```fortran
 !!Generate textfile
-Open(textfile,File='OutputFile.txt',Status='Replace')
+open(textfile,File='OutputFile.txt',Status='Replace')
 ```
 
 We then loop over our solutions, writing the values of the position and fluxes to the text file, with each row corresponding to a node. In code snippet below we write down the data for the first node, then loop over the rest of the nodes in each of the regions.
@@ -78,18 +78,18 @@ We then loop over our solutions, writing the values of the position and fluxes t
 Position = 0._dp
 !!First node
 NodeID = 1
-Write(textfile,'(2E14.6)') Position, Flux(NodeID)
-Do ii = 1, N_Regions
-    Do jj = 1, RegionNodes(ii)-1
+write(textfile,'(2E14.6)') Position, Flux(NodeID)
+do ii = 1, N_Regions
+    do jj = 1, RegionNodes(ii)-1
         NodeID = NodeID + 1
         Position = Position + (Boundary_Pos(ii+1)-Boundary_Pos(ii))/Real(RegionNodes(ii)-1,dp)
-        Write(textfile,'(2E14.6)') Position, Flux(NodeID)
-    EndDo
-EndDo
+        write(textfile,'(2E14.6)') Position, Flux(NodeID)
+    end do
+end do
 ```
 
 Finally, we close the file. We now have a complete set of output data stored in text format that can be plotted or used for later analysis.
 
 ```fortran
-Close(textfile)
+close(textfile)
 ```

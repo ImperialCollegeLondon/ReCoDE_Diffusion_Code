@@ -1,0 +1,11 @@
+name: diffusion
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - compilers
+  - cmake
+  - make
+  - fpm
+  - numpy
+  - matplotlib

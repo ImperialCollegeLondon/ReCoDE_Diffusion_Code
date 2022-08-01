@@ -2,12 +2,6 @@
 
 ## Solving Mathematical Problems
 
-<!-- TODO: remove bullet points or reshape as Learning outcomes to be taught -->
-
-- Discuss how a mathematical problem can be converted into something solvable
-- How you can write your own modules to solve systems of equations
-- Brief aside on preconditioners
-
 In order to generate a solution to our problem we must first convert the general equation that we wish to solve into a system of equations. Scientific problems will often consist of a series of known properties of a system which, when multiplied by an unknown parameter, generate known values. Such systems of equations can be converted into a matrix and vector problem of the form $Ax=b$, where $A$ is our matrix describing the properties of the system, $x$ is a vector containing our unknown parameter of interest and $b$ is a known parameter of the system.
 
 Simple matrix mathematics tells us that this could be trivially solved if we can invert the matrix $A$, such that:
@@ -23,10 +17,6 @@ Where $A^{-1}$ is the inverse of the matrix $A$. Our system produces a relativel
 Such solvers are widely used throughout scientific computing as they are widely applicable to a range of different problems involving a range of different matrices. While the commonly used Conjugate Gradient (CG) method is serviceable for a number of different problems, it does require the matrix $A$ to be symmetric, a limitation which we would ideally like to avoid for this code. As such we have implemented the Bi-Conjugate Gradient (BCG) method for our solver, a modified form of the CG algorithm which can handle asymmetric matrices.
 
 ## Discretisation using Finite Difference Methods
-
-<!-- TODO: remove bullet point -->
-
-- Discretisation in space using data stored within other modules
 
 While our code could solve problems that involve homogenous systems, real systems will have properties that vary in some dimensions. A 1-Dimensional code such as this example code can facilitate variations in properties in the x dimension. To do so, we must have some method of discretising our spatial x dimension which allows us to consistently generate relevant systems of equations to describe the system. The specific discretisation scheme that we utilise in our code is known as 'finite difference', a scheme that generates very simple systems of equations, especially in a one-dimensional case.
 

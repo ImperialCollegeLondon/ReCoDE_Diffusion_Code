@@ -5,4 +5,8 @@ diffusion_petsc
 /.vscode
 site/
 venv/
+build/
+debug/
+release/
+install/
 
