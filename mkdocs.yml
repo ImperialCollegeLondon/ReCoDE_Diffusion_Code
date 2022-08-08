@@ -37,6 +37,8 @@ theme:
     - navigation.top
     - toc.follow
     - content.code.annotate
+extra:
+  homepage: https://imperialcollegelondon.github.io/ReCoDE-home/
 
 # Add here all the plugins you want to use.
 # Don't forget to add them in requirements.txt as well.
